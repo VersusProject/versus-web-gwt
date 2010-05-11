@@ -1,0 +1,1019 @@
+body {
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 90% !important;
+	margin: 0px;
+	padding: 0px;
+	/**background-color: #E3E3E3;**/
+	text-align: center;
+}
+
+.redBorder {
+	border: 1px solid red;
+}
+
+.blueBorder {
+	border: 1px solid blue;
+}
+
+.background {
+	/**background-color: #E3E3E3;**/
+}
+
+.hidden {
+	display: none;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.whiteText {
+	color: white;
+}
+
+.relativePosition {
+	position: relative;
+}
+
+.clearBoth {
+	clear: both;
+	position: relative;
+}
+
+.inline {
+	display:inline;
+}
+
+.pageHeader {
+	background: #002B55;
+	padding: 0px;
+	margin: 0px;
+	border-bottom: #888888 solid 1px;
+	position: relative;
+	height: auto;
+}
+
+.mainMenu {
+	width: 975px;
+	height: 40px;
+	margin: 0px auto 0px auto;
+	padding: 0px;
+	position: relative;
+	vertical-align: top;
+}
+
+.searchBox {
+	border: 1px solid white;
+}
+
+.menuElementLeft {
+	float:left;
+	height: auto;
+	padding: 10px;
+	position: relative;
+	vertical-align: top;
+}
+
+.menuElementRight {
+	float:right;
+	padding: 10px;
+	height: auto;
+	position: relative;
+	vertical-align: top;
+}
+
+.logo {
+	float: left;
+    color: white;
+    text-align: left;
+    width: 100px;
+    font-weight: bold;
+    position: relative;
+	vertical-align: top;
+}
+
+.toolbar {
+	width: 975px;
+	background-color: #069;
+	margin: 0px auto 0px auto;
+	padding: 0px;
+	text-align: left;
+}
+
+.breadcrumb {
+	display: none;
+	width: 975px;
+	margin: 5px auto 0px auto;
+	text-align: left;
+	color: gray;
+	padding-left: 40px;
+	position: relative;
+}
+
+.mainContainer {
+	text-align: center;
+	minHeight: 600px;	
+	width: 975px;
+	/**border: solid 1px #888888;**/
+	margin: 10px auto 20px auto;
+	padding: 0px;
+	background-color: white;
+}
+
+.bottomMenu {
+	/**background-color: #E3E3E3;**/
+	border-top: 1px solid gray;
+	width: 975px;
+	margin: 20px auto 20px auto;
+	padding: 10px;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif !important;	
+	text-decoration:none;
+	color:#666;
+	font-size: 0.9em !important;		
+}
+
+.bottomMenu a:link, .bottomMenu a:visited {
+	color:#666;
+}
+
+.datasetDisclosurePanel {
+	width: 90%;
+	margin: 10px 0px 20px 20px;
+}
+
+.addMetadata {
+	width: 100%;
+	padding: 5px;
+	margin: 10px 0px 10px 0px;
+	background-color: #EFF5FB;
+}
+
+.metadataTable {
+	margin: 10px;
+	border-collapse: collapse;
+}
+
+.metadataTableCell {
+	padding: 5px;
+}
+
+.metadataTableEvenRow {
+	background-color: #F2F2F2;
+}
+
+.metadataTableOddRow {
+}
+
+.gwt-DisclosurePanel-closed {
+	background-color: #F2F2F2;
+}
+
+.gwt-DisclosurePanel-open .header {
+	background-color: #F2F2F2;
+}
+
+.labeledListBoxTitle {
+	margin: 5px;
+}
+
+.labeledListBoxPulldown {
+	margin: 5px;
+}
+
+.loginMenu {
+	float: right;
+	width: 200px;
+	text-align: right;
+	color: white;
+	white-space: nowrap;
+}
+
+.signupPanel div {
+	float: right;
+}
+
+.signupLink:link {
+	color: white;
+	text-decoration: none;
+}
+
+.signupLink:visited {
+	color: white;
+	text-decoration: none;
+}
+
+.signupLink:hover {
+	color: white;
+	text-decoration: underline;
+}
+	
+.loginMenu div {
+	float: left;
+}
+
+.loginMenuLink:link {
+	color: white;
+	text-decoration: none;
+}
+
+.loginMenuLink:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.navMenu {
+	position: relative;
+	padding-left: 100px;
+}
+
+.navMenuLink:link {
+	color: white;
+	text-decoration: none;
+	margin: 5px;
+}
+
+.navMenuLink:visited {
+	color: white;
+	text-decoration: none;
+	margin: 5px;
+}
+
+.navMenuLink:active {
+ 	color: white;
+}
+
+.navMenuLink:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.navMenuLink a:link {
+	color: white;
+	text-decoration: none;
+	margin: 5px;
+}
+
+.navMenuLink a:visited {
+	color: white;
+	text-decoration: none;
+	margin: 5px;
+}
+
+.navMenuLink a:active {
+ 	color: white;
+}
+
+.navMenuLink a:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.smallText {
+    font-size: 0.8em;
+}
+
+.tooltip {
+	color: white;
+	font-size: 0.8em;
+}
+
+.uploadMainPanel {
+	width: 100%;
+	padding: 20px;
+}
+
+.centered {
+	text-align: center;
+	margin: 5px auto 5px auto;
+}
+
+
+.datasetsPager {
+	width: 700px;
+	margin: 0px auto 0px auto;
+	border: 1px solid #CCC;
+}
+
+.pagingWidget {
+	line-height: 24px;
+	margin: 5px;
+}
+
+.pagingButton  {
+	font-size: 0.9em;
+	vertical-align: middle;
+}
+
+.pagingButton:hover {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.pageAnchor {
+	/*border: 1px solid blue;*/
+	font-size: 0.9em;
+	margin: 3px;
+}
+
+.thisPageAnchor {
+	margin: 3px;
+	color: black;
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.page {
+	float: none;
+	width: 100%;
+	text-align: center;
+	minHeight: 600px;
+	margin: 0px;
+	padding: 5px;
+}
+
+.homePageWidget {
+	float: left;
+	/**border: 1px #888888 solid;**/
+	margin: 20px 100px 100px 20px;
+	padding: 5px 10px 20px 10px;
+}
+
+.homePageWidgetTitle {
+	font-size: 1.4em;
+}
+
+.homePageWidgetRow {
+	padding-left: 10px;	
+}
+
+.uploadPageLayout {
+	width: 95%;
+	margin: 10px auto 10px auto;
+	padding-bottom: 30px;
+}
+
+.dndContainer {
+	width: 152px;
+}
+
+.dragAndDrop {
+	width: 152px;
+	border: 1px dashed #002B55;
+	padding: 1px;
+	cursor: pointer;
+	font-size: 0.8em;
+}
+	
+	
+.twoColumnLayout {
+	width: 100%;
+}
+
+.twoColumnLayout-leftCol {
+	position: relative;
+	float: left;
+	width: 600px;
+}
+
+.twoColumnLayout-rightCol {
+	position: relative;
+	float: right;
+	width: 300px;
+}
+
+.usersTable {
+	width: 800px;
+	margin: 20px auto 100px auto;
+}
+
+.textBoxWatermark {
+	font-style: italic;
+	color: gray;	
+}
+
+.pageForm {
+	margin: 20px auto 100px auto;
+}
+
+.feedbackMessage {
+	width: 50%;
+	margin: 5px auto 5px auto;
+	padding: 5px;
+	background: #FFFCCA;
+}
+
+.loginForm {
+	margin: 20px auto 100px auto;
+}
+
+.loginError {
+	padding: 5px;
+	background: #FFFCCA;
+}
+
+.titlePanel {
+    width: 100%;
+    padding: 10px;
+}
+
+.pageTitle {
+  	font-size: 1.5em;
+    color: black;
+}
+
+.rssIcon {
+    width: 1em;
+}
+
+.clearFloat {
+	clear: both;
+}
+
+.borderDebug div {
+	border: 1px solid red;
+}
+
+.titleLabel {
+	text-align:left;
+	font-size: 1.5em;
+  	color: black;
+  	margin: 20px;
+}
+
+.datasetTable {
+	width: 700px;
+	/**border: #CCC solid 1px;**/
+	vertical-align: top;
+	margin: 20px auto 20px auto;
+	padding: 0px;
+	border-spacing:0px;
+	border-collapse: collapse;
+}
+
+.datasetTable .topRow {
+	font-weight: bold;
+	margin: 0px;
+	padding: 8px;
+	background:#FFF url(images/sprites-t1.gif) repeat-x 0px -545px;
+	height: 30px;
+	text-align: center;
+}
+
+.datasetTable .cell {
+	margin: 0px;
+	padding: 8px;
+	border-top: #CCC solid 1px;
+	text-align: center;
+}
+
+.datasetTable .leftCell {
+	width: 40%;
+	margin: 0px;
+	padding: 8px;
+	border-top: #CCC solid 1px;
+	text-align: center;
+}
+
+.datasetTable .rightCell {
+	margin: 0px;
+	padding: 8px;
+	border-top: #CCC solid 1px;
+	text-align: left;
+}
+
+.datasetTable .evenRow {
+	color: black;
+	background-color: #F6F9ED;
+	height: 50px;
+}
+
+.datasetTable .oddRow {
+	color: black;
+	height: 50px;
+}
+
+.alignRight {
+	position: relative;
+	float: right;
+}
+
+.datasetSocialPanel {
+	width: 100px;
+}
+
+.datasetRightColHeading {
+	width: 200px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 0px;
+	font-size: 1.5em;
+	text-align: left;
+	/**background: #EC8E00;**/
+}
+
+.datasetRightColSection {
+	width: 200px;
+	padding: 0px;
+	margin: 20px 5px 50px 5px;
+	text-align: left;
+}
+
+.gallery {
+	width: 350px;
+	padding: 10px;
+	margin: 5px auto 5px auto;
+	border: 1px solid gray;
+	}
+	
+.galleryPager {
+	margin: 5px auto 0px auto;
+}
+
+.galleryImages div {
+	padding: 5px;
+	}
+
+.collectionInfo {
+	text-align: left;
+	margin-left: 20px;
+}
+
+.tagsView {
+	width:100%;
+	padding: 0px;
+	margin: 20px 5px 20px 5px;
+}
+
+.tagsHeading {
+	width: 100px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 0px;
+	font-size: 1.5em;
+}
+
+.tagsLinks {
+	margin-top: 10px;
+	margin-bottom: 20px;
+	padding: 0px;
+}
+
+.tag {
+	padding-left: 0px;
+}
+
+.tagsButton {
+	margin: 0px;
+	padding: 0px;
+}
+
+.addTags {
+	margin-top: 10px auto 10px auto;
+	padding: 0px;
+}
+
+.addTagsLink {
+	margin-left: 5px;
+}
+
+.licenseIndent {
+	margin-left: 20px;
+}
+
+.datasetTitle {
+	font-size: 1.5em;
+  	color: black;
+  	margin: 20px;
+  	text-align: left;
+}
+
+.datasetMainContainer {
+	position: relative;
+	width: 100%;
+}
+
+.datasetMainContainerLeftColumn {
+	float: left;
+	text-align: left;
+	width: 700px;
+}
+
+.datasetMainContainerRightColumn {
+	float: right;
+	width: 250px;
+}
+
+.previewPanel {
+	width: 100%;
+	text-align: center;
+	margin: 0px;
+	padding: 0px;
+	height: auto;
+}
+
+.actionLink {
+	margin: 10px;
+}
+	
+.imagePreviewPanel {
+	width: 500px;
+	overflow: auto;
+	margin: 30px;
+	border: 1px solid #888888;
+	margin-left: auto;
+    margin-right: auto;
+	vertical-align: middle;
+}
+
+.imagePreviewNoOverflow {
+	display: block;
+	margin: 5px auto 5px auto;
+	vertical-align: middle;
+	border: 1px solid #888888;
+}
+
+.imagePreviewShortWidth {
+	height: auto;
+}
+	
+.imagePreviewShortHeight {
+	width: auto;
+}
+
+.imagePreview {
+	display: block;
+	margin-left: auto;
+    margin-right: auto;
+	vertical-align: middle;
+}
+
+.metadataPreview {
+	width:100%;
+	margin: 20px 0px 20px 0px;
+}
+
+.metadataEntry {
+	vertical-align: middle;
+	text-align: left;
+	padding: 5px;
+}
+
+.downloadButton {
+	vertical-align: bottom;
+}
+
+.datasetActions {
+	margin: 0px;
+	padding: 10px 0px 20px 0px;
+	text-align: center;
+	border: none;
+}
+
+.datasetActionLink {
+	margin: 10px;
+}
+
+.previewActionLink {
+	margin: 10px;
+}
+	
+.commentsView {
+	height: auto;
+	clear: both;
+	padding: 20px;
+}
+
+.addToCollectionDialog {
+	text-align: center;
+	}
+	
+.addToCollectionDialog div {
+	margin: 5px;
+	padding: 5px;
+	}
+
+.border {
+	border: 1px solid;
+}
+
+.thumbnail {
+	display: block;
+	cursor: pointer; 
+	cursor: hand;
+	margin: 5px auto 5px auto;
+}
+
+.pendingSmall {
+	background: url(images/preview-100.gif);
+}
+
+.pendingLarge {
+	background: url(images/preview-500.gif);
+}
+
+.seadragon {
+	display: block;
+	margin: 5px auto 5px auto;
+	vertical-align: middle;
+	border: 1px solid #888888;
+	width: 600px;
+	height: 400px;
+	background-color: black;
+	color: white
+}
+
+.anchorButton {
+    padding: 3px;
+}
+
+/*================= Annotations / Comments ============== */
+.commentsHeading {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 0px;
+	font-size: 1.5em;
+}
+
+.annotationMainPanel {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 5px;
+	border-top: 1px solid #959596;
+}
+
+.annotationTitle {
+	font-weight:bold;
+}
+
+.annotationAttributes {
+	font-style: italic;
+}
+
+.annotationBody {
+
+}
+
+.newCommentHeader {
+	font-weight:bold;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.newCommentTextArea {
+}
+
+.newAnnotationMainPanel {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 5px;
+	border-top: 1px solid #959596;
+}
+
+.datasetZoom {
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 0px;
+    width: 670;
+    height: 550;
+}
+
+.absoluteRight {
+    margin-right: 20px;
+    float: right;
+}
+
+.debugLayout {
+    border: 1px dashed #999999;
+}
+
+.centerContainer {
+    display: table;
+    vertical-align: middle;
+}
+
+.flowPreviewLarge {
+    width: 400px;
+    height: 400px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.flowPreviewSmall {
+    width: 150px;
+    height: 400px;
+    text-align: center;
+    overflow: hidden;	
+}
+
+.flowLabelLarge {
+	width: 400px;
+	overflow: hidden;
+}
+
+.flowLabelSmall {
+	width: 150px;
+	overflow: hidden;
+}
+
+.gridPreviewSmall {
+    width: 120px;
+    height: 100px;
+    text-align: center;
+    overflow: hidden;
+    margin: 0px auto;
+}
+
+.gridLabelSmall {
+    width: 120px;
+    height: 10px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.editHighlight {
+    background: #ffff99;
+}
+
+.deleteLink {
+    color: gray;
+    width: 30px;
+    text-align: right;
+}
+
+.gwt-TabPanel {
+  margin-top: 4px !important;
+}
+
+.gwt-TabPanelBottom {
+  background-color: white;
+  border: none !important;
+  overflow: hidden !important;
+  padding: 15px !important;
+  min-height: 500px;
+}
+
+.gwt-TabBar {
+  padding-top: 2px;
+  border-bottom: 1px solid #888888;
+  background-color: #fff;
+}
+
+.gwt-TabBarItem {
+  padding: 4px;
+  cursor: pointer;
+  background-color: white !important;
+  border: 1px solid #888888 !important;
+  margin-right: 2px;
+  font-weight: normal !important;
+  margin-bottom: -1px !important;
+}
+
+.gwt-TabBarItem-selected {
+  padding: 4px;
+  font-weight: bold !important;
+  cursor: default;
+  background: white !important;
+  border-top: 1px solid #888888 !important;
+  border-right: 1px solid #888888 !important;
+  border-bottom: 1px solid white !important;
+  border-left: 1px solid #888888 !important;
+  margin-right: 2px;
+}
+
+.tagsPanel {
+	width: 800px;
+	display: block;
+	margin: 10px auto 30px auto;
+    min-height: 500px;
+}
+
+.tagInPanel {
+    display:inline-block;
+    position: relative;
+	margin: 10px;
+	padding: 5px;
+}
+
+.tagLink {
+	display: inline;
+}
+
+.tagCount {
+	display: inline;
+	font-size: 0.9em;
+	vertical-align: super;
+	color: gray;
+}
+
+.datasetInfoWidget {
+	padding: 10px;
+	margin: 10px auto 10px auto;
+	vertical-align: middle;
+}
+
+.datasetInfoThumbnail {
+	float: left;
+}
+
+.datasetInfoDescription {
+	float: left;
+	margin-left: 20px;
+}
+
+.datasetInfoDescription div {
+	margin-bottom: 5px;
+}
+
+.batchOperationPanel {
+}
+
+.batchOperationCount {
+	float: right;
+	color: gray;
+	font-size: 80%;
+	margin: 5px;
+}
+
+.batchOperationMenu {
+	display: inline;
+	float: right;
+}
+
+.gwt-MenuBar-horizontal .gwt-MenuItem {
+	font-weight: normal !important;
+	color: #000 !important;
+}
+
+.progressBar {
+	border: 1px solid;
+	padding: 1px;
+}
+
+.progressBarBar {
+	background-color: #002b55;
+	font-size: 0.5em;
+}
+
+.titlePanelRightElement {
+	margin-right: 60px
+}
+
+.gwt-MenuBar .gwt-MenuItem-selected {
+	background: red;
+}
+
+.gwt-MenuBar-vertical .subMenuIcon-selected {
+  background: red;
+}
+
+.gwt-MenuBar-horizontal .subMenuIcon-selected {
+  background: red;
+}
+
+.dynamicTable {
+    width: 900px;
+    margin: 10px auto;
+}
+
+.dynamicTable .content {
+    margin: 0px auto;
+}
+
+.dynamicTableHeader {
+	width: 100%;
+    border: #CCC solid 1px;
+}
+
+.dynamicTableList {
+	width: 900px;
+	border: #CCC solid 1px;
+	vertical-align: top;
+	margin: 20px auto 20px auto;
+	padding: 0px;
+	border-spacing:0px;
+	border-collapse: collapse;
+}
+
+.dynamicTableList .cell {
+	margin: 0px;
+	padding: 8px;
+	border-top: #CCC solid 1px;
+	text-align: center;
+}
+
+.dynamicGrid {
+	width: 900px;
+	vertical-align: top;
+	margin: 20px auto 20px auto;
+	padding: 0px;
+	border-spacing:0px;
+	border-collapse: collapse;	
+}
+
+.dynamicGridElement {
+	border: 1px solid #CCC;
+	margin: 10px;
+}
