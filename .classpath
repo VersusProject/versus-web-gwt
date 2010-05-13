@@ -40,7 +40,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/milton-api-1.5.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/milton-servlet-1.5.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/mmdb-web.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mysql-connector-java-5.0.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.apache.commons.httpclient.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/oro-2.0.8.jar"/>
@@ -82,5 +81,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/Jama-1.0.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/MatrixUtilities.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/Utilities.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/mmdb-web.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
