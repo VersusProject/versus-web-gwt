@@ -11,8 +11,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
-import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
-import edu.illinois.ncsa.versus.web.client.event.AddMeasureEventHandler;
+import edu.illinois.ncsa.versus.web.client.event.SelectMeasureEvent;
+import edu.illinois.ncsa.versus.web.client.event.SelectMeasureEventHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
 
 /**
@@ -40,10 +40,10 @@ public class SelectMeasurePresenter implements Presenter {
 	}
 	
 	void bind() {
-		eventBus.addHandler(AddMeasureEvent.TYPE, new AddMeasureEventHandler() {
+		eventBus.addHandler(SelectMeasureEvent.TYPE, new SelectMeasureEventHandler() {
 			
 			@Override
-			public void onAddMeasure(final AddMeasureEvent addMeasureEvent) {
+			public void onAddMeasure(final SelectMeasureEvent addMeasureEvent) {
 				int index = display.addMeasure(addMeasureEvent.getName());
 				display.getMeasureAnchor(index).addClickHandler(new ClickHandler() {
 					

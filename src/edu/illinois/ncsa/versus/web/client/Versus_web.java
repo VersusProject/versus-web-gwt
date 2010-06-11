@@ -2,27 +2,21 @@ package edu.illinois.ncsa.versus.web.client;
 
 import java.util.List;
 
-import com.allen_sauer.gwt.dnd.client.DragEndEvent;
-import com.allen_sauer.gwt.dnd.client.DragHandler;
-import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
-import com.allen_sauer.gwt.dnd.client.VetoDragException;
-import com.allen_sauer.gwt.dnd.client.drop.HorizontalPanelDropController;
-import com.allen_sauer.gwt.dnd.client.drop.IndexedDropController;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.IndexedPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.illinois.ncsa.mmdb.web.client.UploadWidget;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
@@ -30,14 +24,12 @@ import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedHandler;
 import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
-import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
-import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
+import edu.illinois.ncsa.versus.web.client.event.SelectExtractorEvent;
+import edu.illinois.ncsa.versus.web.client.event.SelectMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
-import edu.illinois.ncsa.versus.web.client.presenter.DropBoxPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter;
 import edu.illinois.ncsa.versus.web.client.view.CurrentSelectionsView;
-import edu.illinois.ncsa.versus.web.client.view.DropBoxView;
 import edu.illinois.ncsa.versus.web.client.view.ListThumbails;
 import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
 import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
@@ -63,36 +55,9 @@ public class Versus_web implements EntryPoint {
 		eventBus = new HandlerManager(null);
 		// drag and drop
 		PickupDragController dragController = new PickupDragController(RootPanel.get(), true);
-		dragController.addDragHandler(new DragHandler() {
-			
-			@Override
-			public void onPreviewDragStart(DragStartEvent event)
-					throws VetoDragException {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onPreviewDragEnd(DragEndEvent event) throws VetoDragException {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onDragStart(DragStartEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onDragEnd(DragEndEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		DockLayoutPanel appPanel = new DockLayoutPanel(Unit.EM);
 		HTML header = new HTML("Versus");
-		header.addStyleName("header");
+		header.addStyleName("headerPanel");
 		HTML footer = new HTML("");
 		footer.addStyleName("footer");
 		HTML navigation = new HTML("files");
@@ -101,49 +66,68 @@ public class Versus_web implements EntryPoint {
 		content = new FlowPanel();
 		content.addStyleName("contentPanel");
 		
-		// drop box panel
-		HorizontalPanel dropBoxPanel = new HorizontalPanel();
-		dropBoxPanel.addStyleName("dropBoxesPanel");
-		content.add(dropBoxPanel);
-		// first drop box
-		DropBoxView firstDropBox = new DropBoxView();
-		DropBoxPresenter firstDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, firstDropBox);
-		firstDropBoxPresenter.go(dropBoxPanel);
-		dragController.registerDropController(firstDropBox.getDropController());
-		// second drop box
-		DropBoxView secondDropBox = new DropBoxView();
-		DropBoxPresenter secondDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, secondDropBox);
-		secondDropBoxPresenter.go(dropBoxPanel);
-		dragController.registerDropController(secondDropBox.getDropController());
+//		// drop box panel
+//		HorizontalPanel dropBoxPanel = new HorizontalPanel();
+//		dropBoxPanel.addStyleName("dropBoxesPanel");
+//		content.add(dropBoxPanel);
+//		// first drop box
+//		DropBoxView firstDropBox = new DropBoxView();
+//		DropBoxPresenter firstDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, firstDropBox);
+//		firstDropBoxPresenter.go(dropBoxPanel);
+//		dragController.registerDropController(firstDropBox.getDropController());
+//		// second drop box
+//		DropBoxView secondDropBox = new DropBoxView();
+//		DropBoxPresenter secondDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, secondDropBox);
+//		secondDropBoxPresenter.go(dropBoxPanel);
+//		dragController.registerDropController(secondDropBox.getDropController());
+//		
+		
+		DisclosurePanel newExecutionDisclosure = new DisclosurePanel("New Execution");
+		newExecutionDisclosure.setWidth("100%");
+		VerticalPanel newExecutionPanel = new VerticalPanel();
+		newExecutionPanel.setWidth("100%");
+		newExecutionDisclosure.add(newExecutionPanel);
+		content.add(newExecutionDisclosure);
 		
 		// current selections
 		CurrentSelectionsView currentSelectionsView = new CurrentSelectionsView();
 		CurrentSelectionsPresenter currentSelectionsPresenter = new CurrentSelectionsPresenter(registryService, eventBus, currentSelectionsView); 
-		currentSelectionsPresenter.go(content);
+		currentSelectionsPresenter.go(newExecutionPanel);
 		
-		// testing drop targets
-		HorizontalPanel dropTarget = new HorizontalPanel();
-		dropTarget.setBorderWidth(1);
-		dropTarget.setSize("500px", "100px");
-		HorizontalPanelDropController dropController = new HorizontalPanelDropController(dropTarget);
-		dragController.registerDropController(dropController);
-		content.add(dropTarget);
+//		// testing drop targets
+//		HorizontalPanel dropTarget = new HorizontalPanel();
+//		dropTarget.setBorderWidth(1);
+//		dropTarget.setSize("500px", "100px");
+//		HorizontalPanelDropController dropController = new HorizontalPanelDropController(dropTarget);
+//		dragController.registerDropController(dropController);
+//		content.add(dropTarget);
+		
+		HorizontalPanel selectionPanel = new HorizontalPanel();
+		selectionPanel.setBorderWidth(1);
+		selectionPanel.setWidth("100%");
+		newExecutionPanel.add(selectionPanel);
 		
 		// extractors
 		SelectExtractorView selectExtractorView = new SelectExtractorView();
 		SelectExtractorPresenter selectExtractorPresenter = new SelectExtractorPresenter(registryService, eventBus, selectExtractorView);
-		selectExtractorPresenter.go(content);
+		selectExtractorPresenter.go(selectionPanel);
 		
 		// measures
 		SelectMeasureView selectMeasureView = new SelectMeasureView();
 		SelectMeasurePresenter selectMeasurePresenter = new SelectMeasurePresenter(registryService, eventBus, selectMeasureView);
-		selectMeasurePresenter.go(content);
+		selectMeasurePresenter.go(selectionPanel);
 
 		// dataset selection
 		DynamicTableView datasetTableView = new DynamicTableView();
 		final DatasetTablePresenter datasetTablePresenter = new DatasetTablePresenter(dispatchAsync, eventBus, datasetTableView);
 		datasetTablePresenter.bind();
-		content.add(datasetTableView.asWidget());
+		DisclosurePanel selectionDisclosure = new DisclosurePanel("Select datasets");
+		selectionDisclosure.setWidth("100%");
+		VerticalPanel selectionDisclosureBody = new VerticalPanel();
+		selectionDisclosureBody.setWidth("100%");
+		selectionDisclosureBody.add(datasetTableView.asWidget());
+		selectionDisclosure.add(selectionDisclosureBody);
+		content.add(selectionDisclosure);
 		
 		// upload widget
 		uploadWidget = new UploadWidget(false);
@@ -156,7 +140,7 @@ public class Versus_web implements EntryPoint {
 			}
 			
 		});
-		content.add(uploadWidget);
+		selectionDisclosureBody.add(uploadWidget);
 		
 		appPanel.addNorth(header, 2);
 		appPanel.addSouth(footer, 2);
@@ -176,7 +160,7 @@ public class Versus_web implements EntryPoint {
 			@Override
 			public void onSuccess(List<String> result) {
 				for (String name : result) {
-					eventBus.fireEvent(new AddExtractorEvent(name));
+					eventBus.fireEvent(new SelectExtractorEvent(name));
 				}
 			}
 			
@@ -191,7 +175,7 @@ public class Versus_web implements EntryPoint {
 			@Override
 			public void onSuccess(List<String> result) {
 				for (String name : result) {
-					eventBus.fireEvent(new AddMeasureEvent(name));
+					eventBus.fireEvent(new SelectMeasureEvent(name));
 				}
 			}
 			

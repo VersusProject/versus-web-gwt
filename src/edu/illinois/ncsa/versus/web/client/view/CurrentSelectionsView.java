@@ -4,7 +4,7 @@
 package edu.illinois.ncsa.versus.web.client.view;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,19 +17,19 @@ import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter.
  */
 public class CurrentSelectionsView extends Composite implements Display {
 	
-	private FlowPanel mainPanel;
-	private SimplePanel selectedExecutorPanel;
-	private SimplePanel selectedMeasurePanel;
+	private final HorizontalPanel mainPanel;
+	private final SimplePanel selectedExecutorPanel;
+	private final SimplePanel selectedMeasurePanel;
 
 	public CurrentSelectionsView() {
-		mainPanel = new FlowPanel();
+		mainPanel = new HorizontalPanel();
 		mainPanel.addStyleName("currentSelectionsView");
+		selectedMeasurePanel = new SimplePanel();
+		selectedMeasurePanel.setWidget(new Label("No measure selected"));
+		mainPanel.add(selectedMeasurePanel);		
 		selectedExecutorPanel = new SimplePanel();
 		selectedExecutorPanel.setWidget(new Label("No executor selected"));
 		mainPanel.add(selectedExecutorPanel);
-		selectedMeasurePanel = new SimplePanel();
-		selectedMeasurePanel.setWidget(new Label("No measure selected"));
-		mainPanel.add(selectedMeasurePanel);
 		initWidget(mainPanel);
 	}
 
