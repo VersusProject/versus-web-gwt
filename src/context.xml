@@ -42,13 +42,13 @@
     <a:hasProperties>
       <b:storageTypeMapEntry rdf:about="tag:tupeloproject.org,2006:9c6764b80dd7ebf65f5f76453ea33d5ffe797bb5">
         <b:storageTypeMapKey>MySQL.password</b:storageTypeMapKey>
-        <b:storageTypeMapValue>medici</b:storageTypeMapValue>
+        <b:storageTypeMapValue>tupelo</b:storageTypeMapValue>
       </b:storageTypeMapEntry>
     </a:hasProperties>
     <a:hasProperties>
       <b:storageTypeMapEntry rdf:about="tag:tupeloproject.org,2006:a0ff69e30a06ae309ca8fcbe856a7c55dfff9683">
         <b:storageTypeMapKey>MySQL.user</b:storageTypeMapKey>
-        <b:storageTypeMapValue>medici</b:storageTypeMapValue>
+        <b:storageTypeMapValue>tupelo</b:storageTypeMapValue>
       </b:storageTypeMapEntry>
     </a:hasProperties>
     <a:hasProperties>
@@ -66,7 +66,7 @@
     <a:hasProperties>
       <b:storageTypeMapEntry rdf:about="tag:tupeloproject.org,2006:f46fb261c22c87af3033e559026f1619248b3478">
         <b:storageTypeMapKey>MySQL.database</b:storageTypeMapKey>
-        <b:storageTypeMapValue>medici</b:storageTypeMapValue>
+        <b:storageTypeMapValue>tupelo</b:storageTypeMapValue>
       </b:storageTypeMapEntry>
     </a:hasProperties>
     <a:isType>MySQL</a:isType>
