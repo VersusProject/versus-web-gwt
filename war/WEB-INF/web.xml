@@ -108,7 +108,7 @@
 
 	<servlet-mapping>
 		<servlet-name>UploadBlob</servlet-name>
-		<url-pattern>/mmdb/UploadBlob</url-pattern>
+		<url-pattern>/versus_web/UploadBlob</url-pattern>
 		<!--  this additional mapping is kludgy, but necessary for GWT -->
 	</servlet-mapping>
 
