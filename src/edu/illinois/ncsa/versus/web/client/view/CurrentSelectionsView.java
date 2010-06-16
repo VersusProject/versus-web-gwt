@@ -3,6 +3,8 @@
  */
 package edu.illinois.ncsa.versus.web.client.view;
 
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -20,6 +22,7 @@ public class CurrentSelectionsView extends Composite implements Display {
 	private final HorizontalPanel mainPanel;
 	private final SimplePanel selectedExecutorPanel;
 	private final SimplePanel selectedMeasurePanel;
+	private final Button executeButton;
 
 	public CurrentSelectionsView() {
 		mainPanel = new HorizontalPanel();
@@ -30,6 +33,8 @@ public class CurrentSelectionsView extends Composite implements Display {
 		selectedExecutorPanel = new SimplePanel();
 		selectedExecutorPanel.setWidget(new Label("No executor selected"));
 		mainPanel.add(selectedExecutorPanel);
+		executeButton = new Button("Execute");
+		mainPanel.add(executeButton);
 		initWidget(mainPanel);
 	}
 
@@ -48,4 +53,8 @@ public class CurrentSelectionsView extends Composite implements Display {
 		selectedMeasurePanel.setWidget(new Label(name));
 	}
 
+	@Override
+	public HasClickHandlers getExecuteButton() {
+		return executeButton;
+	}
 }
