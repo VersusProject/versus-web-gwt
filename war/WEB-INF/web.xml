@@ -8,6 +8,11 @@
 
 	<!-- Servlets -->
 	<servlet>
+		<servlet-name>executionServlet</servlet-name>
+		<servlet-class>edu.illinois.ncsa.versus.web.server.ExecutionServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet>
 		<servlet-name>registryServlet</servlet-name>
 		<servlet-class>edu.illinois.ncsa.versus.web.server.RegistryServiceImpl</servlet-class>
 	</servlet>
@@ -55,6 +60,11 @@
 			edu.illinois.ncsa.mmdb.web.server.UploadBlob
     	</servlet-class>
 	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>executionServlet</servlet-name>
+		<url-pattern>/versus_web/execution</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>registryServlet</servlet-name>

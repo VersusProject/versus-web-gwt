@@ -6,10 +6,12 @@ package edu.illinois.ncsa.versus.web.client.presenter;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -17,11 +19,15 @@ import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
+import edu.illinois.ncsa.versus.web.client.ExecutionService;
+import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
+import edu.illinois.ncsa.versus.web.client.RegistryService;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
+import edu.illinois.ncsa.versus.web.server.ExecutionServiceImpl;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
 
@@ -37,6 +43,7 @@ public class CurrentSelectionsPresenter implements Presenter {
 	private final Set<String> datasets;
 	protected String measure;
 	protected String extractor;
+	private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
 	
 	public interface Display {
 		Widget asWidget();
@@ -118,5 +125,18 @@ public class CurrentSelectionsPresenter implements Presenter {
 				}
 			}
 		}
+		// submit execution
+		executionService.submit(comparisons, new AsyncCallback<Void>() {
+			
+			@Override
+			public void onSuccess(Void result) {
+				GWT.log("Execution successfully submitted");
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				GWT.log("Error submitting execution", caught);
+			}
+		});
 	}
 }
