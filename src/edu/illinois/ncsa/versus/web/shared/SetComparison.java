@@ -3,6 +3,7 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.uiuc.ncsa.cet.bean.CETBean;
@@ -17,7 +18,7 @@ public class SetComparison extends CETBean {
 	private List<PairwiseComparison> comparisons;
 	
 	public SetComparison() {
-		// TODO Auto-generated constructor stub
+		comparisons = new ArrayList<PairwiseComparison>();
 	}
 
 	/**

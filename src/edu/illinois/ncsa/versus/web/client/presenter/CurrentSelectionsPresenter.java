@@ -27,7 +27,9 @@ import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
+import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.server.ExecutionServiceImpl;
+import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
 
@@ -126,11 +128,12 @@ public class CurrentSelectionsPresenter implements Presenter {
 			}
 		}
 		// submit execution
-		executionService.submit(comparisons, new AsyncCallback<Void>() {
+		executionService.submit(comparisons, new AsyncCallback<Job>() {
 			
 			@Override
-			public void onSuccess(Void result) {
+			public void onSuccess(Job job) {
 				GWT.log("Execution successfully submitted");
+				eventBus.fireEvent(new NewJobEvent(job));
 			}
 			
 			@Override

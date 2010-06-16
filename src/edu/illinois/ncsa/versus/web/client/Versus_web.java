@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -24,6 +25,8 @@ import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedHandler;
 import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
+import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
+import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.event.SelectExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.SelectMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
@@ -45,6 +48,8 @@ public class Versus_web implements EntryPoint {
 	private HandlerManager eventBus;
 
 	private UploadWidget uploadWidget;
+
+	private VerticalPanel previousDisclosureBody;
 	
 	public static final MyDispatchAsync dispatchAsync        = new MyDispatchAsync();
 
@@ -124,7 +129,8 @@ public class Versus_web implements EntryPoint {
 		previousDisclosure.addStyleName("mainSection");
 		previousDisclosure.setAnimationEnabled(true);
 		previousDisclosure.setOpen(true);
-		VerticalPanel previousDisclosureBody = new VerticalPanel();
+		previousDisclosureBody = new VerticalPanel();
+		previousDisclosure.add(previousDisclosureBody);
 		content.add(previousDisclosure);
 		
 		// dataset selection
@@ -164,6 +170,18 @@ public class Versus_web implements EntryPoint {
 		RootLayoutPanel.get().add(appPanel);
 		populate();
 		datasetTablePresenter.refresh();
+		
+		bind();
+	}
+
+	private void bind() {
+		eventBus.addHandler(NewJobEvent.TYPE, new NewJobHandler() {
+			
+			@Override
+			public void onNewJob(NewJobEvent newJobEvent) {
+				previousDisclosureBody.add(new Label(newJobEvent.getJob().getStarted().toString()));
+			}
+		});
 	}
 
 	private void populate() {

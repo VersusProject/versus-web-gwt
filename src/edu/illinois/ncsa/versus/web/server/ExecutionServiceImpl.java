@@ -3,13 +3,15 @@
  */
 package edu.illinois.ncsa.versus.web.server;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import edu.illinois.ncsa.mmdb.web.server.dispatch.AddCollectionHandler;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
+import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
 
 /**
@@ -24,8 +26,12 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     private static Log log = LogFactory.getLog(ExecutionServiceImpl.class);
 	
 	@Override
-	public void submit(SetComparison job) {
+	public Job submit(SetComparison set) {
+		Job job = new Job();
+		job.setStarted(new Date());
+		job.setComparison(set);
 		log.debug("Job submitted");
+		return job;
 	}
 
 }
