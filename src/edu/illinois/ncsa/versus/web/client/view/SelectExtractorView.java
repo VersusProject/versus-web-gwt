@@ -17,9 +17,11 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.illinois.ncsa.versus.web.client.InfoPopup;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter.Display;
 
 /**
@@ -39,6 +41,7 @@ public class SelectExtractorView extends Composite implements Display {
 		titleLabel.addStyleName("titleLabel");
 		mainPanel.add(titleLabel);
 		listExtractorPanel = new VerticalPanel();
+		listExtractorPanel.setSpacing(10);
 		mainPanel.add(listExtractorPanel);
 		initWidget(mainPanel);
 	}
@@ -50,6 +53,7 @@ public class SelectExtractorView extends Composite implements Display {
 
 	@Override
 	public int addExtractor(String extractor) {
+		final InfoPopup popup = new InfoPopup(extractor);
 		final Anchor extractorAnchor = new Anchor(extractor);
 		extractorAnchor.addStyleName("measureAnchor");
 		extractorAnchors.add(extractorAnchor);
@@ -64,8 +68,13 @@ public class SelectExtractorView extends Composite implements Display {
 		extractorAnchor.addMouseOverHandler(new MouseOverHandler() {
 			
 			@Override
-			public void onMouseOver(MouseOverEvent event) {
+			public void onMouseOver(final MouseOverEvent event) {
 				extractorAnchor.addStyleName("highlightLabel");
+				popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			          public void setPosition(int offsetWidth, int offsetHeight) {
+			            popup.setPopupPosition(event.getClientX() + 50, event.getClientY());
+			          }
+			        });
 			}
 		});
 		extractorAnchor.addMouseOutHandler(new MouseOutHandler() {
@@ -73,6 +82,7 @@ public class SelectExtractorView extends Composite implements Display {
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				extractorAnchor.removeStyleName("highlightLabel");
+				popup.hide();
 			}
 		});
 		listExtractorPanel.add(extractorAnchor);

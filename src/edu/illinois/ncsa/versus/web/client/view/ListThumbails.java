@@ -12,6 +12,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
@@ -29,12 +30,16 @@ public class ListThumbails extends Composite {
 	FlowPanel mainPanel;
 	
 	Map<String, PreviewWidget> previews = new HashMap<String, PreviewWidget>();
+
+	private SimplePanel outerPanel;
 	
 	public ListThumbails(HandlerManager eventBus, final PickupDragController dragController) {
+		outerPanel = new SimplePanel();
+		outerPanel.addStyleName("listThumbnailsPanel");
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName("listThumbnailsPanel");
 		ScrollPanel scrollPanel = new ScrollPanel(mainPanel);
-		initWidget(scrollPanel);
+		outerPanel.add(scrollPanel);
+		initWidget(outerPanel);
 		
 		eventBus.addHandler(DatasetSelectedEvent.TYPE, new DatasetSelectedHandler() {
 			

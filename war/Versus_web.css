@@ -21,7 +21,9 @@
 }
 
 .headerPanel {
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid gray;
+    text-align: left;
+    padding: 5px;
 }
 
 .navigation {
@@ -29,12 +31,14 @@
 }
 
 .footer {
-	border-top: 1px solid black;
+	border-top: 1px solid gray;
 }
 
 .titleLabel {
 	font-size: large;
 	color: orange;
+	margin: 0px;
+	padding: 0px;
 }
 
 .selectMeasurePanel {
@@ -52,19 +56,24 @@
 }
 
 .selectedLabel {
-	background: orange;
+	color: white;
+	background: blue;
+	padding: 5px;
 }
 
 .highlightLabel {
 	background: #FDD017;
+	padding: 5px;
 }
 
 .measureAnchor {
-	color: black;
 	text-decoration: none;
+	padding: 5px;
 }
 
 .listThumbnailsPanel {
+	height: 100%;
+	border-right: 1px solid gray;
 }
 
 .thumbnail {
@@ -98,5 +107,9 @@ HTML, BODY {
 .currentSelectionsView {
 	width: 500px;
 	margin: 5px auto;
-	border: 1px solid black;
+}
+
+.mainSection {
+	width: 95%;
+	margin: 15px 0px 15px 15px;
 }

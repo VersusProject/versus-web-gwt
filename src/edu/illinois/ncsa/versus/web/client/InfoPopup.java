@@ -12,9 +12,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
  */
 public class InfoPopup extends PopupPanel {
 
-	public InfoPopup() {
+	public InfoPopup(String text) {
 		super(true);
 		setAnimationEnabled(true);
-		setWidget(new Label("Extra information"));
+		setWidget(new Label(text));
 	}
 }

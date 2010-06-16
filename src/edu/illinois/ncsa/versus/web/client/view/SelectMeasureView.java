@@ -41,6 +41,7 @@ public class SelectMeasureView extends Composite implements Display {
 		titleLabel.addStyleName("titleLabel");
 		mainPanel.add(titleLabel);
 		listMeasuresPanel = new VerticalPanel();
+		listMeasuresPanel.setSpacing(10);
 		mainPanel.add(listMeasuresPanel);
 		initWidget(mainPanel);
 	}
@@ -52,7 +53,7 @@ public class SelectMeasureView extends Composite implements Display {
 
 	@Override
 	public int addMeasure(String measure) {
-		final InfoPopup popup = new InfoPopup();
+		final InfoPopup popup = new InfoPopup(measure);
 		final Anchor measureAnchor = new Anchor(measure);
 		measureAnchor.addStyleName("measureAnchor");
 		measureAnchors.add(measureAnchor);
@@ -61,6 +62,7 @@ public class SelectMeasureView extends Composite implements Display {
 			@Override
 			public void onClick(ClickEvent event) {
 				clearSelection();
+//				measureAnchor.removeStyleName("measureAnchor");
 				measureAnchor.addStyleName("selectedLabel");
 			}
 		});

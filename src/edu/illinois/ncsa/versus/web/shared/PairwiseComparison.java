@@ -24,7 +24,7 @@ public class PairwiseComparison extends CETBean {
 	
 	private String adapterID;
 	
-	private Similarity similarity;
+	private String similarity;
 	
 	public PairwiseComparison() {
 		// TODO Auto-generated constructor stub
@@ -103,14 +103,14 @@ public class PairwiseComparison extends CETBean {
 	/**
 	 * @return the similarity
 	 */
-	public Similarity getSimilarity() {
+	public String getSimilarity() {
 		return similarity;
 	}
 
 	/**
 	 * @param similarity the similarity to set
 	 */
-	public void setSimilarity(Similarity similarity) {
+	public void setSimilarity(String similarity) {
 		this.similarity = similarity;
 	}
 }
