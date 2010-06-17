@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -30,12 +29,15 @@ import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.event.SelectExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.SelectMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
+import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter;
 import edu.illinois.ncsa.versus.web.client.view.CurrentSelectionsView;
+import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
 import edu.illinois.ncsa.versus.web.client.view.ListThumbails;
 import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
 import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
+import edu.illinois.ncsa.versus.web.shared.Job;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -179,7 +181,14 @@ public class Versus_web implements EntryPoint {
 			
 			@Override
 			public void onNewJob(NewJobEvent newJobEvent) {
-				previousDisclosureBody.add(new Label(newJobEvent.getJob().getStarted().toString()));
+				Job job = newJobEvent.getJob();
+//				previousDisclosureBody.add(new Label(job.getStarted().toString()));
+				
+				JobStatusView jobStatusView = new JobStatusView();
+				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job);
+				jobStatusPresenter.go(previousDisclosureBody);
+				previousDisclosureBody.add(jobStatusView);
+				
 			}
 		});
 	}

@@ -15,4 +15,6 @@ import edu.illinois.ncsa.versus.web.shared.SetComparison;
 public interface ExecutionServiceAsync {
 
 	void submit(SetComparison job, AsyncCallback<Job> callback);
+
+	void getStatus(String jobId, AsyncCallback<String> callback);
 }

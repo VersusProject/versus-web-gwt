@@ -17,4 +17,6 @@ import edu.illinois.ncsa.versus.web.shared.SetComparison;
 public interface ExecutionService extends RemoteService {
 	
 	Job submit(SetComparison job);
+	
+	String getStatus(String jobId);
 }
