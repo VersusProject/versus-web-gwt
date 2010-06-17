@@ -17,6 +17,12 @@ public class SetComparison extends CETBean {
 
 	private List<PairwiseComparison> comparisons;
 	
+	private String extractionID;
+	
+	private String measureID;
+	
+	private String adapterID;
+	
 	public SetComparison() {
 		comparisons = new ArrayList<PairwiseComparison>();
 	}
@@ -33,5 +39,29 @@ public class SetComparison extends CETBean {
 	 */
 	public List<PairwiseComparison> getComparisons() {
 		return comparisons;
+	}
+
+	public void setExtractionID(String extractionID) {
+		this.extractionID = extractionID;
+	}
+
+	public String getExtractionID() {
+		return extractionID;
+	}
+
+	public void setMeasureID(String measureID) {
+		this.measureID = measureID;
+	}
+
+	public String getMeasureID() {
+		return measureID;
+	}
+
+	public void setAdapterID(String adapterID) {
+		this.adapterID = adapterID;
+	}
+
+	public String getAdapterID() {
+		return adapterID;
 	}
 }

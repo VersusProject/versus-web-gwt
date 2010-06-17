@@ -25,9 +25,16 @@ public class JobStatusView extends Composite implements Display {
 	FlowPanel mainPanel;
 	private SimplePanel startPanel;
 	private SimplePanel statusPanel;
+	private SimplePanel measurePanel;
+	private SimplePanel extractorPanel;
 	
 	public JobStatusView() {
 		mainPanel = new FlowPanel();
+		mainPanel.addStyleName("jobStatusPanel");
+		measurePanel = new SimplePanel();
+		mainPanel.add(measurePanel);
+		extractorPanel = new SimplePanel();
+		mainPanel.add(extractorPanel);
 		startPanel = new SimplePanel();
 		mainPanel.add(startPanel);
 		statusPanel = new SimplePanel();
@@ -54,6 +61,16 @@ public class JobStatusView extends Composite implements Display {
 	@Override
 	public void setStatus(String status) {
 		statusPanel.setWidget(new Label(status));
+	}
+
+	@Override
+	public void setExtractor(String extractor) {
+		extractorPanel.setWidget(new Label(extractor));
+	}
+
+	@Override
+	public void setMeasure(String measure) {
+		measurePanel.setWidget(new Label(measure));
 	}
 
 }

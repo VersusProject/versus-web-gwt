@@ -21,14 +21,12 @@ import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
-import edu.illinois.ncsa.versus.web.client.RegistryService;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
-import edu.illinois.ncsa.versus.web.server.ExecutionServiceImpl;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
@@ -119,6 +117,8 @@ public class CurrentSelectionsPresenter implements Presenter {
 
 	protected void submitExecution() {
 		SetComparison comparisons = new SetComparison();
+		comparisons.setMeasureID(measure);
+		comparisons.setExtractionID(extractor);
 		for (String datasetOne : datasets) {
 			for (String datasetTwo : datasets) {
 				if (!datasetOne.equals(datasetTwo)) {

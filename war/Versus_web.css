@@ -113,3 +113,9 @@ HTML, BODY {
 	width: 95%;
 	margin: 15px 0px 15px 15px;
 }
+
+.jobStatusPanel {
+	width: 100%;
+	padding: 5px;
+	margin: 10px;
+	border: 1px dashed orange;

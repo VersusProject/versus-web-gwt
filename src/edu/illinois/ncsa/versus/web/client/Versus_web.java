@@ -132,6 +132,7 @@ public class Versus_web implements EntryPoint {
 		previousDisclosure.setAnimationEnabled(true);
 		previousDisclosure.setOpen(true);
 		previousDisclosureBody = new VerticalPanel();
+		previousDisclosureBody.setWidth("90%");
 		previousDisclosure.add(previousDisclosureBody);
 		content.add(previousDisclosure);
 		
@@ -182,8 +183,6 @@ public class Versus_web implements EntryPoint {
 			@Override
 			public void onNewJob(NewJobEvent newJobEvent) {
 				Job job = newJobEvent.getJob();
-//				previousDisclosureBody.add(new Label(job.getStarted().toString()));
-				
 				JobStatusView jobStatusView = new JobStatusView();
 				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job);
 				jobStatusPresenter.go(previousDisclosureBody);

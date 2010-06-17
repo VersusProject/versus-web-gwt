@@ -3,7 +3,6 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
-import edu.illinois.ncsa.versus.measure.Similarity;
 import edu.uiuc.ncsa.cet.bean.CETBean;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
@@ -17,12 +16,6 @@ public class PairwiseComparison extends CETBean {
 	private DatasetBean firstDataset;
 
 	private DatasetBean secondDataset;
-	
-	private String extractionID;
-	
-	private String measureID;
-	
-	private String adapterID;
 	
 	private String similarity;
 	
@@ -56,48 +49,6 @@ public class PairwiseComparison extends CETBean {
 	 */
 	public void setSecondDataset(DatasetBean secondDataset) {
 		this.secondDataset = secondDataset;
-	}
-
-	/**
-	 * @return the extractionID
-	 */
-	public String getExtractionID() {
-		return extractionID;
-	}
-
-	/**
-	 * @param extractionID the extractionID to set
-	 */
-	public void setExtractionID(String extractionID) {
-		this.extractionID = extractionID;
-	}
-
-	/**
-	 * @return the measureID
-	 */
-	public String getMeasureID() {
-		return measureID;
-	}
-
-	/**
-	 * @param measureID the measureID to set
-	 */
-	public void setMeasureID(String measureID) {
-		this.measureID = measureID;
-	}
-
-	/**
-	 * @return the adapterID
-	 */
-	public String getAdapterID() {
-		return adapterID;
-	}
-
-	/**
-	 * @param adapterID the adapterID to set
-	 */
-	public void setAdapterID(String adapterID) {
-		this.adapterID = adapterID;
 	}
 
 	/**

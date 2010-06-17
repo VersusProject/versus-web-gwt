@@ -37,6 +37,10 @@ public class JobStatusPresenter implements Presenter {
 		void setStart(Date date);
 		
 		void setComparisons(List<PairwiseComparison> datasets);
+		
+		void setMeasure(String measure);
+		
+		void setExtractor(String extractor);
 	}
 	
 	public JobStatusPresenter(HandlerManager eventBus, Display display, Job job) {
@@ -45,6 +49,9 @@ public class JobStatusPresenter implements Presenter {
 		this.job = job;
 		display.setStart(job.getStarted());
 		display.setComparisons(job.getComparison().getComparisons());
+		display.setStatus("Started");
+		display.setExtractor(job.getComparison().getExtractionID());
+		display.setMeasure(job.getComparison().getMeasureID());
 		pollStatus();
 	}
 	
