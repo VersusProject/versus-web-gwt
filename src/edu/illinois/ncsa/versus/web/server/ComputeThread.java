@@ -4,9 +4,13 @@
 package edu.illinois.ncsa.versus.web.server;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.tupeloproject.kernel.BeanSession;
+import org.tupeloproject.kernel.OperatorException;
 
 import edu.illinois.ncsa.versus.UnsupportedTypeException;
 import edu.illinois.ncsa.versus.adapter.Adapter;
@@ -15,6 +19,10 @@ import edu.illinois.ncsa.versus.descriptor.Descriptor;
 import edu.illinois.ncsa.versus.extract.Extractor;
 import edu.illinois.ncsa.versus.measure.Measure;
 import edu.illinois.ncsa.versus.measure.Similarity;
+import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
+import edu.illinois.ncsa.versus.web.shared.SetComparison;
+import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
 /**
  * @author Luigi Marini
@@ -25,37 +33,73 @@ public class ComputeThread extends Thread {
 	/** Commons logging **/
 	private static Log				log	= LogFactory.getLog(ComputeThread.class);
 
-	private final File				file1;
+	private  File				file1;
 
-	private final File				file2;
+	private  File				file2;
 
-	private final Adapter		adapter1;
+	private  Adapter		adapter1;
 
-	private final Extractor			extractor;
+	private  Extractor			extractor;
 
-	private final Measure			measure;
+	private  Measure			measure;
 
-	private final Adapter		adapter2;
+	private  Adapter		adapter2;
+
+	private  Job job;
+
+	private  Map<String, String> jobStatus;
+
+	private SetComparison comparison;
+
+	private  PairwiseComparison pairwiseComparison;
+
+	private String adapterID;
+
+	private String extractionID;
+
+	private String measureID;
+
+	private final BeanSession beanSession;
 
 	/**
 	 * 
-	 * @param resultTableModel
-	 * @param file1
-	 * @param file2
-	 * @param colorSpace
-	 * @param doneHandler
-	 * @param adapter1
-	 * @param extractor
+	 * @param pairwiseComparison
+	 * @param comparison2 
+	 * @param jobStatus
+	 * @param beanSession 
 	 */
-	public ComputeThread(File file1, File file2, String colorSpace, 
-			Adapter adapter1, Adapter adapter2, Extractor extractor,
-			Measure measure, Runnable doneHandler, Runnable errorHandler) {
-		this.file1 = file1;
-		this.file2 = file2;
-		this.adapter2 = adapter2;
-		this.adapter1 = adapter1;
-		this.extractor = extractor;
-		this.measure = measure;
+	public ComputeThread(PairwiseComparison pairwiseComparison, SetComparison comparison, Map<String, String> jobStatus, BeanSession beanSession) {
+		this.pairwiseComparison = pairwiseComparison;
+		this.comparison = comparison;
+		this.jobStatus = jobStatus;
+		this.beanSession = beanSession;
+		adapterID = comparison.getAdapterID();
+		extractionID = comparison.getExtractionID();
+		measureID = comparison.getMeasureID();
+		try {
+			log.debug("Selected adapter is " + adapterID);
+			adapter1 = (Adapter) Class.forName(adapterID).newInstance();
+			adapter2 = (Adapter) Class.forName(adapterID).newInstance();
+			log.debug("Selected extractor is " + extractionID);
+			extractor = (Extractor) Class.forName(extractionID).newInstance();
+			log.debug("Selected measure is " + measureID);
+			measure = (Measure) Class.forName(measureID).newInstance();
+		} catch (InstantiationException e) {
+			log.error("Error setting up compute thread", e);
+		} catch (IllegalAccessException e) {
+			log.error("Error setting up compute thread", e);
+		} catch (ClassNotFoundException e) {
+			log.error("Error setting up compute thread", e);
+		}
+		DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
+		try {
+			file1 = dbu.getDataFile(pairwiseComparison.getFirstDataset());
+			file2 = dbu.getDataFile(pairwiseComparison.getSecondDataset());
+		} catch (IOException e) {
+			log.error("Error getting dataset blob", e);
+		} catch (OperatorException e) {
+			log.error("Error getting dataset blob", e);
+		}
 	}
 
 	/**
@@ -63,11 +107,8 @@ public class ComputeThread extends Thread {
 	 */
 	@Override
 	public void run() {
-
-		Similarity compare;
 		try {
-			compare = compare(file1, file2);
-			log.debug("Compared " + file1.getName() + " with " + file2.getName() + " = " + compare.getValue());
+			compare(file1, file2);
 		} catch (Exception e1) {
 			log.error("Error computing similarity between " + file1 + " and " + file2, e1);
 		}
@@ -90,6 +131,7 @@ public class ComputeThread extends Thread {
 			fileLoaderAdapter2.load(file2);
 			Descriptor feature2 = extractor.extract(fileLoaderAdapter2);
 			Similarity value = measure.compare(feature1, feature2);
+			log.debug("Compared " + file1.getName() + " with " + file2.getName() + " = " + value.getValue());
 			return value;
 		} else {
 			throw new UnsupportedTypeException();

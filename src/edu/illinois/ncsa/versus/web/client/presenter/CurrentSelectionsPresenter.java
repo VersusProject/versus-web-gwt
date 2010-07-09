@@ -115,6 +115,9 @@ public class CurrentSelectionsPresenter implements Presenter {
 		});
 	}
 
+	/**
+	 * Submit a new job to the server.
+	 */
 	protected void submitExecution() {
 		SetComparison comparisons = new SetComparison();
 		comparisons.setMeasureID(measure);
