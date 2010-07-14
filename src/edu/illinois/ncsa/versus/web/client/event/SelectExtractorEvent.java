@@ -4,9 +4,11 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class SelectExtractorEvent extends GwtEvent<SelectExtractorEventHandler> {
 	public static Type<SelectExtractorEventHandler> TYPE = new Type<SelectExtractorEventHandler>();
+	private final String id;
 	private final String name;
 
-	public SelectExtractorEvent(String name) {
+	public SelectExtractorEvent(String id, String name) {
+		this.id = id;
 		this.name = name;
 	}
 

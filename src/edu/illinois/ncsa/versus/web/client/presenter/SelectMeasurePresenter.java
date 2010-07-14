@@ -49,7 +49,7 @@ public class SelectMeasurePresenter implements Presenter {
 					
 					@Override
 					public void onClick(ClickEvent event) {
-						eventBus.fireEvent(new MeasureSelectedEvent(addMeasureEvent.getName()));
+						eventBus.fireEvent(new MeasureSelectedEvent(addMeasureEvent.getId(), addMeasureEvent.getName()));
 					}
 				});
 			}

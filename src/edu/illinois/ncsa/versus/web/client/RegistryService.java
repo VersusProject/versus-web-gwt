@@ -8,12 +8,14 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
+
 /**
  * @author lmarini
  *
  */
 @RemoteServiceRelativePath("registry")
 public interface RegistryService extends RemoteService {
-	List<String> getMeasures();
-	List<String> getExtractors();
+	List<ComponentMetadata> getMeasures();
+	List<ComponentMetadata> getExtractors();
 }

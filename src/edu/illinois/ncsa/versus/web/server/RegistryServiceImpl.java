@@ -15,6 +15,7 @@ import edu.illinois.ncsa.versus.extract.Extractor;
 import edu.illinois.ncsa.versus.measure.Measure;
 import edu.illinois.ncsa.versus.registry.CompareRegistry;
 import edu.illinois.ncsa.versus.web.client.RegistryService;
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 /**
  * @author lmarini
@@ -27,29 +28,29 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 	private static CompareRegistry registry = new CompareRegistry();
 	
 	@Override
-	public List<String> getExtractors() {
-		List<String> extractorTitles = new ArrayList<String>();
+	public List<ComponentMetadata> getExtractors() {
+		List<ComponentMetadata> extractors = new ArrayList<ComponentMetadata>();
 		Collection<Extractor> availableExtractors = registry.getAvailableExtractors();
 		Iterator<Extractor> extractorIter = availableExtractors.iterator();
 		while (extractorIter.hasNext()) {
 			Extractor extractor = extractorIter.next();
-			extractorTitles.add(extractor.getName());
+			ComponentMetadata extractorMetadata = new ComponentMetadata(extractor.getClass().toString(), extractor.getName(), "");
+			extractors.add(extractorMetadata);
 		}
-		Collections.sort(extractorTitles);
-		return extractorTitles;
+		return extractors;
 	}
 
 	@Override
-	public List<String> getMeasures() {
-		List<String> measureTitles = new ArrayList<String>();
+	public List<ComponentMetadata> getMeasures() {
+		List<ComponentMetadata> measures = new ArrayList<ComponentMetadata>();
 		Collection<Measure> availableMeasures = registry.getAvailableMeasures();
 		Iterator<Measure> measureIter = availableMeasures.iterator();
 		while (measureIter.hasNext()) {
 			Measure measure = measureIter.next();
-			measureTitles.add(measure.getName());
+			ComponentMetadata measureMetadata = new ComponentMetadata(measure.getClass().toString(), measure.getName(), "");
+			measures.add(measureMetadata);
 		}
-		Collections.sort(measureTitles);
-		return measureTitles;
+		return measures;
 	}
 
 }

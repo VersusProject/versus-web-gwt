@@ -4,9 +4,11 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class SelectMeasureEvent extends GwtEvent<SelectMeasureEventHandler> {
 	public static Type<SelectMeasureEventHandler> TYPE = new Type<SelectMeasureEventHandler>();
+	private final String id;
 	private final String name;
 
-	public SelectMeasureEvent(String name) {
+	public SelectMeasureEvent(String id, String name) {
+		this.id = id;
 		this.name = name;
 	}
 
@@ -25,5 +27,9 @@ public class SelectMeasureEvent extends GwtEvent<SelectMeasureEventHandler> {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	public String getId() {
+		return id;
 	}
 }

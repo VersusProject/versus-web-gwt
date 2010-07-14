@@ -7,14 +7,15 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
+
 /**
  * @author lmarini
  *
  */
 public interface RegistryServiceAsync {
 
-	void getMeasures(AsyncCallback<List<String>> callback);
+	void getMeasures(AsyncCallback<List<ComponentMetadata>> callback);
 
-	void getExtractors(AsyncCallback<List<String>> callback);
-
+	void getExtractors(AsyncCallback<List<ComponentMetadata>> callback);
 }

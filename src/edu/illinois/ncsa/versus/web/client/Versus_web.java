@@ -37,6 +37,7 @@ import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
 import edu.illinois.ncsa.versus.web.client.view.ListThumbails;
 import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
 import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
 
 /**
@@ -193,12 +194,12 @@ public class Versus_web implements EntryPoint {
 	}
 
 	private void populate() {
-		registryService.getExtractors(new AsyncCallback<List<String>>() {
+		registryService.getExtractors(new AsyncCallback<List<ComponentMetadata>>() {
 			
 			@Override
-			public void onSuccess(List<String> result) {
-				for (String name : result) {
-					eventBus.fireEvent(new SelectExtractorEvent(name));
+			public void onSuccess(List<ComponentMetadata> result) {
+				for (ComponentMetadata metadata : result) {
+					eventBus.fireEvent(new SelectExtractorEvent(metadata.getId(), metadata.getName()));
 				}
 			}
 			
@@ -208,12 +209,12 @@ public class Versus_web implements EntryPoint {
 			}
 		});
 		
-		registryService.getMeasures(new AsyncCallback<List<String>>() {
+		registryService.getMeasures(new AsyncCallback<List<ComponentMetadata>>() {
 			
 			@Override
-			public void onSuccess(List<String> result) {
-				for (String name : result) {
-					eventBus.fireEvent(new SelectMeasureEvent(name));
+			public void onSuccess(List<ComponentMetadata> result) {
+				for (ComponentMetadata metadata : result) {
+					eventBus.fireEvent(new SelectMeasureEvent(metadata.getId(), metadata.getName()));
 				}
 			}
 			
