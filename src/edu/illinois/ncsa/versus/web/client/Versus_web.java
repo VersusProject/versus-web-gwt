@@ -26,8 +26,8 @@ import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
-import edu.illinois.ncsa.versus.web.client.event.SelectExtractorEvent;
-import edu.illinois.ncsa.versus.web.client.event.SelectMeasureEvent;
+import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
+import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
@@ -87,7 +87,7 @@ public class Versus_web implements EntryPoint {
 //		DropBoxView secondDropBox = new DropBoxView();
 //		DropBoxPresenter secondDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, secondDropBox);
 //		secondDropBoxPresenter.go(dropBoxPanel);
-//		dragController.registerDropController(secondDropBox.getDropController());
+//		dragController.registerDropController(secondDropBox.getDropController());metadata.getId(), metadata.getName()
 //		
 		
 		DisclosurePanel newExecutionDisclosure = new DisclosurePanel("New Execution");
@@ -199,7 +199,7 @@ public class Versus_web implements EntryPoint {
 			@Override
 			public void onSuccess(List<ComponentMetadata> result) {
 				for (ComponentMetadata metadata : result) {
-					eventBus.fireEvent(new SelectExtractorEvent(metadata.getId(), metadata.getName()));
+					eventBus.fireEvent(new AddExtractorEvent(metadata));
 				}
 			}
 			
@@ -214,7 +214,7 @@ public class Versus_web implements EntryPoint {
 			@Override
 			public void onSuccess(List<ComponentMetadata> result) {
 				for (ComponentMetadata metadata : result) {
-					eventBus.fireEvent(new SelectMeasureEvent(metadata.getId(), metadata.getName()));
+					eventBus.fireEvent(new AddMeasureEvent(metadata));
 				}
 			}
 			

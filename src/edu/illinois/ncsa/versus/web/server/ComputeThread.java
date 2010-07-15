@@ -4,13 +4,16 @@
 package edu.illinois.ncsa.versus.web.server;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.tupeloproject.kernel.BeanSession;
 import org.tupeloproject.kernel.OperatorException;
+import org.tupeloproject.rdf.Resource;
 
 import edu.illinois.ncsa.versus.UnsupportedTypeException;
 import edu.illinois.ncsa.versus.adapter.Adapter;
@@ -22,6 +25,7 @@ import edu.illinois.ncsa.versus.measure.Similarity;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
+import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
 /**
@@ -93,13 +97,27 @@ public class ComputeThread extends Thread {
 		}
 		DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
 		try {
-			file1 = dbu.getDataFile(pairwiseComparison.getFirstDataset());
-			file2 = dbu.getDataFile(pairwiseComparison.getSecondDataset());
+			file1 = getFile(pairwiseComparison.getFirstDataset());
+			file2 = getFile(pairwiseComparison.getSecondDataset());
 		} catch (IOException e) {
 			log.error("Error getting dataset blob", e);
 		} catch (OperatorException e) {
 			log.error("Error getting dataset blob", e);
 		}
+	}
+
+	private File getFile(DatasetBean datasetBean) throws IOException, OperatorException {
+		File file = File.createTempFile( "versus", ".tmp" );
+        FileOutputStream fos = new FileOutputStream( file );
+        byte[] buf = new byte[10240];
+        int len;
+        InputStream is = beanSession.fetchBlob( Resource.uriRef( datasetBean.getUri() ) );
+        while ( (len = is.read( buf )) > 0 ) {
+            fos.write( buf, 0, len );
+        }
+        is.close();
+        fos.close();
+		return file;
 	}
 
 	/**

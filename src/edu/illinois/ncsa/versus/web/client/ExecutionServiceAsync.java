@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
+import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
  * @author lmarini
@@ -14,7 +15,7 @@ import edu.illinois.ncsa.versus.web.shared.SetComparison;
  */
 public interface ExecutionServiceAsync {
 
-	void submit(SetComparison job, AsyncCallback<Job> callback);
+	void submit(Submission submission, AsyncCallback<Job> callback);
 
 	void getStatus(String jobId, AsyncCallback<String> callback);
 }

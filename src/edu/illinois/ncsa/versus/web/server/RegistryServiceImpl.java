@@ -34,7 +34,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Extractor> extractorIter = availableExtractors.iterator();
 		while (extractorIter.hasNext()) {
 			Extractor extractor = extractorIter.next();
-			ComponentMetadata extractorMetadata = new ComponentMetadata(extractor.getClass().toString(), extractor.getName(), "");
+			ComponentMetadata extractorMetadata = new ComponentMetadata(extractor.getClass().getName(), extractor.getName(), "");
 			extractors.add(extractorMetadata);
 		}
 		return extractors;
@@ -47,7 +47,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Measure> measureIter = availableMeasures.iterator();
 		while (measureIter.hasNext()) {
 			Measure measure = measureIter.next();
-			ComponentMetadata measureMetadata = new ComponentMetadata(measure.getClass().toString(), measure.getName(), "");
+			ComponentMetadata measureMetadata = new ComponentMetadata(measure.getClass().getName(), measure.getName(), "");
 			measures.add(measureMetadata);
 		}
 		return measures;

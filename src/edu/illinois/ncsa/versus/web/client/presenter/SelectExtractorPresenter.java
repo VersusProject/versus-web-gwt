@@ -11,10 +11,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
-import edu.illinois.ncsa.versus.web.client.event.SelectExtractorEvent;
-import edu.illinois.ncsa.versus.web.client.event.SelectExtractorEventHandler;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
-import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
+import edu.illinois.ncsa.versus.web.client.event.AddExtractorEventHandler;
 
 /**
  * @author lmarini
@@ -40,16 +39,16 @@ public class SelectExtractorPresenter implements Presenter {
 	}
 	
 	void bind() {
-		eventBus.addHandler(SelectExtractorEvent.TYPE, new SelectExtractorEventHandler() {
+		eventBus.addHandler(AddExtractorEvent.TYPE, new AddExtractorEventHandler() {
 			
 			@Override
-			public void onAddExtractor(final SelectExtractorEvent addExtractorEvent) {
-				int index = display.addExtractor(addExtractorEvent.getName());
+			public void onAddExtractor(final AddExtractorEvent addExtractorEvent) {
+				int index = display.addExtractor(addExtractorEvent.getExtractorMetadata().getName());
 				display.getExtractorAnchor(index).addClickHandler(new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent event) {
-						eventBus.fireEvent(new ExtractorSelectedEvent(addExtractorEvent.getName()));
+						eventBus.fireEvent(new ExtractorSelectedEvent(addExtractorEvent.getExtractorMetadata()));
 					}
 				});
 			}

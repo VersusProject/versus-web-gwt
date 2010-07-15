@@ -27,9 +27,12 @@ import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.illinois.ncsa.versus.web.shared.SetComparison;
+import edu.illinois.ncsa.versus.web.shared.Submission;
+import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
 /**
  * @author lmarini
@@ -41,8 +44,8 @@ public class CurrentSelectionsPresenter implements Presenter {
 	private final HandlerManager eventBus;
 	private final Display display;
 	private final Set<String> datasets;
-	protected String measure;
-	protected String extractor;
+	protected ComponentMetadata measure;
+	protected ComponentMetadata extractor;
 	private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
 	
 	public interface Display {
@@ -75,8 +78,8 @@ public class CurrentSelectionsPresenter implements Presenter {
 			
 			@Override
 			public void onMeasureSelected(MeasureSelectedEvent event) {
-				measure = event.getName();
-				display.setMeasure(event.getName());
+				measure = event.getMeasureMetadata();
+				display.setMeasure(measure.getName());
 			}
 		});
 		
@@ -84,8 +87,8 @@ public class CurrentSelectionsPresenter implements Presenter {
 			
 			@Override
 			public void onExtractorSelected(ExtractorSelectedEvent event) {
-				extractor = event.getName();
-				display.setExtractor(event.getName());
+				extractor = event.getMeasureMetadata();
+				display.setExtractor(extractor.getName());
 			}
 		});
 		
@@ -119,19 +122,29 @@ public class CurrentSelectionsPresenter implements Presenter {
 	 * Submit a new job to the server.
 	 */
 	protected void submitExecution() {
-		SetComparison comparisons = new SetComparison();
-		comparisons.setMeasureID(measure);
-		comparisons.setExtractionID(extractor);
-		for (String datasetOne : datasets) {
-			for (String datasetTwo : datasets) {
-				if (!datasetOne.equals(datasetTwo)) {
-					PairwiseComparison pairwiseComparison = new PairwiseComparison();
-					comparisons.getComparisons().add(pairwiseComparison);
-				}
-			}
-		}
+		
+		Submission submission = new Submission();
+		submission.setDatasetsURI(datasets);
+		submission.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
+		submission.setMeasureID(measure.getId());
+		submission.setExtractionID(extractor.getId());
+		
+//		SetComparison comparisons = new SetComparison();
+//		comparisons.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
+//		comparisons.setMeasureID(measure.getId());
+//		comparisons.setExtractionID(extractor.getId());
+//		for (String datasetOne : datasets) {
+//			for (String datasetTwo : datasets) {
+//				if (!datasetOne.equals(datasetTwo)) {
+//					PairwiseComparison pairwiseComparison = new PairwiseComparison();
+//					pairwiseComparison.setFirstDataset(datasetOne);
+//					pairwiseComparison.setSecondDataset(datasetTwo);
+//					comparisons.getComparisons().add(pairwiseComparison);
+//				}
+//			}
+//		}
 		// submit execution
-		executionService.submit(comparisons, new AsyncCallback<Job>() {
+		executionService.submit(submission, new AsyncCallback<Job>() {
 			
 			@Override
 			public void onSuccess(Job job) {

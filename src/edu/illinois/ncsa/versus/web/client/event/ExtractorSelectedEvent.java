@@ -2,12 +2,14 @@ package edu.illinois.ncsa.versus.web.client.event;
 
 import com.google.gwt.event.shared.GwtEvent;
 
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
+
 public class ExtractorSelectedEvent extends GwtEvent<ExtractorSelectedHandler> {
 	public static Type<ExtractorSelectedHandler> TYPE = new Type<ExtractorSelectedHandler>();
-	private final String name;
+	private final ComponentMetadata extractorMetadata;
 
-	public ExtractorSelectedEvent(String name) {
-		this.name = name;
+	public ExtractorSelectedEvent(ComponentMetadata measureMetadata) {
+		this.extractorMetadata = measureMetadata;
 	}
 
 	@Override
@@ -20,10 +22,7 @@ public class ExtractorSelectedEvent extends GwtEvent<ExtractorSelectedHandler> {
 		handler.onExtractorSelected(this);
 	}
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
+	public ComponentMetadata getMeasureMetadata() {
+		return extractorMetadata;
 	}
 }
