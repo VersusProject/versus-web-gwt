@@ -6,6 +6,7 @@ package edu.illinois.ncsa.versus.web.server;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -40,6 +41,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Job submit(Submission set) {
 		
+		// create comparison
 		SetComparison comparisons = new SetComparison();
 		comparisons.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
 		comparisons.setMeasureID(set.getMeasureID());
@@ -101,6 +103,11 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 			log.debug("Job " + uri + " done");
 		}
 	
+	}
+
+	@Override
+	public Set<PairwiseComparison> getAllComparisons() {
+		return executionEngine.getComparisons();
 	}
 
 }

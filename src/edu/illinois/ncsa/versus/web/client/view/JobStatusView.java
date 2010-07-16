@@ -3,12 +3,15 @@
  */
 package edu.illinois.ncsa.versus.web.client.view;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,6 +30,7 @@ public class JobStatusView extends Composite implements Display {
 	private SimplePanel statusPanel;
 	private SimplePanel measurePanel;
 	private SimplePanel extractorPanel;
+	private FlowPanel comparisonsPanel;
 	
 	public JobStatusView() {
 		mainPanel = new FlowPanel();
@@ -39,6 +43,8 @@ public class JobStatusView extends Composite implements Display {
 		mainPanel.add(startPanel);
 		statusPanel = new SimplePanel();
 		mainPanel.add(statusPanel);
+		comparisonsPanel = new FlowPanel();
+		mainPanel.add(comparisonsPanel);
 		initWidget(mainPanel);
 	}
 	
@@ -71,6 +77,16 @@ public class JobStatusView extends Composite implements Display {
 	@Override
 	public void setMeasure(String measure) {
 		measurePanel.setWidget(new Label(measure));
+	}
+
+	@Override
+	public void showResults(Set<PairwiseComparison> comparisons) {
+		comparisonsPanel.clear();
+		for (PairwiseComparison comparison: comparisons) {
+			comparisonsPanel.add(new HTML(comparison.getFirstDataset().getTitle() + 
+					" vs " + comparison.getSecondDataset().getTitle() + 
+					" = <b>" + comparison.getSimilarity() + "</b>"));
+		}
 	}
 
 }

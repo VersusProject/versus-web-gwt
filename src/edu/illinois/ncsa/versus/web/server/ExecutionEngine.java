@@ -2,7 +2,9 @@ package edu.illinois.ncsa.versus.web.server;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +20,8 @@ public class ExecutionEngine {
 
 	private static final int EXECUTION_THREADS = 1;
 	private final ExecutorService newFixedThreadPool;
-	private  Map<String, String> jobStatus;
+	private Map<String, String> jobStatus;
+	private Set<PairwiseComparison> comparisons;
     private static Log log = LogFactory.getLog(ExecutionEngine.class);
 	private final BeanSession beanSession;
 	
@@ -26,12 +29,14 @@ public class ExecutionEngine {
 		this.beanSession = beanSession;
 		newFixedThreadPool = Executors.newFixedThreadPool(EXECUTION_THREADS);
 		jobStatus = Collections.synchronizedMap(new HashMap<String, String>());
+		comparisons = new HashSet<PairwiseComparison>();
 	}
 
 	public void submit(Job job) {
 		SetComparison comparison = job.getComparison();
 		for (PairwiseComparison pairwiseComparison : comparison.getComparisons()) {
-			ComputeThread computeThread = new ComputeThread(pairwiseComparison, comparison, getJobStatus(), beanSession);
+			comparisons.add(pairwiseComparison);
+			ComputeThread computeThread = new ComputeThread(pairwiseComparison, comparison, comparisons, getJobStatus(), beanSession);
 			newFixedThreadPool.execute(computeThread);
 		}
 		getJobStatus().put(job.getUri(), "Started");
@@ -40,5 +45,9 @@ public class ExecutionEngine {
 
 	public Map<String, String> getJobStatus() {
 		return jobStatus;
+	}
+
+	public Set<PairwiseComparison> getComparisons() {
+		return comparisons;
 	}
 }

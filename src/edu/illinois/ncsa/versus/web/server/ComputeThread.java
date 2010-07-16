@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,6 +66,8 @@ public class ComputeThread extends Thread {
 
 	private final BeanSession beanSession;
 
+	private final Set<PairwiseComparison> comparisons;
+
 	/**
 	 * 
 	 * @param pairwiseComparison
@@ -72,9 +75,10 @@ public class ComputeThread extends Thread {
 	 * @param jobStatus
 	 * @param beanSession 
 	 */
-	public ComputeThread(PairwiseComparison pairwiseComparison, SetComparison comparison, Map<String, String> jobStatus, BeanSession beanSession) {
+	public ComputeThread(PairwiseComparison pairwiseComparison, SetComparison comparison, Set<PairwiseComparison> comparisons, Map<String, String> jobStatus, BeanSession beanSession) {
 		this.pairwiseComparison = pairwiseComparison;
 		this.comparison = comparison;
+		this.comparisons = comparisons;
 		this.jobStatus = jobStatus;
 		this.beanSession = beanSession;
 		adapterID = comparison.getAdapterID();
@@ -95,7 +99,6 @@ public class ComputeThread extends Thread {
 		} catch (ClassNotFoundException e) {
 			log.error("Error setting up compute thread", e);
 		}
-		DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
 		try {
 			file1 = getFile(pairwiseComparison.getFirstDataset());
 			file2 = getFile(pairwiseComparison.getSecondDataset());
@@ -126,7 +129,13 @@ public class ComputeThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			compare(file1, file2);
+			Similarity compare = compare(file1, file2);
+			for (PairwiseComparison comparison : comparisons) {
+				if (comparison.getFirstDataset().getUri().equals(pairwiseComparison.getFirstDataset().getUri()) && 
+						comparison.getSecondDataset().getUri().equals(pairwiseComparison.getSecondDataset().getUri())) {
+					comparison.setSimilarity(Double.toString(compare.getValue()));
+				}
+			}
 		} catch (Exception e1) {
 			log.error("Error computing similarity between " + file1 + " and " + file2, e1);
 		}

@@ -5,6 +5,7 @@ package edu.illinois.ncsa.versus.web.client.presenter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
@@ -41,6 +42,8 @@ public class JobStatusPresenter implements Presenter {
 		void setMeasure(String measure);
 		
 		void setExtractor(String extractor);
+
+		void showResults(Set<PairwiseComparison> comparisons);
 	}
 	
 	public JobStatusPresenter(HandlerManager eventBus, Display display, Job job) {
@@ -69,6 +72,18 @@ public class JobStatusPresenter implements Presenter {
 						if (result.equals("Done")) {
 							cancel();
 						}
+						executionService.getAllComparisons(new AsyncCallback<Set<PairwiseComparison>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								GWT.log("error", caught);
+							}
+
+							@Override
+							public void onSuccess(Set<PairwiseComparison> comparisons) {
+								display.showResults(comparisons);
+							}
+						});
 					}
 					
 					@Override
