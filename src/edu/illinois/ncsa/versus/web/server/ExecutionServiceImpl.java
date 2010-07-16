@@ -3,7 +3,9 @@
  */
 package edu.illinois.ncsa.versus.web.server;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -47,20 +49,35 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 		comparisons.setMeasureID(set.getMeasureID());
 		comparisons.setExtractionID(set.getExtractionID());
 		DatasetBeanUtil dbu = new DatasetBeanUtil(TupeloStore.getInstance().getBeanSession());
-		for (String datasetOne : set.getDatasetsURI()) {
-			for (String datasetTwo : set.getDatasetsURI()) {
-				if (!datasetOne.equals(datasetTwo)) {
-					PairwiseComparison pairwiseComparison = new PairwiseComparison();
-					try {
-						pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetOne)));
-						pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetTwo)));
-					} catch (OperatorException e) {
-						e.printStackTrace();
-					}
-					comparisons.getComparisons().add(pairwiseComparison);
+		
+		List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
+		for (int i=0; i<datasetsURI.size(); i++) {
+			for (int j=i+1; j<datasetsURI.size(); j++) {
+				PairwiseComparison pairwiseComparison = new PairwiseComparison();
+				try {
+					pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
+					pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
+				} catch (OperatorException e) {
+					e.printStackTrace();
 				}
+				comparisons.getComparisons().add(pairwiseComparison);
 			}
 		}
+		
+//		for (String datasetOne : set.getDatasetsURI()) {
+//			for (String datasetTwo : set.getDatasetsURI()) {
+//				if (!datasetOne.equals(datasetTwo)) {
+//					PairwiseComparison pairwiseComparison = new PairwiseComparison();
+//					try {
+//						pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetOne)));
+//						pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetTwo)));
+//					} catch (OperatorException e) {
+//						e.printStackTrace();
+//					}
+//					comparisons.getComparisons().add(pairwiseComparison);
+//				}
+//			}
+//		}
 		
 		// submit job for execution
 		Job job = new Job();
@@ -107,6 +124,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Set<PairwiseComparison> getAllComparisons() {
+		log.debug("Comparisons in engine = " + executionEngine.getComparisons().size());
 		return executionEngine.getComparisons();
 	}
 

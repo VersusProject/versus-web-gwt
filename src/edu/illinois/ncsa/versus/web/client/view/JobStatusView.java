@@ -3,7 +3,9 @@
  */
 package edu.illinois.ncsa.versus.web.client.view;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -26,11 +28,11 @@ import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 public class JobStatusView extends Composite implements Display {
 
 	FlowPanel mainPanel;
-	private SimplePanel startPanel;
-	private SimplePanel statusPanel;
-	private SimplePanel measurePanel;
-	private SimplePanel extractorPanel;
-	private FlowPanel comparisonsPanel;
+	private final SimplePanel startPanel;
+	private final SimplePanel statusPanel;
+	private final SimplePanel measurePanel;
+	private final SimplePanel extractorPanel;
+	private final FlowPanel comparisonsPanel;
 	
 	public JobStatusView() {
 		mainPanel = new FlowPanel();
@@ -82,7 +84,23 @@ public class JobStatusView extends Composite implements Display {
 	@Override
 	public void showResults(Set<PairwiseComparison> comparisons) {
 		comparisonsPanel.clear();
-		for (PairwiseComparison comparison: comparisons) {
+		List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(comparisons);
+		Collections.sort(ordered, new Comparator<PairwiseComparison>() {
+
+			@Override
+			public int compare(PairwiseComparison o1, PairwiseComparison o2) {
+				double parseDouble = Double.parseDouble(o1.getSimilarity());
+				double parseDouble2 = Double.parseDouble(o2.getSimilarity());
+				if (parseDouble > parseDouble2) {
+					return -1;
+				} else if (parseDouble < parseDouble2) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		});
+		for (PairwiseComparison comparison: ordered) {
 			comparisonsPanel.add(new HTML(comparison.getFirstDataset().getTitle() + 
 					" vs " + comparison.getSecondDataset().getTitle() + 
 					" = <b>" + comparison.getSimilarity() + "</b>"));
