@@ -4,6 +4,7 @@
 package edu.illinois.ncsa.versus.web.shared;
 
 import java.util.Date;
+import java.util.Set;
 
 import edu.uiuc.ncsa.cet.bean.CETBean;
 
@@ -14,7 +15,7 @@ import edu.uiuc.ncsa.cet.bean.CETBean;
 @SuppressWarnings("serial")
 public class Job extends CETBean {
 
-	private SetComparison comparison;
+	private Set<PairwiseComparison> comparison;
 	
 	private Date started;
 	
@@ -22,11 +23,11 @@ public class Job extends CETBean {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void setComparison(SetComparison comparison) {
+	public void setComparison(Set<PairwiseComparison> comparison) {
 		this.comparison = comparison;
 	}
 
-	public SetComparison getComparison() {
+	public Set<PairwiseComparison> getComparison() {
 		return comparison;
 	}
 

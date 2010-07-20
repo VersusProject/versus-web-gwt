@@ -4,7 +4,7 @@
 package edu.illinois.ncsa.versus.web.client.presenter;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
@@ -37,7 +37,7 @@ public class JobStatusPresenter implements Presenter {
 		
 		void setStart(Date date);
 		
-		void setComparisons(List<PairwiseComparison> datasets);
+		void setComparisons(Set<PairwiseComparison> datasets);
 		
 		void setMeasure(String measure);
 		
@@ -51,10 +51,14 @@ public class JobStatusPresenter implements Presenter {
 		this.display = display;
 		this.job = job;
 		display.setStart(job.getStarted());
-		display.setComparisons(job.getComparison().getComparisons());
+		display.setComparisons(job.getComparison());
 		display.setStatus("Started");
-		display.setExtractor(job.getComparison().getExtractionID());
-		display.setMeasure(job.getComparison().getMeasureID());
+		Iterator<PairwiseComparison> iterator = job.getComparison().iterator();
+		if (iterator.hasNext()) {
+			PairwiseComparison next = iterator.next();
+			display.setExtractor(next.getExtractorId());
+			display.setMeasure(next.getMeasureId());
+		}
 		pollStatus();
 	}
 	

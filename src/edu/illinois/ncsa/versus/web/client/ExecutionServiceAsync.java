@@ -9,7 +9,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
-import edu.illinois.ncsa.versus.web.shared.SetComparison;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**

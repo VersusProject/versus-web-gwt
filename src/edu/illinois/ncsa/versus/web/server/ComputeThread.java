@@ -25,9 +25,7 @@ import edu.illinois.ncsa.versus.measure.Measure;
 import edu.illinois.ncsa.versus.measure.Similarity;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
-import edu.illinois.ncsa.versus.web.shared.SetComparison;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
-import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
 /**
  * @author Luigi Marini
@@ -54,7 +52,7 @@ public class ComputeThread extends Thread {
 
 	private  Map<String, String> jobStatus;
 
-	private SetComparison comparison;
+	private Set<PairwiseComparison> comparison;
 
 	private  PairwiseComparison pairwiseComparison;
 
@@ -75,15 +73,15 @@ public class ComputeThread extends Thread {
 	 * @param jobStatus
 	 * @param beanSession 
 	 */
-	public ComputeThread(PairwiseComparison pairwiseComparison, SetComparison comparison, Set<PairwiseComparison> comparisons, Map<String, String> jobStatus, BeanSession beanSession) {
+	public ComputeThread(PairwiseComparison pairwiseComparison, Set<PairwiseComparison> comparison, Set<PairwiseComparison> comparisons, Map<String, String> jobStatus, BeanSession beanSession) {
 		this.pairwiseComparison = pairwiseComparison;
 		this.comparison = comparison;
 		this.comparisons = comparisons;
 		this.jobStatus = jobStatus;
 		this.beanSession = beanSession;
-		adapterID = comparison.getAdapterID();
-		extractionID = comparison.getExtractionID();
-		measureID = comparison.getMeasureID();
+		adapterID = pairwiseComparison.getAdapterId();
+		extractionID = pairwiseComparison.getExtractorId();
+		measureID = pairwiseComparison.getMeasureId();
 		try {
 			log.debug("Selected adapter is " + adapterID);
 			adapter1 = (Adapter) Class.forName(adapterID).newInstance();
@@ -145,7 +143,7 @@ public class ComputeThread extends Thread {
 	 * 
 	 * @param file1
 	 * @param file2
-	 * @return
+	 * @returncomparison
 	 * @throws Exception
 	 */
 	private Similarity compare(File file1, File file2) throws Exception {

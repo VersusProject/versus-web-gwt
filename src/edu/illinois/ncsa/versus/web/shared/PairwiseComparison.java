@@ -17,6 +17,12 @@ public class PairwiseComparison extends CETBean {
 
 	private DatasetBean secondDataset;
 	
+	private String adapterId;
+	
+	private String extractorId;
+	
+	private String measureId;
+	
 	private String similarity;
 	
 	public PairwiseComparison() {
@@ -63,5 +69,29 @@ public class PairwiseComparison extends CETBean {
 	 */
 	public void setSimilarity(String similarity) {
 		this.similarity = similarity;
+	}
+
+	public void setAdapterId(String adapterId) {
+		this.adapterId = adapterId;
+	}
+
+	public String getAdapterId() {
+		return adapterId;
+	}
+
+	public void setExtractorId(String extractorId) {
+		this.extractorId = extractorId;
+	}
+
+	public String getExtractorId() {
+		return extractorId;
+	}
+
+	public void setMeasureId(String measureId) {
+		this.measureId = measureId;
+	}
+
+	public String getMeasureId() {
+		return measureId;
 	}
 }

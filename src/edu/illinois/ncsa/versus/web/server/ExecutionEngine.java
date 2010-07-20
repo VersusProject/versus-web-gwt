@@ -14,7 +14,6 @@ import org.tupeloproject.kernel.BeanSession;
 
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
-import edu.illinois.ncsa.versus.web.shared.SetComparison;
 
 public class ExecutionEngine {
 
@@ -33,8 +32,8 @@ public class ExecutionEngine {
 	}
 
 	public void submit(Job job) {
-		SetComparison comparison = job.getComparison();
-		for (PairwiseComparison pairwiseComparison : comparison.getComparisons()) {
+		Set<PairwiseComparison> comparison = job.getComparison();
+		for (PairwiseComparison pairwiseComparison : comparison) {
 			comparisons.add(pairwiseComparison);
 			ComputeThread computeThread = new ComputeThread(pairwiseComparison, comparison, comparisons, getJobStatus(), beanSession);
 			newFixedThreadPool.execute(computeThread);

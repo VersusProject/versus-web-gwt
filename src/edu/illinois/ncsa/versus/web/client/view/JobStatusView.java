@@ -56,7 +56,7 @@ public class JobStatusView extends Composite implements Display {
 	}
 
 	@Override
-	public void setComparisons(List<PairwiseComparison> datasets) {
+	public void setComparisons(Set<PairwiseComparison> datasets) {
 		// TODO Auto-generated method stub
 		
 	}

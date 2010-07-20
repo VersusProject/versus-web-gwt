@@ -5,6 +5,7 @@ package edu.illinois.ncsa.versus.web.server;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -23,7 +24,6 @@ import edu.illinois.ncsa.mmdb.web.server.TupeloStore;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
-import edu.illinois.ncsa.versus.web.shared.SetComparison;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
@@ -44,10 +44,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 	public Job submit(Submission set) {
 		
 		// create comparison
-		SetComparison comparisons = new SetComparison();
-		comparisons.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
-		comparisons.setMeasureID(set.getMeasureID());
-		comparisons.setExtractionID(set.getExtractionID());
+		Set<PairwiseComparison> comparisons = new HashSet<PairwiseComparison>();
 		DatasetBeanUtil dbu = new DatasetBeanUtil(TupeloStore.getInstance().getBeanSession());
 		
 		List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
@@ -57,17 +54,20 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 				try {
 					pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
 					pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
+					pairwiseComparison.setAdapterId("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
+					pairwiseComparison.setMeasureId(set.getMeasureID());
+					pairwiseComparison.setExtractorId(set.getExtractionID());
 				} catch (OperatorException e) {
 					e.printStackTrace();
 				}
-				comparisons.getComparisons().add(pairwiseComparison);
+				comparisons.add(pairwiseComparison);
 			}
 		}
 		
 //		for (String datasetOne : set.getDatasetsURI()) {
 //			for (String datasetTwo : set.getDatasetsURI()) {
 //				if (!datasetOne.equals(datasetTwo)) {
-//					PairwiseComparison pairwiseComparison = new PairwiseComparison();
+//					PaircomparisonswiseComparison pairwiseComparison = new PairwiseComparison();
 //					try {
 //						pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetOne)));
 //						pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetTwo)));

@@ -29,10 +29,7 @@ import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
-import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
-import edu.illinois.ncsa.versus.web.shared.SetComparison;
 import edu.illinois.ncsa.versus.web.shared.Submission;
-import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
 /**
  * @author lmarini
