@@ -39,6 +39,7 @@ import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
 import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -184,8 +185,9 @@ public class Versus_web implements EntryPoint {
 			@Override
 			public void onNewJob(NewJobEvent newJobEvent) {
 				Job job = newJobEvent.getJob();
+				Submission submission = newJobEvent.getSubmission();
 				JobStatusView jobStatusView = new JobStatusView();
-				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job);
+				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job, submission);
 				jobStatusPresenter.go(previousDisclosureBody);
 				previousDisclosureBody.add(jobStatusView);
 				

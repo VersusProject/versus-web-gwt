@@ -14,9 +14,9 @@ import java.util.Set;
 public class Submission implements Serializable {
 
 	private Set<String> datasetsURI;
-	private String extractionID;
-	private String measureID;
-	private String adapterID;
+	private ComponentMetadata extraction;
+	private ComponentMetadata measure;
+	private ComponentMetadata adapter;
 	
 	public Submission() {
 	}
@@ -29,27 +29,27 @@ public class Submission implements Serializable {
 		return datasetsURI;
 	}
 
-	public void setExtractionID(String extractionID) {
-		this.extractionID = extractionID;
+	public void setExtraction(ComponentMetadata extraction) {
+		this.extraction = extraction;
 	}
 
-	public String getExtractionID() {
-		return extractionID;
+	public ComponentMetadata getExtraction() {
+		return extraction;
 	}
 
-	public void setMeasureID(String measureID) {
-		this.measureID = measureID;
+	public void setMeasure(ComponentMetadata measure) {
+		this.measure = measure;
 	}
 
-	public String getMeasureID() {
-		return measureID;
+	public ComponentMetadata getMeasure() {
+		return measure;
 	}
 
-	public void setAdapterID(String adapterID) {
-		this.adapterID = adapterID;
+	public void setAdapter(ComponentMetadata adapter) {
+		this.adapter = adapter;
 	}
 
-	public String getAdapterID() {
-		return adapterID;
+	public ComponentMetadata getAdapter() {
+		return adapter;
 	}
 }

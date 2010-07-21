@@ -19,6 +19,7 @@ import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
+import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
  * @author lmarini
@@ -31,6 +32,7 @@ public class JobStatusPresenter implements Presenter {
 	private final Display display;
 	private final Job job;
 	private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
+	private final Submission submission;
 
 	public interface Display {
 		Widget asWidget();
@@ -48,18 +50,15 @@ public class JobStatusPresenter implements Presenter {
 		void showResults(Set<PairwiseComparison> comparisons);
 	}
 	
-	public JobStatusPresenter(HandlerManager eventBus, Display display, Job job) {
+	public JobStatusPresenter(HandlerManager eventBus, Display display, Job job, Submission submission) {
 		this.eventBus = eventBus;
 		this.display = display;
 		this.job = job;
+		this.submission = submission;
 		display.setStart(job.getStarted());
 		display.setComparisons(job.getComparison());
-		Iterator<PairwiseComparison> iterator = job.getComparison().iterator();
-		if (iterator.hasNext()) {
-			PairwiseComparison next = iterator.next();
-			display.setExtractor(next.getExtractorId());
-			display.setMeasure(next.getMeasureId());
-		}
+		display.setExtractor(submission.getExtraction().getName());
+		display.setMeasure(submission.getMeasure().getName());
 		pollStatus();
 	}
 	

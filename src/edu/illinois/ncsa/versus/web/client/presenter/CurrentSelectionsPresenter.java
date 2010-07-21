@@ -120,11 +120,13 @@ public class CurrentSelectionsPresenter implements Presenter {
 	 */
 	protected void submitExecution() {
 		
-		Submission submission = new Submission();
+		final Submission submission = new Submission();
 		submission.setDatasetsURI(datasets);
-		submission.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
-		submission.setMeasureID(measure.getId());
-		submission.setExtractionID(extractor.getId());
+		// TODO remove hardcoded adapter
+		ComponentMetadata adapter = new ComponentMetadata("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter", "", "");
+		submission.setAdapter(adapter);
+		submission.setMeasure(measure);
+		submission.setExtraction(extractor);
 		
 //		SetComparison comparisons = new SetComparison();
 //		comparisons.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
@@ -146,7 +148,7 @@ public class CurrentSelectionsPresenter implements Presenter {
 			@Override
 			public void onSuccess(Job job) {
 				GWT.log("Execution successfully submitted");
-				eventBus.fireEvent(new NewJobEvent(job));
+				eventBus.fireEvent(new NewJobEvent(job, submission));
 			}
 			
 			@Override
