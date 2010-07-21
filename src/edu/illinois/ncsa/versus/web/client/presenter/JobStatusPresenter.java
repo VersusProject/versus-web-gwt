@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 
 /**
@@ -25,6 +26,7 @@ import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
  */
 public class JobStatusPresenter implements Presenter {
 
+	private static final int WAIT_INTERVAL = 1000;
 	private final HandlerManager eventBus;
 	private final Display display;
 	private final Job job;
@@ -52,7 +54,6 @@ public class JobStatusPresenter implements Presenter {
 		this.job = job;
 		display.setStart(job.getStarted());
 		display.setComparisons(job.getComparison());
-		display.setStatus("Started");
 		Iterator<PairwiseComparison> iterator = job.getComparison().iterator();
 		if (iterator.hasNext()) {
 			PairwiseComparison next = iterator.next();
@@ -68,26 +69,21 @@ public class JobStatusPresenter implements Presenter {
 			
 			@Override
 			public void run() {
-				executionService.getStatus(job.getUri(), new AsyncCallback<String>() {
+				executionService.getStatus(job.getUri(), new AsyncCallback<Job>() {
 					
 					@Override
-					public void onSuccess(String result) {
-						display.setStatus(result);
-						if (result.equals("Done")) {
+					public void onSuccess(Job job) {
+						int done = 0;
+						for (ComparisonStatus status : job.getComparisonStatus().values()) {
+							if (status == ComparisonStatus.ENDED) {
+								done++;
+							}
+						}
+						display.setStatus(done + " / " + job.getComparisonStatus().size());
+						display.showResults(job.getComparison());
+						if (done == job.getComparisonStatus().size()) {
 							cancel();
 						}
-						executionService.getAllComparisons(new AsyncCallback<Set<PairwiseComparison>>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								GWT.log("error", caught);
-							}
-
-							@Override
-							public void onSuccess(Set<PairwiseComparison> comparisons) {
-								display.showResults(comparisons);
-							}
-						});
 					}
 					
 					@Override
@@ -98,7 +94,7 @@ public class JobStatusPresenter implements Presenter {
 				});
 			}
 		};
-		timer.scheduleRepeating(5000);
+		timer.scheduleRepeating(WAIT_INTERVAL);
 
 	}
 

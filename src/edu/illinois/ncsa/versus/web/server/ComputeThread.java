@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +22,7 @@ import edu.illinois.ncsa.versus.extract.Extractor;
 import edu.illinois.ncsa.versus.measure.Measure;
 import edu.illinois.ncsa.versus.measure.Similarity;
 import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
@@ -50,10 +49,6 @@ public class ComputeThread extends Thread {
 
 	private  Job job;
 
-	private  Map<String, String> jobStatus;
-
-	private Set<PairwiseComparison> comparison;
-
 	private  PairwiseComparison pairwiseComparison;
 
 	private String adapterID;
@@ -64,8 +59,6 @@ public class ComputeThread extends Thread {
 
 	private final BeanSession beanSession;
 
-	private final Set<PairwiseComparison> comparisons;
-
 	/**
 	 * 
 	 * @param pairwiseComparison
@@ -73,11 +66,9 @@ public class ComputeThread extends Thread {
 	 * @param jobStatus
 	 * @param beanSession 
 	 */
-	public ComputeThread(PairwiseComparison pairwiseComparison, Set<PairwiseComparison> comparison, Set<PairwiseComparison> comparisons, Map<String, String> jobStatus, BeanSession beanSession) {
+	public ComputeThread(PairwiseComparison pairwiseComparison, Job job, BeanSession beanSession) {
 		this.pairwiseComparison = pairwiseComparison;
-		this.comparison = comparison;
-		this.comparisons = comparisons;
-		this.jobStatus = jobStatus;
+		this.job = job;
 		this.beanSession = beanSession;
 		adapterID = pairwiseComparison.getAdapterId();
 		extractionID = pairwiseComparison.getExtractorId();
@@ -128,13 +119,10 @@ public class ComputeThread extends Thread {
 	public void run() {
 		try {
 			Similarity compare = compare(file1, file2);
-			for (PairwiseComparison comparison : comparisons) {
-				if (comparison.getFirstDataset().getUri().equals(pairwiseComparison.getFirstDataset().getUri()) && 
-						comparison.getSecondDataset().getUri().equals(pairwiseComparison.getSecondDataset().getUri())) {
-					comparison.setSimilarity(Double.toString(compare.getValue()));
-				}
-			}
+			job.updateSimilarityValue(pairwiseComparison.getUri(), compare.getValue());
+			log.debug("Done computing similarity between " + file1 + " and " + file2);
 		} catch (Exception e1) {
+			job.setStatus(pairwiseComparison.getUri(), ComparisonStatus.FAILED);
 			log.error("Error computing similarity between " + file1 + " and " + file2, e1);
 		}
 	}
@@ -143,7 +131,7 @@ public class ComputeThread extends Thread {
 	 * 
 	 * @param file1
 	 * @param file2
-	 * @returncomparison
+	 * @return comparison
 	 * @throws Exception
 	 */
 	private Similarity compare(File file1, File file2) throws Exception {

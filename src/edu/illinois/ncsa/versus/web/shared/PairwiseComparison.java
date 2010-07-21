@@ -3,6 +3,7 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
+import edu.illinois.ncsa.versus.measure.Similarity;
 import edu.uiuc.ncsa.cet.bean.CETBean;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
@@ -23,7 +24,7 @@ public class PairwiseComparison extends CETBean {
 	
 	private String measureId;
 	
-	private String similarity;
+	private Double similarity;
 	
 	public PairwiseComparison() {
 		// TODO Auto-generated constructor stub
@@ -60,14 +61,14 @@ public class PairwiseComparison extends CETBean {
 	/**
 	 * @return the similarity
 	 */
-	public String getSimilarity() {
+	public Double getSimilarity() {
 		return similarity;
 	}
 
 	/**
 	 * @param similarity the similarity to set
 	 */
-	public void setSimilarity(String similarity) {
+	public void setSimilarity(Double similarity) {
 		this.similarity = similarity;
 	}
 

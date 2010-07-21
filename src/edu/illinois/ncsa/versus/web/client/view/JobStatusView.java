@@ -68,7 +68,9 @@ public class JobStatusView extends Composite implements Display {
 
 	@Override
 	public void setStatus(String status) {
-		statusPanel.setWidget(new Label(status));
+		FlowPanel panel = new FlowPanel();
+		panel.add(new Label(status));
+		statusPanel.setWidget(panel);
 	}
 
 	@Override
@@ -89,8 +91,8 @@ public class JobStatusView extends Composite implements Display {
 
 			@Override
 			public int compare(PairwiseComparison o1, PairwiseComparison o2) {
-				double parseDouble = Double.parseDouble(o1.getSimilarity());
-				double parseDouble2 = Double.parseDouble(o2.getSimilarity());
+				double parseDouble = o1.getSimilarity();
+				double parseDouble2 = o2.getSimilarity();
 				if (parseDouble > parseDouble2) {
 					return -1;
 				} else if (parseDouble < parseDouble2) {

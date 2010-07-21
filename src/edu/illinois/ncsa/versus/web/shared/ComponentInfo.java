@@ -5,55 +5,53 @@ import edu.uiuc.ncsa.cet.bean.CETBean;
 @SuppressWarnings("serial")
 public class ComponentInfo extends CETBean {
 
-	private String name;
+	private Job name;
+	private Job description;
+	private Job id;
+	
+	public ComponentInfo() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	public Job getName() {
 		return name;
 	}
 
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
+	public void setName(Job name) {
 		this.name = name;
 	}
 
 	/**
 	 * @return the description
 	 */
-	public String getDescription() {
+	public Job getDescription() {
 		return description;
 	}
 
 	/**
 	 * @param description the description to set
 	 */
-	public void setDescription(String description) {
+	public void setDescription(Job description) {
 		this.description = description;
 	}
 
 	/**
 	 * @return the id
 	 */
-	public String getId() {
+	public Job getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(String id) {
+	public void setId(Job id) {
 		this.id = id;
-	}
-
-	private String description;
-	
-	private String id;
-	
-	public ComponentInfo() {
-		// TODO Auto-generated constructor stub
 	}
 }

@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,74 +54,22 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 					pairwiseComparison.setMeasureId(set.getMeasureID());
 					pairwiseComparison.setExtractorId(set.getExtractionID());
 				} catch (OperatorException e) {
-					e.printStackTrace();
+					log.error("Error setting up comparison",e);
 				}
 				comparisons.add(pairwiseComparison);
 			}
 		}
-		
-//		for (String datasetOne : set.getDatasetsURI()) {
-//			for (String datasetTwo : set.getDatasetsURI()) {
-//				if (!datasetOne.equals(datasetTwo)) {
-//					PaircomparisonswiseComparison pairwiseComparison = new PairwiseComparison();
-//					try {
-//						pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetOne)));
-//						pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetTwo)));
-//					} catch (OperatorException e) {
-//						e.printStackTrace();
-//					}
-//					comparisons.getComparisons().add(pairwiseComparison);
-//				}
-//			}
-//		}
 		
 		// submit job for execution
 		Job job = new Job();
 		job.setStarted(new Date());
 		job.setComparison(comparisons);
 		executionEngine.submit(job);
-		// timer submission for debugging
-		executionEngine.getJobStatus().put(job.getUri(), "Started");
-		Timer timer = new Timer();
-		TimerTask task = new RandomJobTask(job.getUri(), executionEngine.getJobStatus());
-		Random randomGenerator = new Random();
-		timer.schedule(task, randomGenerator.nextInt(60)*1000);
 		return job;
 	}
 
 	@Override
-	public String getStatus(String jobId) {
-		return executionEngine.getJobStatus().get(jobId);
+	public Job getStatus(String jobId) {
+		return executionEngine.getJob(jobId);
 	}
-	
-	/**
-	 * For testing purposes only. Add job uri to map as done without doing anything.
-	 * 
-	 * @author lmarini
-	 *
-	 */
-	class RandomJobTask extends TimerTask {
-
-		private final String uri;
-		private final Map<String, String> jobStatus2;
-
-		public RandomJobTask(String uri, Map<String, String> jobStatus) {
-			this.uri = uri;
-			jobStatus2 = jobStatus;
-		}
-
-		@Override
-		public void run() {
-			jobStatus2.put(uri, "Done");
-			log.debug("Job " + uri + " done");
-		}
-	
-	}
-
-	@Override
-	public Set<PairwiseComparison> getAllComparisons() {
-		log.debug("Comparisons in engine = " + executionEngine.getComparisons().size());
-		return executionEngine.getComparisons();
-	}
-
 }
