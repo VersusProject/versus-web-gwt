@@ -52,6 +52,7 @@ public class SelectAdapterView extends Composite implements Display {
 			@Override
 			public void onClick(ClickEvent event) {
 				clearSelection();
+//				adapterAnchor.removeStyleName("measureAnchor");
 				adapterAnchor.addStyleName("selectedLabel");
 			}
 		});
