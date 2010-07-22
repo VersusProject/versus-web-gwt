@@ -18,4 +18,5 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 public interface RegistryService extends RemoteService {
 	List<ComponentMetadata> getMeasures();
 	List<ComponentMetadata> getExtractors();
+	List<ComponentMetadata> getAdapters();
 }

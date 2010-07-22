@@ -41,6 +41,11 @@
 	padding: 0px;
 }
 
+.selectAdapterPanel {
+	width: 400px;
+	margin: 10px auto;
+}
+
 .selectMeasurePanel {
 	width: 400px;
 	margin: 10px auto;

@@ -91,21 +91,28 @@ public class JobStatusView extends Composite implements Display {
 
 			@Override
 			public int compare(PairwiseComparison o1, PairwiseComparison o2) {
-				double parseDouble = o1.getSimilarity();
-				double parseDouble2 = o2.getSimilarity();
-				if (parseDouble > parseDouble2) {
-					return -1;
-				} else if (parseDouble < parseDouble2) {
-					return 1;
+				if (o1.getSimilarity() != null & o2.getSimilarity() != null) {
+					double parseDouble = o1.getSimilarity();
+					double parseDouble2 = o2.getSimilarity();
+					if (parseDouble > parseDouble2) {
+						return -1;
+					} else if (parseDouble < parseDouble2) {
+						return 1;
+					} else {
+						return 0;
+					}
 				} else {
 					return 0;
 				}
 			}
 		});
 		for (PairwiseComparison comparison: ordered) {
-			comparisonsPanel.add(new HTML(comparison.getFirstDataset().getTitle() + 
-					" vs " + comparison.getSecondDataset().getTitle() + 
-					" = <b>" + comparison.getSimilarity() + "</b>"));
+			String text = comparison.getFirstDataset().getTitle() + " vs " + comparison.getSecondDataset().getTitle() + " = ";
+			
+			if (comparison.getSimilarity() != null) {
+				text += "<b>" + comparison.getSimilarity() + "</b>";
+			}
+			comparisonsPanel.add(new HTML(text));
 		}
 	}
 

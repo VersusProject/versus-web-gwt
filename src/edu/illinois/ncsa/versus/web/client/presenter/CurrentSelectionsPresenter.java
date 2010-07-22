@@ -22,6 +22,8 @@ import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
+import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
@@ -41,12 +43,15 @@ public class CurrentSelectionsPresenter implements Presenter {
 	private final HandlerManager eventBus;
 	private final Display display;
 	private final Set<String> datasets;
+	protected ComponentMetadata adapter;
 	protected ComponentMetadata measure;
 	protected ComponentMetadata extractor;
 	private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
-	
+
 	public interface Display {
 		Widget asWidget();
+
+		void setAdapter(String name);
 
 		void setMeasure(String name);
 		
@@ -71,6 +76,15 @@ public class CurrentSelectionsPresenter implements Presenter {
 	}
 
 	private void bind() {
+		eventBus.addHandler(AdapterSelectedEvent.TYPE, new AdapterSelectedHandler() {
+			
+			@Override
+			public void onAdapterSelected(AdapterSelectedEvent event) {
+				adapter = event.getAdapterMetadata();
+				display.setAdapter(adapter.getName());
+			}
+		});
+		
 		eventBus.addHandler(MeasureSelectedEvent.TYPE, new MeasureSelectedHandler() {
 			
 			@Override
@@ -119,29 +133,12 @@ public class CurrentSelectionsPresenter implements Presenter {
 	 * Submit a new job to the server.
 	 */
 	protected void submitExecution() {
-		
 		final Submission submission = new Submission();
 		submission.setDatasetsURI(datasets);
-		// TODO remove hardcoded adapter
-		ComponentMetadata adapter = new ComponentMetadata("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter", "", "");
 		submission.setAdapter(adapter);
 		submission.setMeasure(measure);
 		submission.setExtraction(extractor);
 		
-//		SetComparison comparisons = new SetComparison();
-//		comparisons.setAdapterID("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
-//		comparisons.setMeasureID(measure.getId());
-//		comparisons.setExtractionID(extractor.getId());
-//		for (String datasetOne : datasets) {
-//			for (String datasetTwo : datasets) {
-//				if (!datasetOne.equals(datasetTwo)) {
-//					PairwiseComparison pairwiseComparison = new PairwiseComparison();
-//					pairwiseComparison.setFirstDataset(datasetOne);
-//					pairwiseComparison.setSecondDataset(datasetTwo);
-//					comparisons.getComparisons().add(pairwiseComparison);
-//				}
-//			}
-//		}
 		// submit execution
 		executionService.submit(submission, new AsyncCallback<Job>() {
 			

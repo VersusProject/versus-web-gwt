@@ -18,4 +18,6 @@ public interface RegistryServiceAsync {
 	void getMeasures(AsyncCallback<List<ComponentMetadata>> callback);
 
 	void getExtractors(AsyncCallback<List<ComponentMetadata>> callback);
+
+	void getAdapters(AsyncCallback<List<ComponentMetadata>> callback);
 }

@@ -26,6 +26,7 @@ public class CurrentSelectionsView extends Composite implements Display {
 	private final SimplePanel selectedMeasurePanel;
 	private final Button executeButton;
 	private HorizontalPanel selectionsPanel;
+	private SimplePanel selectedAdapterPanel;
 
 	public CurrentSelectionsView() {
 		mainPanel = new VerticalPanel();
@@ -34,6 +35,9 @@ public class CurrentSelectionsView extends Composite implements Display {
 		selectionsPanel = new HorizontalPanel();
 		selectionsPanel.setSpacing(20);
 		mainPanel.add(selectionsPanel);
+		selectedAdapterPanel = new SimplePanel();
+		selectedAdapterPanel.setWidget(new Label("No adapter selected"));
+		selectionsPanel.add(selectedAdapterPanel);		
 		selectedMeasurePanel = new SimplePanel();
 		selectedMeasurePanel.setWidget(new Label("No measure selected"));
 		selectionsPanel.add(selectedMeasurePanel);		
@@ -51,6 +55,11 @@ public class CurrentSelectionsView extends Composite implements Display {
 	}
 
 	@Override
+	public void setAdapter(String name) {
+		selectedAdapterPanel.setWidget(new Label(name));
+	}
+
+	@Override
 	public void setMeasure(String name) {
 		selectedExecutorPanel.setWidget(new Label(name));
 	}
@@ -64,4 +73,5 @@ public class CurrentSelectionsView extends Composite implements Display {
 	public HasClickHandlers getExecuteButton() {
 		return executeButton;
 	}
+
 }

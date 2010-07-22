@@ -26,15 +26,18 @@ import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
+import edu.illinois.ncsa.versus.web.client.event.AddAdapterEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
+import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter;
 import edu.illinois.ncsa.versus.web.client.view.CurrentSelectionsView;
 import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
 import edu.illinois.ncsa.versus.web.client.view.ListThumbails;
+import edu.illinois.ncsa.versus.web.client.view.SelectAdapterView;
 import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
 import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
@@ -116,6 +119,11 @@ public class Versus_web implements EntryPoint {
 		selectionPanel.setBorderWidth(0);
 		selectionPanel.setWidth("100%");
 		newExecutionPanel.add(selectionPanel);
+		
+		// adapters
+		SelectAdapterView selectAdapterView = new SelectAdapterView();
+		SelectAdapterPresenter selectAdapterPresenter = new SelectAdapterPresenter(registryService, eventBus, selectAdapterView);
+		selectAdapterPresenter.go(selectionPanel);
 		
 		// extractors
 		SelectExtractorView selectExtractorView = new SelectExtractorView();
@@ -207,6 +215,22 @@ public class Versus_web implements EntryPoint {
 	}
 
 	private void populate() {
+		
+		registryService.getAdapters(new AsyncCallback<List<ComponentMetadata>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				GWT.log("Error retrieving adapters", caught);
+			}
+
+			@Override
+			public void onSuccess(List<ComponentMetadata> result) {
+				for (ComponentMetadata metadata : result) {
+					eventBus.fireEvent(new AddAdapterEvent(metadata));
+				}
+			}
+		});
+		
 		registryService.getExtractors(new AsyncCallback<List<ComponentMetadata>>() {
 			
 			@Override

@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import edu.illinois.ncsa.versus.adapter.Adapter;
 import edu.illinois.ncsa.versus.extract.Extractor;
 import edu.illinois.ncsa.versus.measure.Measure;
 import edu.illinois.ncsa.versus.registry.CompareRegistry;
@@ -51,6 +52,19 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 			measures.add(measureMetadata);
 		}
 		return measures;
+	}
+
+	@Override
+	public List<ComponentMetadata> getAdapters() {
+		List<ComponentMetadata> adapters = new ArrayList<ComponentMetadata>();
+		Collection<Adapter> availableAdapters = registry.getAvailableAdapters();
+		Iterator<Adapter> adapterIter = availableAdapters.iterator();
+		while (adapterIter.hasNext()) {
+			Adapter adapter = adapterIter.next();
+			ComponentMetadata adapterMetadata = new ComponentMetadata(adapter.getClass().getName(), adapter.getName(), "");
+			adapters.add(adapterMetadata);
+		}
+		return adapters;
 	}
 
 }
