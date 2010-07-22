@@ -11,6 +11,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -37,6 +38,9 @@ public class ListThumbails extends Composite {
 		outerPanel = new SimplePanel();
 		outerPanel.addStyleName("listThumbnailsPanel");
 		mainPanel = new FlowPanel();
+		Label selectedLabel = new Label("Selected Data");
+		selectedLabel.addStyleName("listThumbnailsLabel");
+		mainPanel.add(selectedLabel);
 		ScrollPanel scrollPanel = new ScrollPanel(mainPanel);
 		outerPanel.add(scrollPanel);
 		initWidget(outerPanel);

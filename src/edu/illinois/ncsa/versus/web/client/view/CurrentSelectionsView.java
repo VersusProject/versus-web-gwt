@@ -40,7 +40,7 @@ public class CurrentSelectionsView extends Composite implements Display {
 		selectedExecutorPanel = new SimplePanel();
 		selectedExecutorPanel.setWidget(new Label("No executor selected"));
 		selectionsPanel.add(selectedExecutorPanel);
-		executeButton = new Button("Execute");
+		executeButton = new Button("Launch");
 		mainPanel.add(executeButton);
 		initWidget(mainPanel);
 	}

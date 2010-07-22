@@ -76,6 +76,11 @@
 	border-right: 1px solid gray;
 }
 
+.listThumbnailsLabel {
+	color: gray;
+	margin-top: 5px;	
+}
+
 .thumbnail {
 	margin: 10px;
 }

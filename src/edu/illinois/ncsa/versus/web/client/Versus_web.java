@@ -54,8 +54,12 @@ public class Versus_web implements EntryPoint {
 	private UploadWidget uploadWidget;
 
 	private VerticalPanel previousDisclosureBody;
+
+	private DisclosurePanel previousDisclosure;
 	
 	public static final MyDispatchAsync dispatchAsync        = new MyDispatchAsync();
+
+	private static final boolean DISCLOSURE_OPEN = false;
 
 	/**
 	 * This is the entry point method.
@@ -91,14 +95,14 @@ public class Versus_web implements EntryPoint {
 //		dragController.registerDropController(secondDropBox.getDropController());metadata.getId(), metadata.getName()
 //		
 		
-		DisclosurePanel newExecutionDisclosure = new DisclosurePanel("New Execution");
+		DisclosurePanel newExecutionDisclosure = new DisclosurePanel("Launch New Comparison");
 		newExecutionDisclosure.addStyleName("mainSection");
 		newExecutionDisclosure.setAnimationEnabled(true);
-		newExecutionDisclosure.setOpen(true);
+		newExecutionDisclosure.setOpen(DISCLOSURE_OPEN);
 		VerticalPanel newExecutionPanel = new VerticalPanel();
 		newExecutionPanel.setWidth("100%");
 		newExecutionDisclosure.add(newExecutionPanel);
-		content.add(newExecutionDisclosure);
+		
 		
 //		// testing drop targets
 //		HorizontalPanel dropTarget = new HorizontalPanel();
@@ -129,28 +133,28 @@ public class Versus_web implements EntryPoint {
 		currentSelectionsPresenter.go(newExecutionPanel);
 
 		// previous executions
-		DisclosurePanel previousDisclosure = new DisclosurePanel("Previous Executions");
+		previousDisclosure = new DisclosurePanel("View Previous Comparisons");
 		previousDisclosure.addStyleName("mainSection");
 		previousDisclosure.setAnimationEnabled(true);
-		previousDisclosure.setOpen(true);
+		previousDisclosure.setOpen(DISCLOSURE_OPEN);
 		previousDisclosureBody = new VerticalPanel();
 		previousDisclosureBody.setWidth("90%");
 		previousDisclosure.add(previousDisclosureBody);
-		content.add(previousDisclosure);
+		
 		
 		// dataset selection
 		DynamicTableView datasetTableView = new DynamicTableView();
 		final DatasetTablePresenter datasetTablePresenter = new DatasetTablePresenter(dispatchAsync, eventBus, datasetTableView);
 		datasetTablePresenter.bind();
-		DisclosurePanel selectionDisclosure = new DisclosurePanel("Select Datasets");
+		DisclosurePanel selectionDisclosure = new DisclosurePanel("Select Data");
 		selectionDisclosure.addStyleName("mainSection");
 		selectionDisclosure.setAnimationEnabled(true);
-		selectionDisclosure.setOpen(true);
+		selectionDisclosure.setOpen(DISCLOSURE_OPEN);
 		VerticalPanel selectionDisclosureBody = new VerticalPanel();
 		selectionDisclosureBody.setWidth("100%");
 		selectionDisclosureBody.add(datasetTableView.asWidget());
 		selectionDisclosure.add(selectionDisclosureBody);
-		content.add(selectionDisclosure);
+		
 		
 		// upload widget
 		uploadWidget = new UploadWidget(false);
@@ -164,6 +168,12 @@ public class Versus_web implements EntryPoint {
 			
 		});
 		selectionDisclosureBody.add(uploadWidget);
+		
+		
+		// layout
+		content.add(selectionDisclosure);
+		content.add(newExecutionDisclosure);
+		content.add(previousDisclosure);
 		
 		appPanel.addNorth(header, 2);
 //		appPanel.addSouth(footer, 2);
@@ -190,6 +200,7 @@ public class Versus_web implements EntryPoint {
 				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job, submission);
 				jobStatusPresenter.go(previousDisclosureBody);
 				previousDisclosureBody.add(jobStatusView);
+				previousDisclosure.setOpen(true);
 				
 			}
 		});
