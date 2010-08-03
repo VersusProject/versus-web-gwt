@@ -14,10 +14,14 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
+import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter.Display;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 
@@ -107,12 +111,28 @@ public class JobStatusView extends Composite implements Display {
 			}
 		});
 		for (PairwiseComparison comparison: ordered) {
-			String text = comparison.getFirstDataset().getTitle() + " vs " + comparison.getSecondDataset().getTitle() + " = ";
+			HorizontalPanel pairwiseComparisonPanel = new HorizontalPanel();
+			
+			PreviewWidget previewWidget = new PreviewWidget(comparison.getFirstDataset().getUri(), GetPreviews.SMALL, null);
+			previewWidget.addStyleName("thumbnail");
+			pairwiseComparisonPanel.add(previewWidget);
+			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget, HasVerticalAlignment.ALIGN_MIDDLE);
+			
+			PreviewWidget previewWidget2 = new PreviewWidget(comparison.getSecondDataset().getUri(), GetPreviews.SMALL, null);
+			previewWidget.addStyleName("thumbnail");
+			pairwiseComparisonPanel.add(previewWidget2);
+			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget2, HasVerticalAlignment.ALIGN_MIDDLE);
+			
+			String text = " = ";
 			
 			if (comparison.getSimilarity() != null) {
 				text += "<b>" + comparison.getSimilarity() + "</b>";
 			}
-			comparisonsPanel.add(new HTML(text));
+			HTML similarity = new HTML(text);
+			pairwiseComparisonPanel.add(similarity);
+			pairwiseComparisonPanel.setCellVerticalAlignment(similarity, HasVerticalAlignment.ALIGN_MIDDLE);
+			
+			comparisonsPanel.add(pairwiseComparisonPanel);
 		}
 	}
 
