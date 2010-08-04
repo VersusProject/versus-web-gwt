@@ -23,11 +23,13 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
 import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter.Display;
+import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 
 /**
  * @author lmarini
- *
+ * 
  */
 public class JobStatusView extends Composite implements Display {
 
@@ -37,7 +39,7 @@ public class JobStatusView extends Composite implements Display {
 	private final SimplePanel measurePanel;
 	private final SimplePanel extractorPanel;
 	private final FlowPanel comparisonsPanel;
-	
+
 	public JobStatusView() {
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName("jobStatusPanel");
@@ -53,7 +55,7 @@ public class JobStatusView extends Composite implements Display {
 		mainPanel.add(comparisonsPanel);
 		initWidget(mainPanel);
 	}
-	
+
 	@Override
 	public Widget asWidget() {
 		return this;
@@ -62,12 +64,13 @@ public class JobStatusView extends Composite implements Display {
 	@Override
 	public void setComparisons(Set<PairwiseComparison> datasets) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setStart(Date date) {
-		startPanel.setWidget(new Label(DateTimeFormat.getMediumDateTimeFormat().format(date)));
+		startPanel.setWidget(new Label(DateTimeFormat.getMediumDateTimeFormat()
+				.format(date)));
 	}
 
 	@Override
@@ -88,9 +91,11 @@ public class JobStatusView extends Composite implements Display {
 	}
 
 	@Override
-	public void showResults(Set<PairwiseComparison> comparisons) {
+	public void showResults(Job job) {
+		Set<PairwiseComparison> comparisons = job.getComparison();
 		comparisonsPanel.clear();
-		List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(comparisons);
+		List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(
+				comparisons);
 		Collections.sort(ordered, new Comparator<PairwiseComparison>() {
 
 			@Override
@@ -110,28 +115,37 @@ public class JobStatusView extends Composite implements Display {
 				}
 			}
 		});
-		for (PairwiseComparison comparison: ordered) {
+		for (PairwiseComparison comparison : ordered) {
 			HorizontalPanel pairwiseComparisonPanel = new HorizontalPanel();
-			
-			PreviewWidget previewWidget = new PreviewWidget(comparison.getFirstDataset().getUri(), GetPreviews.SMALL, null);
+
+			PreviewWidget previewWidget = new PreviewWidget(comparison
+					.getFirstDataset().getUri(), GetPreviews.SMALL, null);
 			previewWidget.addStyleName("thumbnail");
 			pairwiseComparisonPanel.add(previewWidget);
-			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget, HasVerticalAlignment.ALIGN_MIDDLE);
-			
-			PreviewWidget previewWidget2 = new PreviewWidget(comparison.getSecondDataset().getUri(), GetPreviews.SMALL, null);
+			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget,
+					HasVerticalAlignment.ALIGN_MIDDLE);
+
+			PreviewWidget previewWidget2 = new PreviewWidget(comparison
+					.getSecondDataset().getUri(), GetPreviews.SMALL, null);
 			previewWidget.addStyleName("thumbnail");
 			pairwiseComparisonPanel.add(previewWidget2);
-			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget2, HasVerticalAlignment.ALIGN_MIDDLE);
-			
+			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget2,
+					HasVerticalAlignment.ALIGN_MIDDLE);
+
 			String text = " = ";
-			
-			if (comparison.getSimilarity() != null) {
+
+			ComparisonStatus comparisonStatus = job.getComparisonStatus().get(
+					comparison.getUri());
+			if (comparisonStatus == ComparisonStatus.ENDED) {
 				text += "<b>" + comparison.getSimilarity() + "</b>";
+			} else {
+				text += "<b>" + comparisonStatus + "</b>";
 			}
 			HTML similarity = new HTML(text);
 			pairwiseComparisonPanel.add(similarity);
-			pairwiseComparisonPanel.setCellVerticalAlignment(similarity, HasVerticalAlignment.ALIGN_MIDDLE);
-			
+			pairwiseComparisonPanel.setCellVerticalAlignment(similarity,
+					HasVerticalAlignment.ALIGN_MIDDLE);
+
 			comparisonsPanel.add(pairwiseComparisonPanel);
 		}
 	}

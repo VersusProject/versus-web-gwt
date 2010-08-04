@@ -47,7 +47,7 @@ public class JobStatusPresenter implements Presenter {
 		
 		void setExtractor(String extractor);
 
-		void showResults(Set<PairwiseComparison> comparisons);
+		void showResults(Job job);
 	}
 	
 	public JobStatusPresenter(HandlerManager eventBus, Display display, Job job, Submission submission) {
@@ -73,14 +73,19 @@ public class JobStatusPresenter implements Presenter {
 					@Override
 					public void onSuccess(Job job) {
 						int done = 0;
+						int failed = 0;
 						for (ComparisonStatus status : job.getComparisonStatus().values()) {
 							if (status == ComparisonStatus.ENDED) {
 								done++;
 							}
+							if (status == ComparisonStatus.FAILED) {
+								failed++;
+							}
 						}
-						display.setStatus(done + " / " + job.getComparisonStatus().size());
-						display.showResults(job.getComparison());
-						if (done == job.getComparisonStatus().size()) {
+						display.setStatus("Done: " + done + " / " + job.getComparisonStatus().size() 
+								+ " Failed: " + failed + " / " + job.getComparisonStatus().size());
+						display.showResults(job);
+						if (done + failed == job.getComparisonStatus().size()) {
 							cancel();
 						}
 					}

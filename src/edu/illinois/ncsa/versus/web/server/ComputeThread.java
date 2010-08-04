@@ -123,7 +123,8 @@ public class ComputeThread extends Thread {
 			log.debug("Done computing similarity between " + file1 + " and " + file2);
 		} catch (Exception e1) {
 			job.setStatus(pairwiseComparison.getUri(), ComparisonStatus.FAILED);
-			log.error("Error computing similarity between " + file1 + " and " + file2, e1);
+			log.error("Error computing similarity between " + file1 + " and " 
+					+ file2 + " [" + pairwiseComparison.getUri() + "]", e1);
 		}
 	}
 
