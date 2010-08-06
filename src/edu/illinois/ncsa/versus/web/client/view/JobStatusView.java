@@ -36,20 +36,37 @@ public class JobStatusView extends Composite implements Display {
 	FlowPanel mainPanel;
 	private final SimplePanel startPanel;
 	private final SimplePanel statusPanel;
-	private final SimplePanel measurePanel;
-	private final SimplePanel extractorPanel;
 	private final FlowPanel comparisonsPanel;
+	private HorizontalPanel selectionsPanel;
+	private SimplePanel selectedAdapterPanel;
+	private SimplePanel selectedExtractorPanel;
+	private SimplePanel selectedMeasurePanel;
 
 	public JobStatusView() {
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName("jobStatusPanel");
-		measurePanel = new SimplePanel();
-		mainPanel.add(measurePanel);
-		extractorPanel = new SimplePanel();
-		mainPanel.add(extractorPanel);
+		
+		selectionsPanel = new HorizontalPanel();
+		selectionsPanel.setSpacing(20);
+		mainPanel.add(selectionsPanel);
+		selectedAdapterPanel = new SimplePanel();
+		selectedAdapterPanel.setWidget(new Label("*"));
+		selectionsPanel.add(selectedAdapterPanel);
+		selectionsPanel.add(new HTML("&#8594;"));
+		selectedExtractorPanel = new SimplePanel();
+		selectedExtractorPanel.setWidget(new Label("*"));
+		selectionsPanel.add(selectedExtractorPanel);
+		selectionsPanel.add(new HTML("&#8594;"));
+		selectedMeasurePanel = new SimplePanel();
+		selectedMeasurePanel.setWidget(new Label("*"));
+		selectionsPanel.add(selectedMeasurePanel);		
+		mainPanel.add(selectionsPanel);
+
 		startPanel = new SimplePanel();
+		startPanel.addStyleName("jobStatusSubPanel");
 		mainPanel.add(startPanel);
 		statusPanel = new SimplePanel();
+		statusPanel.addStyleName("jobStatusSubPanel");
 		mainPanel.add(statusPanel);
 		comparisonsPanel = new FlowPanel();
 		mainPanel.add(comparisonsPanel);
@@ -81,13 +98,18 @@ public class JobStatusView extends Composite implements Display {
 	}
 
 	@Override
+	public void setAdapter(String adapter) {
+		selectedAdapterPanel.setWidget(new Label(adapter));
+	}
+	
+	@Override
 	public void setExtractor(String extractor) {
-		extractorPanel.setWidget(new Label(extractor));
+		selectedExtractorPanel.setWidget(new Label(extractor));
 	}
 
 	@Override
 	public void setMeasure(String measure) {
-		measurePanel.setWidget(new Label(measure));
+		selectedMeasurePanel.setWidget(new Label(measure));
 	}
 
 	@Override

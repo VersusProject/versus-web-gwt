@@ -43,6 +43,8 @@ public class JobStatusPresenter implements Presenter {
 		
 		void setComparisons(Set<PairwiseComparison> datasets);
 		
+		void setAdapter(String adapter);
+		
 		void setMeasure(String measure);
 		
 		void setExtractor(String extractor);
@@ -57,6 +59,7 @@ public class JobStatusPresenter implements Presenter {
 		this.submission = submission;
 		display.setStart(job.getStarted());
 		display.setComparisons(job.getComparison());
+		display.setAdapter(submission.getAdapter().getName());
 		display.setExtractor(submission.getExtraction().getName());
 		display.setMeasure(submission.getMeasure().getName());
 		pollStatus();

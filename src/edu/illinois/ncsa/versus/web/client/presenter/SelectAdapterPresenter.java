@@ -9,8 +9,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.AdapterUnselectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddAdapterEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddAdapterEventHandler;
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 /**
  * 
@@ -22,11 +24,14 @@ public class SelectAdapterPresenter implements Presenter {
 	private final RegistryServiceAsync registryService;
 	private final HandlerManager eventBus;
 	private final Display display;
+	private String selectedAdapterId;
 
 	public interface Display {
 		int addAdapter(String adapter);
 		int getNumAdapters();
 		HasClickHandlers getAdapterAnchor(int index);
+		void selectAdapter(int index);
+		void unselectAdapter(int index);
 		Widget asWidget();
 	}
 	
@@ -48,12 +53,21 @@ public class SelectAdapterPresenter implements Presenter {
 			
 			@Override
 			public void onAddAdapter(final AddAdapterEvent addAdapterEvent) {
-				int index = display.addAdapter(addAdapterEvent.getAdapterMetadata().getName());
+				final int index = display.addAdapter(addAdapterEvent.getAdapterMetadata().getName());
 				display.getAdapterAnchor(index).addClickHandler(new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent event) {
-						eventBus.fireEvent(new AdapterSelectedEvent(addAdapterEvent.getAdapterMetadata()));
+						ComponentMetadata adapterMetadata = addAdapterEvent.getAdapterMetadata();
+						if (selectedAdapterId == adapterMetadata.getId()) {
+							selectedAdapterId = null;
+							eventBus.fireEvent(new AdapterUnselectedEvent(adapterMetadata));
+							display.unselectAdapter(index);
+						} else {
+							selectedAdapterId = adapterMetadata.getId();
+							eventBus.fireEvent(new AdapterSelectedEvent(adapterMetadata));
+							display.selectAdapter(index);
+						}
 					}
 				});
 			}

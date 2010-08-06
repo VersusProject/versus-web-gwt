@@ -11,9 +11,11 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
-import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEventHandler;
+import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.ExtractorUnselectedEvent;
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 /**
  * @author lmarini
@@ -24,10 +26,13 @@ public class SelectExtractorPresenter implements Presenter {
 	private final RegistryServiceAsync registryService;
 	private final HandlerManager eventBus;
 	private final Display display;
+	private String selectedExtractorId;
 
 	public interface Display {
 		int addExtractor(String extractor);
 		HasClickHandlers getExtractorAnchor(int index);
+		void selectExtractor(int index);
+		void unselectExtractor(int index);
 		Widget asWidget();
 	}
 	
@@ -43,12 +48,21 @@ public class SelectExtractorPresenter implements Presenter {
 			
 			@Override
 			public void onAddExtractor(final AddExtractorEvent addExtractorEvent) {
-				int index = display.addExtractor(addExtractorEvent.getExtractorMetadata().getName());
+				final int index = display.addExtractor(addExtractorEvent.getExtractorMetadata().getName());
 				display.getExtractorAnchor(index).addClickHandler(new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent event) {
-						eventBus.fireEvent(new ExtractorSelectedEvent(addExtractorEvent.getExtractorMetadata()));
+						ComponentMetadata adapterMetadata = addExtractorEvent.getExtractorMetadata();
+						if (selectedExtractorId == adapterMetadata.getId()) {
+							selectedExtractorId = null;
+							eventBus.fireEvent(new ExtractorUnselectedEvent(adapterMetadata));
+							display.unselectExtractor(index);
+						} else {
+							selectedExtractorId = adapterMetadata.getId();
+							eventBus.fireEvent(new ExtractorSelectedEvent(adapterMetadata));
+							display.selectExtractor(index);
+						}
 					}
 				});
 			}

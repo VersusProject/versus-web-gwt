@@ -14,6 +14,8 @@ import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddMeasureEventHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedEvent;
+import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 /**
  * @author lmarini
@@ -24,11 +26,14 @@ public class SelectMeasurePresenter implements Presenter {
 	private final RegistryServiceAsync registryService;
 	private final HandlerManager eventBus;
 	private final Display display;
+	private String selectedMeasureId;
 
 	public interface Display {
 		int addMeasure(String measure);
 		int getNumMeasures();
 		HasClickHandlers getMeasureAnchor(int index);
+		void selectMeasure(int index);
+		void unselectMeasure(int index);
 		Widget asWidget();
 	}
 	
@@ -44,12 +49,21 @@ public class SelectMeasurePresenter implements Presenter {
 			
 			@Override
 			public void onAddMeasure(final AddMeasureEvent addMeasureEvent) {
-				int index = display.addMeasure(addMeasureEvent.getMeasureMetadata().getName());
+				final int index = display.addMeasure(addMeasureEvent.getMeasureMetadata().getName());
 				display.getMeasureAnchor(index).addClickHandler(new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent event) {
-						eventBus.fireEvent(new MeasureSelectedEvent(addMeasureEvent.getMeasureMetadata()));
+						ComponentMetadata adapterMetadata = addMeasureEvent.getMeasureMetadata();
+						if (selectedMeasureId == adapterMetadata.getId()) {
+							selectedMeasureId = null;
+							eventBus.fireEvent(new MeasureUnselectedEvent(adapterMetadata));
+							display.unselectMeasure(index);
+						} else {
+							selectedMeasureId = adapterMetadata.getId();
+							eventBus.fireEvent(new MeasureSelectedEvent(adapterMetadata));
+							display.selectMeasure(index);
+						}
 					}
 				});
 			}

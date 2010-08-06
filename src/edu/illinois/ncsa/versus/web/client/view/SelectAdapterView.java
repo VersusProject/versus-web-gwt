@@ -3,8 +3,6 @@ package edu.illinois.ncsa.versus.web.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
@@ -47,15 +45,6 @@ public class SelectAdapterView extends Composite implements Display {
 		final Anchor adapterAnchor = new Anchor(adapter);
 		adapterAnchor.addStyleName("measureAnchor");
 		adapterAnchors.add(adapterAnchor);
-		adapterAnchor.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				clearSelection();
-//				adapterAnchor.removeStyleName("measureAnchor");
-				adapterAnchor.addStyleName("selectedLabel");
-			}
-		});
 		adapterAnchor.addMouseOverHandler(new MouseOverHandler() {
 			
 			@Override
@@ -89,6 +78,17 @@ public class SelectAdapterView extends Composite implements Display {
 	@Override
 	public HasClickHandlers getAdapterAnchor(int index) {
 		return adapterAnchors.get(index);
+	}
+
+	@Override
+	public void selectAdapter(int index) {
+		clearSelection();
+		adapterAnchors.get(index).addStyleName("selectedLabel");
+	}
+
+	@Override
+	public void unselectAdapter(int index) {
+		clearSelection();
 	}
 
 }

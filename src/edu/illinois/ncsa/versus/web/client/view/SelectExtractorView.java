@@ -100,4 +100,15 @@ public class SelectExtractorView extends Composite implements Display {
 		return extractorAnchors.get(index);
 	}
 
+	@Override
+	public void selectExtractor(int index) {
+		clearSelection();
+		extractorAnchors.get(index).addStyleName("selectedLabel");
+	}
+
+	@Override
+	public void unselectExtractor(int index) {
+		clearSelection();
+	}
+
 }

@@ -24,10 +24,16 @@ import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedHandler;
+import edu.illinois.ncsa.versus.web.client.event.AdapterUnselectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.AdapterUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
+import edu.illinois.ncsa.versus.web.client.event.ExtractorUnselectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.ExtractorUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
+import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
@@ -85,6 +91,15 @@ public class CurrentSelectionsPresenter implements Presenter {
 			}
 		});
 		
+		eventBus.addHandler(AdapterUnselectedEvent.TYPE, new AdapterUnselectedHandler() {
+			
+			@Override
+			public void onAdapterUnselected(AdapterUnselectedEvent event) {
+				adapter = null;
+				display.setAdapter("");
+			}
+		});
+		
 		eventBus.addHandler(MeasureSelectedEvent.TYPE, new MeasureSelectedHandler() {
 			
 			@Override
@@ -94,12 +109,30 @@ public class CurrentSelectionsPresenter implements Presenter {
 			}
 		});
 		
+		eventBus.addHandler(MeasureUnselectedEvent.TYPE, new MeasureUnselectedHandler() {
+			
+			@Override
+			public void onMeasureUnselected(MeasureUnselectedEvent event) {
+				measure = null;
+				display.setMeasure("");
+			}
+		});
+		
 		eventBus.addHandler(ExtractorSelectedEvent.TYPE, new ExtractorSelectedHandler() {
 			
 			@Override
 			public void onExtractorSelected(ExtractorSelectedEvent event) {
 				extractor = event.getMeasureMetadata();
 				display.setExtractor(extractor.getName());
+			}
+		});
+		
+		eventBus.addHandler(ExtractorUnselectedEvent.TYPE, new ExtractorUnselectedHandler() {
+			
+			@Override
+			public void onExtractorUnselected(ExtractorUnselectedEvent event) {
+				extractor = null;
+				display.setExtractor("");
 			}
 		});
 		

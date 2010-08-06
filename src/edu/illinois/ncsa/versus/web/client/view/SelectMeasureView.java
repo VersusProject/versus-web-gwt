@@ -106,4 +106,15 @@ public class SelectMeasureView extends Composite implements Display {
 	public int getNumMeasures() {
 		return measureAnchors.size();
 	}
+
+	@Override
+	public void selectMeasure(int index) {
+		clearSelection();
+		measureAnchors.get(index).addStyleName("selectedLabel");
+	}
+
+	@Override
+	public void unselectMeasure(int index) {
+		clearSelection();
+	}
 }

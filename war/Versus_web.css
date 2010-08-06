@@ -42,17 +42,17 @@
 }
 
 .selectAdapterPanel {
-	width: 400px;
+	width: 200px;
 	margin: 10px auto;
 }
 
 .selectMeasurePanel {
-	width: 400px;
+	width: 200px;
 	margin: 10px auto;
 }
 
 .selectExtractorPanel {
-	width: 400px;
+	width: 200px;
 	margin: 10px auto;
 }
 
@@ -115,7 +115,7 @@ HTML, BODY {
 }
 
 .currentSelectionsView {
-	width: 500px;
+	width: 800px;
 	margin: 5px auto;
 }
 
@@ -125,10 +125,15 @@ HTML, BODY {
 }
 
 .jobStatusPanel {
-	width: 100%;
+	width: 800px;
 	padding: 5px;
-	margin: 10px;
+	margin: 10px auto;
 	border: 1px dashed orange;
+}
+
+.jobStatusSubPanel {
+	margin: 0px 0px 10px 20px;
+	padding: 0px;
 }
 
 .pairwiseComparisonPanel {
