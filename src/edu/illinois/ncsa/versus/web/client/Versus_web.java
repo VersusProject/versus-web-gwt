@@ -1,28 +1,38 @@
 package edu.illinois.ncsa.versus.web.client;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.UploadWidget;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedHandler;
 import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
+import edu.illinois.ncsa.mmdb.web.client.ui.DatasetWidget;
+import edu.illinois.ncsa.mmdb.web.client.ui.LoginPage;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
@@ -43,11 +53,12 @@ import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
+import edu.uiuc.ncsa.cet.bean.PersonBean;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Versus_web implements EntryPoint {
+public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 	private final RegistryServiceAsync registryService = GWT.create(RegistryService.class);
 
 	private FlowPanel content;
@@ -59,6 +70,18 @@ public class Versus_web implements EntryPoint {
 	private VerticalPanel previousDisclosureBody;
 
 	private DisclosurePanel previousDisclosure;
+
+	private DockLayoutPanel appPanel;
+
+	private ScrollPanel contentScrollPanel;
+
+	private DatasetTablePresenter datasetTablePresenter;
+
+	private ListThumbails listThumbails;
+
+	private HTML logo;
+
+	private HorizontalPanel headerPanel;
 	
 	public static final MyDispatchAsync dispatchAsync        = new MyDispatchAsync();
 
@@ -68,17 +91,32 @@ public class Versus_web implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		
+		// HACK required by PreviewWidget
+		MMDB.getSessionState().setCurrentUser(new PersonBean());
+		
 		eventBus = new HandlerManager(null);
+		
 		// drag and drop
 		PickupDragController dragController = new PickupDragController(RootPanel.get(), true);
-		DockLayoutPanel appPanel = new DockLayoutPanel(Unit.EM);
-		HTML header = new HTML("Versus");
-		header.addStyleName("headerPanel");
+		appPanel = new DockLayoutPanel(Unit.EM);
+		
+		// header panel
+		headerPanel = new HorizontalPanel();
+		headerPanel.addStyleName("headerPanel");
+		logo = new HTML("Versus");
+		headerPanel.add(logo);
+		headerPanel.setCellHorizontalAlignment(logo, HasHorizontalAlignment.ALIGN_CENTER);
+		headerPanel.setCellWidth(logo, "140px");
+		Hyperlink homeLink = new Hyperlink("Home", "");
+		headerPanel.add(homeLink);
+		
+		// footer
 		HTML footer = new HTML("");
 		footer.addStyleName("footer");
-		HTML navigation = new HTML("files");
-		navigation.addStyleName("navigation");
-		ListThumbails listThumbails = new ListThumbails(eventBus, dragController);
+		
+		// left content
+		listThumbails = new ListThumbails(eventBus, dragController);
 		content = new FlowPanel();
 		content.addStyleName("contentPanel");
 		
@@ -152,7 +190,7 @@ public class Versus_web implements EntryPoint {
 		
 		// dataset selection
 		DynamicTableView datasetTableView = new DynamicTableView();
-		final DatasetTablePresenter datasetTablePresenter = new DatasetTablePresenter(dispatchAsync, eventBus, datasetTableView);
+		datasetTablePresenter = new DatasetTablePresenter(dispatchAsync, eventBus, datasetTableView);
 		datasetTablePresenter.bind();
 		DisclosurePanel selectionDisclosure = new DisclosurePanel("Select Data");
 		selectionDisclosure.addStyleName("mainSection");
@@ -182,19 +220,21 @@ public class Versus_web implements EntryPoint {
 		content.add(selectionDisclosure);
 		content.add(newExecutionDisclosure);
 		content.add(previousDisclosure);
+		contentScrollPanel = new ScrollPanel(content);
 		
-		appPanel.addNorth(header, 2);
+		appPanel.addNorth(headerPanel, 2);
 //		appPanel.addSouth(footer, 2);
 		appPanel.addWest(listThumbails, 10);
-		
-		ScrollPanel contentScrollPanel = new ScrollPanel(content);
-		
 		appPanel.add(contentScrollPanel);
 		RootLayoutPanel.get().add(appPanel);
 		populate();
 		datasetTablePresenter.refresh();
 		
 		bind();
+		
+        // history support
+        History.addValueChangeHandler(this);
+        History.fireCurrentHistoryState();
 	}
 
 	private void bind() {
@@ -227,7 +267,13 @@ public class Versus_web implements EntryPoint {
 			public void onSuccess(List<ComponentMetadata> result) {
 				for (ComponentMetadata metadata : result) {
 					eventBus.fireEvent(new AddAdapterEvent(metadata));
-				}
+				}		appPanel.addNorth(logo, 2);
+//				appPanel.addSouth(footer, 2);
+				appPanel.addWest(listThumbails, 10);
+				appPanel.add(contentScrollPanel);
+				RootLayoutPanel.get().add(appPanel);
+				populate();
+				datasetTablePresenter.refresh();
 			}
 		});
 		
@@ -261,4 +307,40 @@ public class Versus_web implements EntryPoint {
 			}
 		});
 	}
+
+	@Override
+	public void onValueChange(ValueChangeEvent<String> event) {
+
+        final String token = event.getValue();
+
+        GWT.log("History changed: " + event.getValue(), null);
+
+        if (token.startsWith("dataset")) {
+        	DatasetWidget datasetWidget = new DatasetWidget(dispatchAsync);
+        	contentScrollPanel.clear();
+        	contentScrollPanel.add(datasetWidget);
+        	 String datasetUri = getParams().get("id");
+             if (datasetUri != null) {
+                 datasetWidget.showDataset(datasetUri);
+             }
+        } else {
+        	contentScrollPanel.clear();
+        	contentScrollPanel.add(content);
+        }
+	}
+	
+    public Map<String, String> getParams() {
+        Map<String, String> params = new HashMap<String, String>();
+        String paramString = History.getToken().substring(
+                History.getToken().indexOf("?") + 1);
+        if (!paramString.isEmpty()) {
+            for (String paramEntry : paramString.split("&") ) {
+                String[] terms = paramEntry.split("=");
+                if (terms.length == 2) {
+                    params.put(terms[0], terms[1]);
+                }
+            }
+        }
+        return params;
+    }
 }

@@ -50,11 +50,12 @@ public class ListThumbails extends Composite {
 			@Override
 			public void onDatasetSelected(DatasetSelectedEvent event) {
 				GWT.log("Adding selected dataset to list thumbnails view");
-				PreviewWidget previewWidget = new PreviewWidget(event.getUri(), GetPreviews.SMALL, null);
+				PreviewWidget previewWidget = new PreviewWidget(event.getUri(), 
+						GetPreviews.SMALL, "dataset?id=" + event.getUri());
 				previewWidget.addStyleName("thumbnail");
 				mainPanel.add(previewWidget);
 				previews.put(event.getUri(), previewWidget);
-				dragController.makeDraggable(previewWidget);
+//				dragController.makeDraggable(previewWidget);
 			}
 		});
 		

@@ -139,16 +139,14 @@ public class JobStatusView extends Composite implements Display {
 		});
 		for (PairwiseComparison comparison : ordered) {
 			HorizontalPanel pairwiseComparisonPanel = new HorizontalPanel();
-
-			PreviewWidget previewWidget = new PreviewWidget(comparison
-					.getFirstDataset().getUri(), GetPreviews.SMALL, null);
+			String firstId = comparison.getFirstDataset().getUri();
+			PreviewWidget previewWidget = new PreviewWidget(firstId, GetPreviews.SMALL, "dataset?id=" + firstId);
 			previewWidget.addStyleName("thumbnail");
 			pairwiseComparisonPanel.add(previewWidget);
 			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget,
 					HasVerticalAlignment.ALIGN_MIDDLE);
-
-			PreviewWidget previewWidget2 = new PreviewWidget(comparison
-					.getSecondDataset().getUri(), GetPreviews.SMALL, null);
+			String secondId = comparison.getSecondDataset().getUri();
+			PreviewWidget previewWidget2 = new PreviewWidget(secondId, GetPreviews.SMALL, "dataset?id=" + secondId);
 			previewWidget.addStyleName("thumbnail");
 			pairwiseComparisonPanel.add(previewWidget2);
 			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget2,

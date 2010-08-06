@@ -21,6 +21,7 @@
 }
 
 .headerPanel {
+	width: 100%;
 	border-bottom: 1px solid gray;
     text-align: left;
     padding: 5px;
