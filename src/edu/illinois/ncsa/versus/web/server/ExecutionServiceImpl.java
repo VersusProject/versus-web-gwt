@@ -50,7 +50,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 				try {
 					pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
 					pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
-					pairwiseComparison.setAdapterId("edu.illinois.ncsa.versus.adapter.impl.BufferedImageAdapter");
+					pairwiseComparison.setAdapterId(set.getAdapter().getId());
 					pairwiseComparison.setMeasureId(set.getMeasure().getId());
 					pairwiseComparison.setExtractorId(set.getExtraction().getId());
 				} catch (OperatorException e) {
