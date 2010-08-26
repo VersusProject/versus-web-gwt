@@ -5,6 +5,7 @@ package edu.illinois.ncsa.versus.web.client.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -109,6 +110,34 @@ public class SelectExtractorView extends Composite implements Display {
 	@Override
 	public void unselectExtractor(int index) {
 		clearSelection();
+	}
+
+	@Override
+	public void enableExtractors(Set<Integer> extractors) {
+		for (int i=0; i<extractorAnchors.size(); i++) {
+			if (extractors.contains(i)) {
+				extractorAnchors.get(i).addStyleName("enabledExtractor");
+			} else {
+				extractorAnchors.get(i);
+			}
+		}
+		for (Integer index : extractors) {
+			extractorAnchors.get(index).addStyleName("enabledExtractor");
+		}
+	}
+	
+	@Override
+	public void disableExtractors() {
+		for (Anchor anchor : extractorAnchors) {
+			anchor.removeStyleName("hideExtractor");
+		}
+	}
+
+	@Override
+	public void disableExtractors(Set<Integer> extractors) {
+		for (Integer index : extractors) {
+			extractorAnchors.get(index).addStyleName("hideExtractor");
+		}
 	}
 
 }
