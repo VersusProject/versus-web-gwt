@@ -42,7 +42,7 @@ public class SelectExtractorPresenter implements Presenter {
 	private String selectedExtractorId;
 	private Map<ComponentMetadata, Integer> extractorToIndex = new HashMap<ComponentMetadata, Integer>();
 	private Map<Integer, ComponentMetadata> indexToExtractor = new HashMap<Integer, ComponentMetadata>();
-	private List<Set<HandlerRegistration>> clickHandlers  = new ArrayList<Set<HandlerRegistration>>();
+	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
 	private Set<Integer> hiddenByAdapter = new HashSet<Integer>();
 	private Set<Integer> hiddenByMeasure = new HashSet<Integer>();
 
@@ -81,7 +81,8 @@ public class SelectExtractorPresenter implements Presenter {
 				final int index = display.addExtractor(addExtractorEvent.getExtractorMetadata().getName());
 				extractorToIndex.put(addExtractorEvent.getExtractorMetadata(), index);
 				indexToExtractor.put(index, addExtractorEvent.getExtractorMetadata());
-				addClickHandler(index);
+				HandlerRegistration handlerRegistration = display.getExtractorAnchor(index).addClickHandler(new SelectionHandler(index));
+				clickHandlers.add(handlerRegistration);
 			}
 		});
 		
@@ -89,7 +90,7 @@ public class SelectExtractorPresenter implements Presenter {
 
 			@Override
 			public void onAdapterSelected(AdapterSelectedEvent event) {
-				enableAll();
+				resetView();
 				Set<String> supportedOutputs = event.getAdapterMetadata().getSupportedOutputs();
 				for (ComponentMetadata extractor : extractorToIndex.keySet()) {
 					boolean found = false;
@@ -117,14 +118,18 @@ public class SelectExtractorPresenter implements Presenter {
 			public void onAdapterUnselected(AdapterUnselectedEvent event) {
 				hiddenByAdapter.clear();
 				display.disableExtractors();
+				resetView();
 			}
 		});
 	}
 
-	protected void enableAll() {
+	/**
+	 * 
+	 */
+	protected void resetView() {
+		GWT.log("Refreshing all handlers");
 		hiddenByAdapter.clear();
 		display.disableExtractors();
-		clickHandlers.clear();
 		for (Integer index : indexToExtractor.keySet()) {
 			addClickHandler(index);
 		}
@@ -136,41 +141,14 @@ public class SelectExtractorPresenter implements Presenter {
 	 */
 	protected void addClickHandler(final int index) {
 		GWT.log("Adding handler for entry " + index);
-		HandlerRegistration handlerRegistration = display.getExtractorAnchor(index).addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				GWT.log("Clicked on " + this + " / " + index);
-				ComponentMetadata componentMetadata = indexToExtractor.get(index);
-				if (selectedExtractorId == componentMetadata.getId()) {
-					selectedExtractorId = null;
-					eventBus.fireEvent(new ExtractorUnselectedEvent(componentMetadata));
-					display.unselectExtractor(index);
-				} else {
-					selectedExtractorId = componentMetadata.getId();
-					eventBus.fireEvent(new ExtractorSelectedEvent(componentMetadata));
-					display.selectExtractor(index);
-				}
-			}
-		});
-		getHandlerRegistrations(index).add(handlerRegistration);
-		for (HandlerRegistration registration : clickHandlers.get(index)) {
-			GWT.log(registration + " registered with " + index);
+		HandlerRegistration oldRegistration = clickHandlers.get(index);
+		if (oldRegistration != null) {
+			oldRegistration.removeHandler();
+			clickHandlers.set(index, null);
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	protected Set<HandlerRegistration> getHandlerRegistrations(int index) {
-		int delta = index - clickHandlers.size() + 1;
-		if (delta > 0) {
-			GWT.log("Growing handler registration array by " + delta);
-			for (int i=0; i<delta; i++) {
-				clickHandlers.add(new HashSet<HandlerRegistration>());
-			}
-		}
-		return clickHandlers.get(index);
+		HandlerRegistration handlerRegistration = 
+			display.getExtractorAnchor(index).addClickHandler(new SelectionHandler(index));
+		clickHandlers.set(index, handlerRegistration);
 	}
 	
 	/**
@@ -179,12 +157,10 @@ public class SelectExtractorPresenter implements Presenter {
 	 */
 	protected void removeClickHandler(int index) {
 		GWT.log("Removing handler for entry " + index);
-		if (clickHandlers.get(index) != null) {
-			for (HandlerRegistration registration : clickHandlers.get(index)) {
-				GWT.log("Unregistering " + registration + " / " + index);
-				registration.removeHandler();
-			}
-			clickHandlers.get(index).clear();
+		HandlerRegistration handlerRegistration = clickHandlers.get(index);
+		if (handlerRegistration != null) {
+			handlerRegistration.removeHandler();
+			clickHandlers.set(index, null);
 		}
 	}
 
@@ -197,4 +173,31 @@ public class SelectExtractorPresenter implements Presenter {
 		container.add(display.asWidget());
 	}
 
+	class SelectionHandler implements ClickHandler {
+
+		private final int index;
+		
+		public SelectionHandler(int index) {
+			super();
+			this.index = index;
+			
+		}
+		@Override
+		public void onClick(ClickEvent event) {
+			GWT.log("Clicked on " + this + " / " + index);
+			ComponentMetadata componentMetadata = indexToExtractor.get(index);
+			if (selectedExtractorId == componentMetadata.getId()) {
+				selectedExtractorId = null;
+				eventBus.fireEvent(new ExtractorUnselectedEvent(componentMetadata));
+				display.unselectExtractor(index);
+			} else {
+				selectedExtractorId = componentMetadata.getId();
+				eventBus.fireEvent(new ExtractorSelectedEvent(componentMetadata));
+				display.selectExtractor(index);
+			}
+			
+		}
+		
+	}
+	
 }

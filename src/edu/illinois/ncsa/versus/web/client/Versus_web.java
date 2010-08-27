@@ -1,5 +1,6 @@
 package edu.illinois.ncsa.versus.web.client;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,15 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -20,13 +29,20 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
+import edu.illinois.ncsa.mmdb.web.client.TextFormatter;
 import edu.illinois.ncsa.mmdb.web.client.UploadWidget;
+import edu.illinois.ncsa.mmdb.web.client.UserSessionState;
+import edu.illinois.ncsa.mmdb.web.client.dispatch.Authenticate;
+import edu.illinois.ncsa.mmdb.web.client.dispatch.AuthenticateResult;
+import edu.illinois.ncsa.mmdb.web.client.dispatch.GetUser;
+import edu.illinois.ncsa.mmdb.web.client.dispatch.GetUserResult;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedHandler;
@@ -267,13 +283,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 			public void onSuccess(List<ComponentMetadata> result) {
 				for (ComponentMetadata metadata : result) {
 					eventBus.fireEvent(new AddAdapterEvent(metadata));
-				}		appPanel.addNorth(logo, 2);
-//				appPanel.addSouth(footer, 2);
-				appPanel.addWest(listThumbails, 10);
-				appPanel.add(contentScrollPanel);
-				RootLayoutPanel.get().add(appPanel);
-				populate();
-				datasetTablePresenter.refresh();
+				}
 			}
 		});
 		
@@ -323,6 +333,10 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
              if (datasetUri != null) {
                  datasetWidget.showDataset(datasetUri);
              }
+        } else if (token.startsWith("login")) {
+        	LoginPage loginPage = new LoginPage(dispatchAsync, new MMDB());
+        	contentScrollPanel.clear();
+        	contentScrollPanel.add(loginPage);
         } else {
         	contentScrollPanel.clear();
         	contentScrollPanel.add(content);
@@ -343,4 +357,140 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         }
         return params;
     }
+    
+    /**
+     * Authenticate against the REST endpoint to make sure user is
+     * authenticated on the server side. If successful, login local.
+     */
+    protected void authenticate(final String username, final String password) {
+        logout(new Command() { // ensure we're logged out before authenticating
+            public void execute() {
+                MMDB.dispatchAsync.execute(new Authenticate(username, password),
+                        new AsyncCallback<AuthenticateResult>() {
+
+                            @Override
+                            public void onFailure(Throwable arg0) {
+                                fail();
+                            }
+
+                            @Override
+                            public void onSuccess(final AuthenticateResult arg0) {
+                                if (arg0.getAuthenticated()) {
+                                    // now hit the REST authentication endpoint
+                                    String restUrl = "./api/authenticate";
+                                    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restUrl);
+                                    builder.setUser(TextFormatter.escapeEmailAddress(username));
+                                    builder.setPassword(password);
+                                    try {
+                                        GWT.log("attempting to authenticate " + username + " against " + restUrl, null);
+                                        builder.sendRequest("", new RequestCallback() {
+                                            public void onError(Request request, Throwable exception) {
+                                                fail();
+                                            }
+
+                                            public void onResponseReceived(Request request, Response response) {
+                                                // success!
+                                                String sessionKey = response.getText();
+                                                GWT.log("REST auth status code = " + response.getStatusCode(), null);
+                                                if (response.getStatusCode() > 300) {
+                                                    GWT.log("authentication failed: " + sessionKey, null);
+                                                    fail();
+                                                }
+                                                GWT.log("user " + username + " associated with session key " + sessionKey, null);
+                                                // login local
+                                                login(arg0.getSessionId(), sessionKey);
+//                                                redirect();
+                                            }
+                                        });
+                                    } catch (RequestException x) {
+                                        // another error condition
+                                        fail();
+                                    }
+                                } else {
+                                    fail();
+                                }
+                            }
+                        });
+            }
+        });
+    }
+    
+    public void login(final String userId, final String sessionKey) {
+        final UserSessionState state = MMDB.getSessionState();
+        state.setSessionKey(sessionKey);
+        // set cookie
+        // TODO move to more prominent place... MMDB? A class with static properties?
+        final long DURATION = 1000 * 60 * 60; // 60 minutes
+        final Date expires = new Date(System.currentTimeMillis() + DURATION);
+        Cookies.setCookie("sessionKey", sessionKey, expires);
+
+        GetUser getUser = new GetUser();
+        getUser.setUserId(userId);
+        MMDB.dispatchAsync.execute(getUser, new AsyncCallback<GetUserResult>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                GWT.log("Error retrieving user with id " + userId);
+            }
+
+            @Override
+            public void onSuccess(GetUserResult result) {
+                PersonBean personBean = result.getPersonBean();
+                state.setCurrentUser(personBean);
+                MMDB.loginStatusWidget.login(personBean.getName());
+                GWT.log("Current user set to " + personBean.getUri());
+                Cookies.setCookie("sid", personBean.getUri(), expires);
+//                checkPermissions(History.getToken());
+            }
+        });
+
+    }
+    
+    void fail() {
+        GWT.log("Failed authenticating", null);
+        Label message = new Label(
+                "Incorrect username/password combination");
+        message.addStyleName("loginError");
+    }
+    
+    public static void logout(Command onSuccess) {
+        UserSessionState state = MMDB.getSessionState();
+        if (state.getCurrentUser() != null && state.getCurrentUser().getUri() != null) {
+            GWT.log("user " + state.getCurrentUser().getUri() + " logging out", null);
+            MMDB.clearSessionState();
+        }
+        // in case anyone is holding refs to the state, zero out the auth information in it
+        state.setCurrentUser(null);
+        state.setSessionKey(null);
+        Cookies.removeCookie("sid");
+        Cookies.removeCookie("sessionKey");
+        clearBrowserCreds(onSuccess);
+        MMDB.loginStatusWidget.logout();
+    }
+    
+    public static void clearBrowserCreds(final Command onSuccess) {
+        // now hit the REST authentication endpoint with bad creds
+        String restUrl = "./api/logout";
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restUrl);
+        builder.setUser("_badCreds_");
+        builder.setPassword("_reallyReallyBadCreds_");
+        try {
+            builder.sendRequest("", new RequestCallback() {
+                public void onError(Request request, Throwable exception) {
+                    // do something
+                    Window.alert("error logging out " + exception.getMessage());
+                }
+
+                public void onResponseReceived(Request request, Response response) {
+                    if (onSuccess != null) {
+                        onSuccess.execute();
+                    }
+                }
+            });
+        } catch (RequestException x) {
+            // another error condition, do something
+            Window.alert("error logging out: " + x.getMessage());
+        }
+    }
+    
 }

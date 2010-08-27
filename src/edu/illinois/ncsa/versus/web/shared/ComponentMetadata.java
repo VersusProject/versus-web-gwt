@@ -4,6 +4,8 @@
 package edu.illinois.ncsa.versus.web.shared;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author lmarini
@@ -14,6 +16,8 @@ public class ComponentMetadata implements Serializable {
 	private String id;
 	private String name;
 	private String description;
+	private Set<String> supportedInputs = new HashSet<String>();
+	private Set<String> supportedOutputs = new HashSet<String>();
 	
 	public ComponentMetadata() {}
 	
@@ -33,5 +37,29 @@ public class ComponentMetadata implements Serializable {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setSupportedInputs(Set<String> supportedInputs) {
+		this.supportedInputs = supportedInputs;
+	}
+	
+	public void addSupportedInput(String supportedInput) {
+		this.supportedInputs.add(supportedInput);
+	}
+
+	public Set<String> getSupportedInputs() {
+		return supportedInputs;
+	}
+
+	public void setSupportedOutputs(Set<String> supportedOutputs) {
+		this.supportedOutputs = supportedOutputs;
+	}
+	
+	public void addSupportedOutputs(String supportedOutput) {
+		this.supportedOutputs.add(supportedOutput);
+	}
+
+	public Set<String> getSupportedOutputs() {
+		return supportedOutputs;
 	}
 }

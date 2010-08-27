@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="versus-web" default="war" basedir=".">
+
+	<property environment="env" />
+
+	<property name="webxml" value="web.xml" />
+	
+	<property name="tupelo" value="/home/hudson/work/jobs/tupelo/lastSuccessful" />
+
+	<property name="deploy" value="/var/lib/tomcat6/webapps" />
+
+	<property name="war" value="${ant.project.name}.war" />
+	
+	<property name="debug" value="true" />
+	
+	<property name="deprecation" value="true" />
+		
+	<property name="version" value="v1.0.100#${env.BUILD_NUMBER}" />
+	
+	<property name="googlemap" value="ABQIAAAASEElYb9IDDsAc5ZKA3a2sRQmgYtTImkVBc-VhblDgOLOdwhVaBSGMDSn-_9k3bx4tYolchXvrvB8Ag" />
+	
+	<condition property="deps" value=".." else="../plugins">
+		<available file="../edu.uiuc.ncsa.cet.bean/build.properties" />
+	</condition>
+		
+	
+	<available file="war/mmdb.tmp" property="mmdb_tmp_exists" />
+
+	<path id="classpath">
+		<pathelement path="build" />
+		<pathelement path="src" />
+		<pathelement location="lib/gwt-user.jar" />
+		<pathelement location="lib/gwt-dev.jar" />
+		<fileset dir="war/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean" description="deletes all generated files">
+		<delete dir="war/versus_web" />
+		<delete dir="war/WEB-INF/classes" />
+		<delete dir="${war}" />
+	</target>
+	
+	<!-- copy the tupelo jar files -->
+	<target name="tupelo" description="Copy the latest tupelo jars">
+		<delete>
+			<fileset dir="war/WEB-INF/lib" includes="**/tupelo*.jar"/>
+		</delete>
+		<copy todir="war/WEB-INF/lib" preservelastmodified="true" overwrite="true" verbose="true" flatten="true">
+			<fileset dir="${tupelo}">
+				<include name="**/tupelo-client-*.jar" />
+				<include name="**/tupelo-jena-*.jar" />
+				<include name="**/tupelo-kernel-*.jar" />
+				<include name="**/tupelo-mysql-*.jar" />
+				<include name="**/tupelo-rdf-ntriples-*.jar" />
+				<include name="**/tupelo-server-*.jar" />
+				<include name="**/tupelo-sparql-*.jar" />
+				<include name="**/tupelo-sql-*.jar" />
+				<include name="**/tupelo-util-*.jar" />
+				<exclude name="**/tupelo*-tests.jar" />
+			</fileset>
+		</copy>
+	</target>
+		
+	<!-- make sure we have the latest beans -->
+	<target name="cetbean" description="Compile CET beans.">
+		<!-- compile the CET beans -->
+		<delete dir="beanclass" />
+		<mkdir dir="beanclass" />
+		<javac destdir="beanclass" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="${deps}/edu.uiuc.ncsa.cet.bean/src" />
+			<exclude name="**/sdl/**/*.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.uiuc.ncsa.cet.bean.jar">
+			<fileset dir="beanclass" />
+			<fileset dir="${deps}/edu.uiuc.ncsa.cet.bean/src">
+				<exclude name="**/sdl/**/*.java" />
+			</fileset>
+		</jar>
+
+		<!-- compile the CET beans tupelo -->
+		<delete dir="beanclass" />
+		<mkdir dir="beanclass" />
+		<javac destdir="beanclass" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="${deps}/edu.uiuc.ncsa.cet.bean.tupelo/src" />
+			<classpath>
+				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+			</classpath>
+			<exclude name="**/sdl/**/*.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.uiuc.ncsa.cet.bean.tupelo.jar" basedir="beanclass" />
+
+		<!-- remove the temp folder -->
+		<delete dir="beanclass" />
+	</target>
+
+	<!-- make sure we have the latest contexts jars -->
+	<target name="contexts" depends="cetbean" description="Compile contexts jars">
+		<delete dir="contextsTemp" />
+
+		<!-- compile the mysql context jar -->
+		<mkdir dir="contextsTemp" />
+		<javac destdir="contextsTemp" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="../edu.illinois.ncsa.bard.context.mysql/src" />
+			<classpath>
+				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+			</classpath>
+			<exclude name="**/osgi/**/*.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.illinois.ncsa.bard.context.mysql.jar">
+			<fileset dir="contextsTemp" />
+			<fileset dir="../edu.illinois.ncsa.bard.context.mysql" includes="META-INF/services/*" />
+		</jar>
+		<delete dir="contextsTemp" />
+
+		<!-- compile the tupeloserver context jar -->
+		<mkdir dir="contextsTemp" />
+		<javac destdir="contextsTemp" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="../edu.illinois.ncsa.bard.context.tupeloserver/src" />
+			<classpath>
+				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+			</classpath>
+			<exclude name="**/osgi/**/*.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.illinois.ncsa.bard.context.tupeloserver.jar">
+			<fileset dir="contextsTemp" />
+			<fileset dir="../edu.illinois.ncsa.bard.context.tupeloserver" includes="META-INF/services/*" />
+		</jar>
+		<delete dir="contextsTemp" />
+
+	</target>
+
+	<!-- make sure we have the latest jaas jars -->
+	<target name="jaas" description="Compile jaas jars">
+		<!-- compile the basic jaas jar -->
+		<delete dir="jaasTemp" />
+		<mkdir dir="jaasTemp" />
+		<javac destdir="jaasTemp" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="../edu.illinois.ncsa.bard.jaas/src" />
+			<classpath>
+				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+			</classpath>
+			<exclude name="**/osgi/**/*.java" />
+			<exclude name="edu/illinois/ncsa/bard/jaas/CETConfiguration.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.illinois.ncsa.bard.jaas.jar">
+			<fileset dir="jaasTemp" />
+			<fileset dir="../edu.illinois.ncsa.bard.jaas/src">
+				<exclude name="**/osgi/**/*.java" />
+				<exclude name="edu/illinois/ncsa/bard/jaas/CETConfiguration.java" />
+			</fileset>
+		</jar>
+
+		<!-- compile the context based jaas module -->
+		<delete dir="jaasTemp" />
+		<mkdir dir="jaasTemp" />
+		<javac destdir="jaasTemp" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="../edu.illinois.ncsa.bard.jaas.context/src" />
+			<classpath>
+				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+			</classpath>
+			<exclude name="**/osgi/**/*.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.illinois.ncsa.bard.jaas.context.jar">
+			<fileset dir="jaasTemp" />
+			<fileset dir="../edu.illinois.ncsa.bard.jaas.context/src">
+				<exclude name="**/osgi/**/*.java" />
+			</fileset>
+		</jar>
+
+		<!-- compile the always authenticate jaas module -->
+		<delete dir="jaasTemp" />
+		<mkdir dir="jaasTemp" />
+		<javac destdir="jaasTemp" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<src path="../edu.illinois.ncsa.bard.jaas.always/src" />
+			<exclude name="**/osgi/**/*.java" />
+		</javac>
+		<jar jarfile="war/WEB-INF/lib/edu.illinois.ncsa.bard.jaas.always.jar">
+			<fileset dir="jaasTemp" />
+			<fileset dir="../edu.illinois.ncsa.bard.jaas.always/src">
+				<exclude name="**/osgi/**/*.java" />
+			</fileset>
+		</jar>
+		<!-- delete temp directory -->
+		<delete dir="jaasTemp" />
+	</target>
+
+	<target name="checkstyle">
+		<taskdef resource="checkstyletask.properties" classpath="/home/hudson/checkstyle/checkstyle-all-5.0-beta01.jar" />
+		<checkstyle config="checks.xml" maxErrors="2147483647">
+			<fileset dir=".">
+				<include name="**/*.java" />
+			</fileset>
+			<formatter type="xml" toFile="checkstyle-result.xml" />
+		</checkstyle>
+	</target>
+
+	<target name="compile" depends="resources" description="compiles Java source files to bytecode">
+		<javac srcdir="src" includes="**" encoding="utf-8" destdir="war/WEB-INF/classes" source="1.5" target="1.5" deprecation="${deprecation}" debug="${debug}">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="gwtc" depends="compile" description="compiles Java source files to JavaScript">
+		<!-- Consider adding -Xms256m -Xmx512m to improve performance. -->
+		<java classname="com.google.gwt.dev.Compiler" classpathref="classpath" fork="true" failonerror="true">
+			<jvmarg value="-Xms256m" />
+			<jvmarg value="-Xmx512m" />
+			<arg line="-style DETAILED" />
+			<arg value="edu.illinois.ncsa.versus.web.Versus_web" />
+		</java>
+	</target>
+
+	<target name="resources" description="Copy all resources to output folder.">
+		<mkdir dir="war/WEB-INF/classes" />
+		<copy todir="war/WEB-INF/classes">
+			<fileset dir="src">
+				<include name="log4j.properties" />				<include name="context.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="deploy" depends="war" description="deploys the war file to Tomcat">
+		<copy file="${war}" todir="${deploy}" />
+	</target>
+
+	<target name="war" depends="clean, compile, gwtc, resources" description="builds the war file">
+		<zip destfile="${war}" basedir="war" >
+		</zip>
+	</target>
+</project>
+

@@ -143,3 +143,11 @@ HTML, BODY {
 	width: 100%;
 	border:1px solid red;
 }
+
+.enabledExtractor {
+	border: 1px solid red;
+}
+
+.hideExtractor {
+	background: black;
+}
