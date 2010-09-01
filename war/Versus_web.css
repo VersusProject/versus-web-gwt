@@ -78,8 +78,9 @@
 }
 
 .listThumbnailsPanel {
-	height: 100%;
-	border-right: 1px solid gray;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
 }
 
 .listThumbnailsLabel {
@@ -88,7 +89,8 @@
 }
 
 .thumbnail {
-	margin: 10px;
+	margin: 5px;
+	padding: 5px;
 }
 
 .dropBoxesPanel {
