@@ -154,3 +154,20 @@ HTML, BODY {
 .hideExtractor {
 	background: black;
 }
+
+.logo {
+    padding-left: 10px;	
+}
+
+.logo a {
+	color: #C4273A;
+	text-decoration: none;
+}
+
+.logo a:visited {
+	color: #C4273A;
+}
+
+.logo a:hover {
+	text-decoration: underline;
+}

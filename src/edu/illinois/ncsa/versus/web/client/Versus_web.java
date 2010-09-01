@@ -94,8 +94,6 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	private ListThumbails listThumbails;
 
-	private HTML logo;
-
 	private HorizontalPanel headerPanel;
 
 	private TabPanel tabPanel;
@@ -125,11 +123,12 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		// header panel
 		headerPanel = new HorizontalPanel();
 		headerPanel.addStyleName("headerPanel");
-		logo = new HTML("Versus");
-		headerPanel.add(logo);
-		headerPanel.setCellHorizontalAlignment(logo, HasHorizontalAlignment.ALIGN_CENTER);
-		headerPanel.setCellWidth(logo, "140px");
-		Hyperlink homeLink = new Hyperlink("Home", "");
+		Hyperlink homeLink = new Hyperlink("Versus", "");
+		homeLink.addStyleName("logo");
+		headerPanel.add(homeLink);
+		headerPanel.setCellHorizontalAlignment(homeLink, HasHorizontalAlignment.ALIGN_CENTER);
+		headerPanel.setCellWidth(homeLink, "140px");
+		
 		headerPanel.add(homeLink);
 		
 		// footer
@@ -315,7 +314,10 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         centralPanel.clear();
         if (token.startsWith("dataset")) {
         	DatasetWidget datasetWidget = new DatasetWidget(dispatchAsync);
-        	centralPanel.add(datasetWidget);
+        	ScrollPanel scrollPanel = new ScrollPanel();
+        	scrollPanel.setSize("100%", "100%");
+        	scrollPanel.add(datasetWidget);
+        	centralPanel.add(scrollPanel);
         	 String datasetUri = getParams().get("id");
              if (datasetUri != null) {
                  datasetWidget.showDataset(datasetUri);
