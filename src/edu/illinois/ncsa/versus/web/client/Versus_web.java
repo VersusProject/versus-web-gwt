@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
@@ -77,8 +78,6 @@ import edu.uiuc.ncsa.cet.bean.PersonBean;
 public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 	private final RegistryServiceAsync registryService = GWT.create(RegistryService.class);
 
-	private FlowPanel content;
-
 	private HandlerManager eventBus;
 
 	private UploadWidget uploadWidget;
@@ -89,8 +88,6 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	private DockLayoutPanel appPanel;
 
-	private ScrollPanel contentScrollPanel;
-
 	private DatasetTablePresenter datasetTablePresenter;
 
 	private ListThumbails listThumbails;
@@ -98,6 +95,10 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 	private HTML logo;
 
 	private HorizontalPanel headerPanel;
+
+	private TabLayoutPanel tabLayoutPanel;
+
+	private ScrollPanel mainContentScroll;
 	
 	public static final MyDispatchAsync dispatchAsync        = new MyDispatchAsync();
 
@@ -128,13 +129,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		headerPanel.add(homeLink);
 		
 		// footer
-		HTML footer = new HTML("");
-		footer.addStyleName("footer");
-		
-		// left content
 		listThumbails = new ListThumbails(eventBus, dragController);
-		content = new FlowPanel();
-		content.addStyleName("contentPanel");
 		
 //		// drop box panel
 //		HorizontalPanel dropBoxPanel = new HorizontalPanel();
@@ -151,15 +146,9 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 //		secondDropBoxPresenter.go(dropBoxPanel);
 //		dragController.registerDropController(secondDropBox.getDropController());metadata.getId(), metadata.getName()
 //		
-		
-		DisclosurePanel newExecutionDisclosure = new DisclosurePanel("Launch New Comparison");
-		newExecutionDisclosure.addStyleName("mainSection");
-		newExecutionDisclosure.setAnimationEnabled(true);
-		newExecutionDisclosure.setOpen(DISCLOSURE_OPEN);
+
 		VerticalPanel newExecutionPanel = new VerticalPanel();
 		newExecutionPanel.setWidth("100%");
-		newExecutionDisclosure.add(newExecutionPanel);
-		
 		
 //		// testing drop targets
 //		HorizontalPanel dropTarget = new HorizontalPanel();
@@ -203,20 +192,13 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		previousDisclosureBody.setWidth("90%");
 		previousDisclosure.add(previousDisclosureBody);
 		
-		
 		// dataset selection
 		DynamicTableView datasetTableView = new DynamicTableView();
 		datasetTablePresenter = new DatasetTablePresenter(dispatchAsync, eventBus, datasetTableView);
 		datasetTablePresenter.bind();
-		DisclosurePanel selectionDisclosure = new DisclosurePanel("Select Data");
-		selectionDisclosure.addStyleName("mainSection");
-		selectionDisclosure.setAnimationEnabled(true);
-		selectionDisclosure.setOpen(DISCLOSURE_OPEN);
 		VerticalPanel selectionDisclosureBody = new VerticalPanel();
 		selectionDisclosureBody.setWidth("100%");
 		selectionDisclosureBody.add(datasetTableView.asWidget());
-		selectionDisclosure.add(selectionDisclosureBody);
-		
 		
 		// upload widget
 		uploadWidget = new UploadWidget(false);
@@ -231,17 +213,16 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		});
 		selectionDisclosureBody.add(uploadWidget);
 		
-		
-		// layout
-		content.add(selectionDisclosure);
-		content.add(newExecutionDisclosure);
-		content.add(previousDisclosure);
-		contentScrollPanel = new ScrollPanel(content);
+		// tab panel layout
+		tabLayoutPanel = new TabLayoutPanel(40, Unit.PX);
+		tabLayoutPanel.add(selectionDisclosureBody, "Select");
+		tabLayoutPanel.add(newExecutionPanel, "Execute");
+		tabLayoutPanel.add(new ScrollPanel(previousDisclosureBody), "Results");
+//		mainContentScroll = new ScrollPanel(tabLayoutPanel);
 		
 		appPanel.addNorth(headerPanel, 2);
-//		appPanel.addSouth(footer, 2);
-		appPanel.addWest(listThumbails, 10);
-		appPanel.add(contentScrollPanel);
+		appPanel.addSouth(listThumbails, 10);
+		appPanel.add(tabLayoutPanel);
 		RootLayoutPanel.get().add(appPanel);
 		populate();
 		datasetTablePresenter.refresh();
@@ -327,19 +308,16 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
         if (token.startsWith("dataset")) {
         	DatasetWidget datasetWidget = new DatasetWidget(dispatchAsync);
-        	contentScrollPanel.clear();
-        	contentScrollPanel.add(datasetWidget);
+        	appPanel.remove(tabLayoutPanel);
+        	appPanel.add(datasetWidget);
         	 String datasetUri = getParams().get("id");
              if (datasetUri != null) {
                  datasetWidget.showDataset(datasetUri);
              }
         } else if (token.startsWith("login")) {
         	LoginPage loginPage = new LoginPage(dispatchAsync, new MMDB());
-        	contentScrollPanel.clear();
-        	contentScrollPanel.add(loginPage);
-        } else {
-        	contentScrollPanel.clear();
-        	contentScrollPanel.add(content);
+        	appPanel.remove(tabLayoutPanel);
+        	appPanel.add(loginPage);
         }
 	}
 	

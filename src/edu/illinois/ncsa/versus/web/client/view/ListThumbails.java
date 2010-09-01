@@ -10,10 +10,8 @@ import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
@@ -28,22 +26,15 @@ import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
  */
 public class ListThumbails extends Composite {
 
-	FlowPanel mainPanel;
+	HorizontalPanel mainPanel;
 	
 	Map<String, PreviewWidget> previews = new HashMap<String, PreviewWidget>();
-
-	private SimplePanel outerPanel;
 	
 	public ListThumbails(HandlerManager eventBus, final PickupDragController dragController) {
-		outerPanel = new SimplePanel();
-		outerPanel.addStyleName("listThumbnailsPanel");
-		mainPanel = new FlowPanel();
-		Label selectedLabel = new Label("Selected Data");
-		selectedLabel.addStyleName("listThumbnailsLabel");
-		mainPanel.add(selectedLabel);
+		mainPanel = new HorizontalPanel();
 		ScrollPanel scrollPanel = new ScrollPanel(mainPanel);
-		outerPanel.add(scrollPanel);
-		initWidget(outerPanel);
+		scrollPanel.addStyleName("listThumbnailsPanel");
+		initWidget(scrollPanel);
 		
 		eventBus.addHandler(DatasetSelectedEvent.TYPE, new DatasetSelectedHandler() {
 			
