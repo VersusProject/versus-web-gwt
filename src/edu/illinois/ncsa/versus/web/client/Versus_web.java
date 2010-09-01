@@ -33,7 +33,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
@@ -96,9 +98,11 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	private HorizontalPanel headerPanel;
 
-	private TabLayoutPanel tabLayoutPanel;
+	private TabPanel tabPanel;
 
 	private ScrollPanel mainContentScroll;
+
+	private SimplePanel centralPanel;
 	
 	public static final MyDispatchAsync dispatchAsync        = new MyDispatchAsync();
 
@@ -213,16 +217,21 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		});
 		selectionDisclosureBody.add(uploadWidget);
 		
+		centralPanel = new SimplePanel();
+		centralPanel.setWidth("100%");
+		
 		// tab panel layout
-		tabLayoutPanel = new TabLayoutPanel(40, Unit.PX);
-		tabLayoutPanel.add(selectionDisclosureBody, "Select");
-		tabLayoutPanel.add(newExecutionPanel, "Execute");
-		tabLayoutPanel.add(new ScrollPanel(previousDisclosureBody), "Results");
-//		mainContentScroll = new ScrollPanel(tabLayoutPanel);
+		tabPanel = new TabPanel();
+		tabPanel.setWidth("100%");
+		tabPanel.add(selectionDisclosureBody, "Select");
+		tabPanel.add(newExecutionPanel, "Execute");
+		tabPanel.add(new ScrollPanel(previousDisclosureBody), "Results");
+		tabPanel.selectTab(0);
+		centralPanel.add(tabPanel);
 		
 		appPanel.addNorth(headerPanel, 2);
 		appPanel.addSouth(listThumbails, 10);
-		appPanel.add(tabLayoutPanel);
+		appPanel.add(centralPanel);
 		RootLayoutPanel.get().add(appPanel);
 		populate();
 		datasetTablePresenter.refresh();
@@ -301,23 +310,21 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
-
         final String token = event.getValue();
-
         GWT.log("History changed: " + event.getValue(), null);
-
+        centralPanel.clear();
         if (token.startsWith("dataset")) {
         	DatasetWidget datasetWidget = new DatasetWidget(dispatchAsync);
-        	appPanel.remove(tabLayoutPanel);
-        	appPanel.add(datasetWidget);
+        	centralPanel.add(datasetWidget);
         	 String datasetUri = getParams().get("id");
              if (datasetUri != null) {
                  datasetWidget.showDataset(datasetUri);
              }
         } else if (token.startsWith("login")) {
         	LoginPage loginPage = new LoginPage(dispatchAsync, new MMDB());
-        	appPanel.remove(tabLayoutPanel);
-        	appPanel.add(loginPage);
+        	centralPanel.add(loginPage);
+        } else {
+        	centralPanel.add(tabPanel);
         }
 	}
 	
