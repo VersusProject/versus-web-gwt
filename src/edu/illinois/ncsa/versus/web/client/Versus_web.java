@@ -226,6 +226,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		appPanel.addSouth(listThumbails, 10);
 		appPanel.add(centralPanel);
 		RootLayoutPanel.get().add(appPanel);
+		
 		populate();
 		datasetTablePresenter.refresh();
 		

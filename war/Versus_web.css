@@ -62,7 +62,7 @@
 }
 
 .selectedLabel {
-	color: white !important;
+	color: white;
 	background: blue;
 	padding: 5px;
 }

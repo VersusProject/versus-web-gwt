@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -67,6 +68,7 @@ public class SelectExtractorView extends Composite implements Display {
 	}
 	
 	private void addStyleAndHandlers(int index) {
+		GWT.log("SelectedExtractorView: Enabling extractor " + index);
 		final Anchor extractorAnchor = extractorAnchors.get(index);
 		extractorAnchor.addStyleName("measureAnchor");
 		final InfoPopup popup = new InfoPopup(extractorAnchor.getText());
@@ -78,11 +80,19 @@ public class SelectExtractorView extends Composite implements Display {
 				extractorAnchor.addStyleName("selectedLabel");
 			}
 		});
-		clickHandlers.add(addClickHandler);
+		if (index > clickHandlers.size() -1) {
+			clickHandlers.add(addClickHandler);
+		} else {
+			if (clickHandlers.get(index) != null) {
+				clickHandlers.get(index).removeHandler();
+			}
+			clickHandlers.set(index, addClickHandler);
+		}
 		HandlerRegistration addMouseOverHandler = extractorAnchor.addMouseOverHandler(new MouseOverHandler() {
 			
 			@Override
 			public void onMouseOver(final MouseOverEvent event) {
+				GWT.log("ON MOUSE OVER");
 				extractorAnchor.addStyleName("highlightLabel");
 				popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			          public void setPosition(int offsetWidth, int offsetHeight) {
@@ -91,30 +101,48 @@ public class SelectExtractorView extends Composite implements Display {
 			        });
 			}
 		});
-		mouseOverHandlers.add(addMouseOverHandler);
+		if (index > mouseOverHandlers.size() -1) {
+			mouseOverHandlers.add(addMouseOverHandler);
+		} else {
+			if (mouseOutHandlers.get(index) != null) {
+				mouseOverHandlers.get(index).removeHandler();
+			}
+			mouseOverHandlers.set(index, addMouseOverHandler);
+		}
 		HandlerRegistration addMouseOutHandler = extractorAnchor.addMouseOutHandler(new MouseOutHandler() {
 			
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
+				GWT.log("ON MOUSE OUT");
 				extractorAnchor.removeStyleName("highlightLabel");
 				popup.hide();
 			}
 		});
-		mouseOutHandlers.add(addMouseOutHandler);
+		if (index > mouseOutHandlers.size() -1) {
+			mouseOutHandlers.add(addMouseOutHandler);
+		} else {
+			if (mouseOutHandlers.get(index) != null) {
+				mouseOutHandlers.get(index).removeHandler();
+			}
+			mouseOutHandlers.set(index, addMouseOutHandler);
+		}
 	}
 	
 	private void removeStyleAndHandlers(int index) {
 		if (clickHandlers.get(index) != null) {
 			clickHandlers.get(index).removeHandler();
 			clickHandlers.set(index, null);
+			GWT.log("SelectExtractorView: Removed click handler from " + index);
 		}
 		if (mouseOverHandlers.get(index) != null) {
 			mouseOverHandlers.get(index).removeHandler();
 			mouseOverHandlers.set(index, null);
+			GWT.log("SelectExtractorView: Removed mouse over from " + index);
 		}
 		if (mouseOutHandlers.get(index) != null) {
 			mouseOutHandlers.get(index).removeHandler();
 			mouseOutHandlers.set(index, null);
+			GWT.log("SelectExtractorView: Removed mouse out from " + index);
 		}
 	}
 
@@ -139,24 +167,12 @@ public class SelectExtractorView extends Composite implements Display {
 	public void unselectExtractor(int index) {
 		clearSelection();
 	}
-
-	@Override
-	public void enableExtractors(Set<Integer> extractors) {
-		for (int i=0; i<extractorAnchors.size(); i++) {
-			addStyleAndHandlers(i);
-			if (extractors.contains(i)) {
-				extractorAnchors.get(i).addStyleName("enabledExtractor");
-			} else {
-				extractorAnchors.get(i);
-			}
-		}
-		for (Integer index : extractors) {
-			extractorAnchors.get(index).addStyleName("enabledExtractor");
-		}
-	}
 	
 	@Override
-	public void disableExtractors() {
+	public void enableExtractors() {
+		for (int i=0; i<extractorAnchors.size(); i++) {
+			addStyleAndHandlers(i);
+		}
 		for (Anchor anchor : extractorAnchors) {
 			anchor.removeStyleName("hideExtractor");
 		}

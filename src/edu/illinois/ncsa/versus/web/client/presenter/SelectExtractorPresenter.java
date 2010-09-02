@@ -51,8 +51,7 @@ public class SelectExtractorPresenter implements Presenter {
 		HasClickHandlers getExtractorAnchor(int index);
 		void selectExtractor(int index);
 		void unselectExtractor(int index);
-		void enableExtractors(Set<Integer> extractors);
-		void disableExtractors();
+		void enableExtractors();
 		void disableExtractors(Set<Integer> extractors);
 		Widget asWidget();
 	}
@@ -116,20 +115,25 @@ public class SelectExtractorPresenter implements Presenter {
 			
 			@Override
 			public void onAdapterUnselected(AdapterUnselectedEvent event) {
-				hiddenByAdapter.clear();
-				display.disableExtractors();
 				resetView();
 			}
 		});
 	}
 
 	/**
-	 * 
+	 * hiddenByAdapter.clear();
 	 */
 	protected void resetView() {
 		GWT.log("Refreshing all handlers");
+		if (selectedExtractorId != null) {
+			for (ComponentMetadata componentMetadata : extractorToIndex.keySet()) {
+				if (componentMetadata.getId().equals(selectedExtractorId)) {
+					eventBus.fireEvent(new ExtractorUnselectedEvent(componentMetadata));
+				}
+			}
+		}
 		hiddenByAdapter.clear();
-		display.disableExtractors();
+		display.enableExtractors();
 		for (Integer index : indexToExtractor.keySet()) {
 			addClickHandler(index);
 		}
@@ -156,11 +160,11 @@ public class SelectExtractorPresenter implements Presenter {
 	 * @param index
 	 */
 	protected void removeClickHandler(int index) {
-		GWT.log("Removing handler for entry " + index);
 		HandlerRegistration handlerRegistration = clickHandlers.get(index);
 		if (handlerRegistration != null) {
 			handlerRegistration.removeHandler();
 			clickHandlers.set(index, null);
+			GWT.log("SelectExtractorPresenter: Removed click handler for entry " + index);
 		}
 	}
 
@@ -169,7 +173,7 @@ public class SelectExtractorPresenter implements Presenter {
 	 */
 	@Override
 	public void go(HasWidgets container) {
-		bind();
+		bind();hiddenByAdapter.clear();
 		container.add(display.asWidget());
 	}
 
