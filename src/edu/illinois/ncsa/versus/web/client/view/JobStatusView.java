@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -41,6 +42,7 @@ public class JobStatusView extends Composite implements Display {
 	private SimplePanel selectedAdapterPanel;
 	private SimplePanel selectedExtractorPanel;
 	private SimplePanel selectedMeasurePanel;
+	private DisclosurePanel disclosurePanel;
 
 	public JobStatusView() {
 		mainPanel = new FlowPanel();
@@ -70,7 +72,14 @@ public class JobStatusView extends Composite implements Display {
 		mainPanel.add(statusPanel);
 		comparisonsPanel = new FlowPanel();
 		mainPanel.add(comparisonsPanel);
-		initWidget(mainPanel);
+		
+		disclosurePanel = new DisclosurePanel("Result");
+		disclosurePanel.addStyleName("resultDisclosurePanel");
+		disclosurePanel.setWidth("100%");
+		disclosurePanel.setAnimationEnabled(true);
+		disclosurePanel.setContent(mainPanel);
+		
+		initWidget(disclosurePanel);
 	}
 
 	@Override
@@ -86,8 +95,9 @@ public class JobStatusView extends Composite implements Display {
 
 	@Override
 	public void setStart(Date date) {
-		startPanel.setWidget(new Label(DateTimeFormat.getMediumDateTimeFormat()
-				.format(date)));
+		String dateString = DateTimeFormat.getMediumDateTimeFormat().format(date);
+		disclosurePanel.getHeaderTextAccessor().setText(dateString);
+		startPanel.setWidget(new Label(dateString));
 	}
 
 	@Override
@@ -114,6 +124,7 @@ public class JobStatusView extends Composite implements Display {
 
 	@Override
 	public void showResults(Job job) {
+		disclosurePanel.setOpen(true);
 		Set<PairwiseComparison> comparisons = job.getComparison();
 		comparisonsPanel.clear();
 		List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(

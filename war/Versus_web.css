@@ -129,10 +129,8 @@ HTML, BODY {
 }
 
 .jobStatusPanel {
-	width: 800px;
+	width: 100%;
 	padding: 5px;
-	margin: 10px auto;
-	border: 1px dashed orange;
 }
 
 .jobStatusSubPanel {
@@ -170,4 +168,12 @@ HTML, BODY {
 
 .logo a:hover {
 	text-decoration: underline;
+}
+
+.resultDisclosurePanel {
+	margin: 10px
+}
+
+.centralPanelLayout {
+	overflow: auto;
 }

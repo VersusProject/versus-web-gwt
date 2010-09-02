@@ -86,8 +86,6 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	private VerticalPanel previousDisclosureBody;
 
-	private DisclosurePanel previousDisclosure;
-
 	private DockLayoutPanel appPanel;
 
 	private DatasetTablePresenter datasetTablePresenter;
@@ -187,13 +185,9 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		currentSelectionsPresenter.go(newExecutionPanel);
 
 		// previous executions
-		previousDisclosure = new DisclosurePanel("View Previous Comparisons");
-		previousDisclosure.addStyleName("mainSection");
-		previousDisclosure.setAnimationEnabled(true);
-		previousDisclosure.setOpen(DISCLOSURE_OPEN);
 		previousDisclosureBody = new VerticalPanel();
-		previousDisclosureBody.setWidth("90%");
-		previousDisclosure.add(previousDisclosureBody);
+		previousDisclosureBody.setWidth("95%");
+		ScrollPanel previousExecScroll = new ScrollPanel(previousDisclosureBody);
 		
 		// dataset selection
 		DynamicTableView datasetTableView = new DynamicTableView();
@@ -217,14 +211,14 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		selectionDisclosureBody.add(uploadWidget);
 		
 		centralPanel = new SimplePanel();
-		centralPanel.setWidth("100%");
+		centralPanel.addStyleName("centralPanelLayout");
 		
 		// tab panel layout
 		tabPanel = new TabPanel();
 		tabPanel.setWidth("100%");
 		tabPanel.add(selectionDisclosureBody, "Select");
-		tabPanel.add(newExecutionPanel, "Execute");
-		tabPanel.add(new ScrollPanel(previousDisclosureBody), "Results");
+		tabPanel.add(newExecutionPanel, "Compare");
+		tabPanel.add(previousExecScroll, "View Results");
 		tabPanel.selectTab(0);
 		centralPanel.add(tabPanel);
 		
@@ -252,9 +246,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 				JobStatusView jobStatusView = new JobStatusView();
 				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job, submission);
 				jobStatusPresenter.go(previousDisclosureBody);
-				previousDisclosureBody.add(jobStatusView);
-				previousDisclosure.setOpen(true);
-				
+				previousDisclosureBody.add(jobStatusView);				
 			}
 		});
 	}
