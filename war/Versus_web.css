@@ -77,6 +77,10 @@
 	padding: 5px;
 }
 
+.measureAnchor:hover {
+	text-decoration: none;
+}
+
 .listThumbnailsPanel {
 	width: 100%;
 	margin: 0px;
@@ -150,7 +154,13 @@ HTML, BODY {
 }
 
 .hideExtractor {
-	background: black;
+	color: gray;
+	background: white;
+}
+
+.hideExtractor:hover {
+	color: gray;
+	cursor: default;
 }
 
 .logo {

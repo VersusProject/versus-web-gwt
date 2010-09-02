@@ -216,7 +216,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		// tab panel layout
 		tabPanel = new TabPanel();
 		tabPanel.setWidth("100%");
-		tabPanel.add(selectionDisclosureBody, "Select");
+		tabPanel.add(selectionDisclosureBody, "Select Data");
 		tabPanel.add(newExecutionPanel, "Compare");
 		tabPanel.add(previousExecScroll, "View Results");
 		tabPanel.selectTab(0);

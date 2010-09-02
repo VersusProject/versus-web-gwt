@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -34,6 +35,9 @@ public class SelectExtractorView extends Composite implements Display {
 	private final FlowPanel mainPanel;
 	private final VerticalPanel listExtractorPanel;
 	private final List<Anchor> extractorAnchors = new ArrayList<Anchor>();
+	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
+	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
+	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
 	
 	public SelectExtractorView() {
 		mainPanel = new FlowPanel();
@@ -54,11 +58,19 @@ public class SelectExtractorView extends Composite implements Display {
 
 	@Override
 	public int addExtractor(String extractor) {
-		final InfoPopup popup = new InfoPopup(extractor);
 		final Anchor extractorAnchor = new Anchor(extractor);
-		extractorAnchor.addStyleName("measureAnchor");
 		extractorAnchors.add(extractorAnchor);
-		extractorAnchor.addClickHandler(new ClickHandler() {
+		listExtractorPanel.add(extractorAnchor);
+		int index = extractorAnchors.indexOf(extractorAnchor);
+		addStyleAndHandlers(index);
+		return index;
+	}
+	
+	private void addStyleAndHandlers(int index) {
+		final Anchor extractorAnchor = extractorAnchors.get(index);
+		extractorAnchor.addStyleName("measureAnchor");
+		final InfoPopup popup = new InfoPopup(extractorAnchor.getText());
+		HandlerRegistration addClickHandler = extractorAnchor.addClickHandler(new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
@@ -66,7 +78,8 @@ public class SelectExtractorView extends Composite implements Display {
 				extractorAnchor.addStyleName("selectedLabel");
 			}
 		});
-		extractorAnchor.addMouseOverHandler(new MouseOverHandler() {
+		clickHandlers.add(addClickHandler);
+		HandlerRegistration addMouseOverHandler = extractorAnchor.addMouseOverHandler(new MouseOverHandler() {
 			
 			@Override
 			public void onMouseOver(final MouseOverEvent event) {
@@ -78,7 +91,8 @@ public class SelectExtractorView extends Composite implements Display {
 			        });
 			}
 		});
-		extractorAnchor.addMouseOutHandler(new MouseOutHandler() {
+		mouseOverHandlers.add(addMouseOverHandler);
+		HandlerRegistration addMouseOutHandler = extractorAnchor.addMouseOutHandler(new MouseOutHandler() {
 			
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
@@ -86,10 +100,24 @@ public class SelectExtractorView extends Composite implements Display {
 				popup.hide();
 			}
 		});
-		listExtractorPanel.add(extractorAnchor);
-		return extractorAnchors.indexOf(extractorAnchor);
+		mouseOutHandlers.add(addMouseOutHandler);
 	}
 	
+	private void removeStyleAndHandlers(int index) {
+		if (clickHandlers.get(index) != null) {
+			clickHandlers.get(index).removeHandler();
+			clickHandlers.set(index, null);
+		}
+		if (mouseOverHandlers.get(index) != null) {
+			mouseOverHandlers.get(index).removeHandler();
+			mouseOverHandlers.set(index, null);
+		}
+		if (mouseOutHandlers.get(index) != null) {
+			mouseOutHandlers.get(index).removeHandler();
+			mouseOutHandlers.set(index, null);
+		}
+	}
+
 	private void clearSelection() {
 		for (Anchor anchor : extractorAnchors) {
 			anchor.removeStyleName("selectedLabel");
@@ -115,6 +143,7 @@ public class SelectExtractorView extends Composite implements Display {
 	@Override
 	public void enableExtractors(Set<Integer> extractors) {
 		for (int i=0; i<extractorAnchors.size(); i++) {
+			addStyleAndHandlers(i);
 			if (extractors.contains(i)) {
 				extractorAnchors.get(i).addStyleName("enabledExtractor");
 			} else {
@@ -137,6 +166,7 @@ public class SelectExtractorView extends Composite implements Display {
 	public void disableExtractors(Set<Integer> extractors) {
 		for (Integer index : extractors) {
 			extractorAnchors.get(index).addStyleName("hideExtractor");
+			removeStyleAndHandlers(index);
 		}
 	}
 
