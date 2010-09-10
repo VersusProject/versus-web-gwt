@@ -53,29 +53,15 @@ public class SelectMeasureView extends Composite implements Display {
 
 	@Override
 	public int addMeasure(String measure) {
-		final InfoPopup popup = new InfoPopup(measure);
 		final Anchor measureAnchor = new Anchor(measure);
 		measureAnchor.addStyleName("measureAnchor");
 		measureAnchors.add(measureAnchor);
-		measureAnchor.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				clearSelection();
-//				measureAnchor.removeStyleName("measureAnchor");
-				measureAnchor.addStyleName("selectedLabel");
-			}
-		});
+		listMeasuresPanel.add(measureAnchor);
 		measureAnchor.addMouseOverHandler(new MouseOverHandler() {
 			
 			@Override
 			public void onMouseOver(final MouseOverEvent event) {
 				measureAnchor.addStyleName("highlightLabel");
-				popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-			          public void setPosition(int offsetWidth, int offsetHeight) {
-			            popup.setPopupPosition(event.getClientX() + 50, event.getClientY());
-			          }
-			        });
 			}
 		});
 		measureAnchor.addMouseOutHandler(new MouseOutHandler() {
@@ -83,11 +69,8 @@ public class SelectMeasureView extends Composite implements Display {
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				measureAnchor.removeStyleName("highlightLabel");
-				popup.hide();
 			}
 		});
-		measureAnchors.add(measureAnchor);
-		listMeasuresPanel.add(measureAnchor);
 		return measureAnchors.indexOf(measureAnchor);
 	}
 	
@@ -98,7 +81,7 @@ public class SelectMeasureView extends Composite implements Display {
 	}
 
 	@Override
-	public HasClickHandlers getMeasureAnchor(int index) {
+	public HasClickHandlers getClickAnchor(int index) {
 		return measureAnchors.get(index);
 	}
 

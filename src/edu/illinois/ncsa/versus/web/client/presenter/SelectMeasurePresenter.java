@@ -6,6 +6,11 @@ package edu.illinois.ncsa.versus.web.client.presenter;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,7 +36,7 @@ public class SelectMeasurePresenter implements Presenter {
 	public interface Display {
 		int addMeasure(String measure);
 		int getNumMeasures();
-		HasClickHandlers getMeasureAnchor(int index);
+		HasClickHandlers getClickAnchor(int index);
 		void selectMeasure(int index);
 		void unselectMeasure(int index);
 		Widget asWidget();
@@ -50,7 +55,8 @@ public class SelectMeasurePresenter implements Presenter {
 			@Override
 			public void onAddMeasure(final AddMeasureEvent addMeasureEvent) {
 				final int index = display.addMeasure(addMeasureEvent.getMeasureMetadata().getName());
-				display.getMeasureAnchor(index).addClickHandler(new ClickHandler() {
+				HasClickHandlers clickAnchor = display.getClickAnchor(index);
+				clickAnchor.addClickHandler(new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent event) {
