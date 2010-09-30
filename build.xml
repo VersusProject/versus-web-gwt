@@ -61,7 +61,7 @@
 			</fileset>
 		</copy>
 	</target>
-		
+			<target name="build-versus">		<ant antfile="../versus/build.xml" dir="../versus/" target="archive" inheritall="false"/>		<copy file="../versus/dist/versus-api-0.5.jar" todir="war/WEB-INF/lib"/>		<copy file="../versus/dist/versus-impl-0.5.jar" todir="war/WEB-INF/lib"/>	</target>	
 	<!-- make sure we have the latest beans -->
 	<target name="cetbean" description="Compile CET beans.">
 		<!-- compile the CET beans -->
