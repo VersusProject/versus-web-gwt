@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -43,8 +45,10 @@ public class JobStatusView extends Composite implements Display {
 	private SimplePanel selectedExtractorPanel;
 	private SimplePanel selectedMeasurePanel;
 	private DisclosurePanel disclosurePanel;
+	private final DispatchAsync dispatchAsync;
 
-	public JobStatusView() {
+	public JobStatusView(DispatchAsync dispatchAsync) {
+		this.dispatchAsync = dispatchAsync;
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName("jobStatusPanel");
 		
@@ -151,13 +155,13 @@ public class JobStatusView extends Composite implements Display {
 		for (PairwiseComparison comparison : ordered) {
 			HorizontalPanel pairwiseComparisonPanel = new HorizontalPanel();
 			String firstId = comparison.getFirstDataset().getUri();
-			PreviewWidget previewWidget = new PreviewWidget(firstId, GetPreviews.SMALL, "dataset?id=" + firstId);
+			PreviewWidget previewWidget = new PreviewWidget(firstId, GetPreviews.SMALL, "dataset?id=" + firstId, dispatchAsync);
 			previewWidget.addStyleName("thumbnail");
 			pairwiseComparisonPanel.add(previewWidget);
 			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget,
 					HasVerticalAlignment.ALIGN_MIDDLE);
 			String secondId = comparison.getSecondDataset().getUri();
-			PreviewWidget previewWidget2 = new PreviewWidget(secondId, GetPreviews.SMALL, "dataset?id=" + secondId);
+			PreviewWidget previewWidget2 = new PreviewWidget(secondId, GetPreviews.SMALL, "dataset?id=" + secondId, dispatchAsync);
 			previewWidget.addStyleName("thumbnail");
 			pairwiseComparisonPanel.add(previewWidget2);
 			pairwiseComparisonPanel.setCellVerticalAlignment(previewWidget2,

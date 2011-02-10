@@ -4,7 +4,6 @@
 package edu.illinois.ncsa.versus.web.client.presenter;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;

@@ -3,13 +3,10 @@
  */
 package edu.illinois.ncsa.versus.web.server;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +32,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
     private static Log log = LogFactory.getLog(RegistryServiceImpl.class);
     
 	@Override
-	public List<ComponentMetadata> getExtractors() {
+	public List<ComponentMetadata> getExtractors() {		
 		List<ComponentMetadata> extractors = new ArrayList<ComponentMetadata>();
 		Collection<Extractor> availableExtractors = registry.getAvailableExtractors();
 		Iterator<Extractor> extractorIter = availableExtractors.iterator();
@@ -46,7 +43,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 				extractorMetadata.addSupportedInput(type.getName());
 				log.debug("Extractor " + extractor.getClass().getName() + " supports adapter " + type.getName());
 			}
-			extractorMetadata.addSupportedOutputs(extractor.getFeatureType().toString());
+			extractorMetadata.addSupportedOutputs(extractor.getFeatureType().getName());
 			extractors.add(extractorMetadata);
 		}
 		return extractors;

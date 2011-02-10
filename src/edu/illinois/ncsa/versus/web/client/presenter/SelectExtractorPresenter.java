@@ -121,7 +121,7 @@ public class SelectExtractorPresenter implements Presenter {
 	}
 
 	/**
-	 * hiddenByAdapter.clear();
+	 * 
 	 */
 	protected void resetView() {
 		GWT.log("Refreshing all handlers");
@@ -186,6 +186,7 @@ public class SelectExtractorPresenter implements Presenter {
 			this.index = index;
 			
 		}
+		
 		@Override
 		public void onClick(ClickEvent event) {
 			GWT.log("Clicked on " + this + " / " + index);
@@ -198,10 +199,7 @@ public class SelectExtractorPresenter implements Presenter {
 				selectedExtractorId = componentMetadata.getId();
 				eventBus.fireEvent(new ExtractorSelectedEvent(componentMetadata));
 				display.selectExtractor(index);
-			}
-			
+			}	
 		}
-		
 	}
-	
 }

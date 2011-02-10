@@ -70,7 +70,7 @@ public class SelectExtractorView extends Composite implements Display {
 	private void addStyleAndHandlers(int index) {
 		GWT.log("SelectedExtractorView: Enabling extractor " + index);
 		final Anchor extractorAnchor = extractorAnchors.get(index);
-		extractorAnchor.addStyleName("measureAnchor");
+		extractorAnchor.addStyleName("listAnchor");
 		final InfoPopup popup = new InfoPopup(extractorAnchor.getText());
 		HandlerRegistration addClickHandler = extractorAnchor.addClickHandler(new ClickHandler() {
 			

@@ -26,6 +26,8 @@
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
   <!-- Other module inherits                                      -->
+  <stylesheet src="../mmdb.css" />
+  <stylesheet src="../Versus_web.css" />
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='edu.illinois.ncsa.versus.web.client.Versus_web'/>

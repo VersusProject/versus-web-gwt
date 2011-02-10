@@ -6,6 +6,8 @@ package edu.illinois.ncsa.versus.web.client.view;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
@@ -29,8 +31,11 @@ public class ListThumbails extends Composite {
 	HorizontalPanel mainPanel;
 	
 	Map<String, PreviewWidget> previews = new HashMap<String, PreviewWidget>();
+
+	private DispatchAsync service;
 	
-	public ListThumbails(HandlerManager eventBus, final PickupDragController dragController) {
+	public ListThumbails(DispatchAsync dispatchAsync, HandlerManager eventBus, final PickupDragController dragController) {
+		this.service = dispatchAsync;
 		mainPanel = new HorizontalPanel();
 		ScrollPanel scrollPanel = new ScrollPanel(mainPanel);
 		scrollPanel.addStyleName("listThumbnailsPanel");
@@ -42,7 +47,7 @@ public class ListThumbails extends Composite {
 			public void onDatasetSelected(DatasetSelectedEvent event) {
 				GWT.log("Adding selected dataset to list thumbnails view");
 				PreviewWidget previewWidget = new PreviewWidget(event.getUri(), 
-						GetPreviews.SMALL, "dataset?id=" + event.getUri());
+						GetPreviews.SMALL, "dataset?id=" + event.getUri(), service);
 				previewWidget.addStyleName("thumbnail");
 				mainPanel.add(previewWidget);
 				previews.put(event.getUri(), previewWidget);

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -17,15 +19,13 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -34,10 +34,11 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
+import edu.illinois.ncsa.mmdb.web.client.Authentication;
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.TextFormatter;
 import edu.illinois.ncsa.mmdb.web.client.UploadWidget;
@@ -47,17 +48,27 @@ import edu.illinois.ncsa.mmdb.web.client.dispatch.AuthenticateResult;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetUser;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetUserResult;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
+import edu.illinois.ncsa.mmdb.web.client.dispatch.JiraIssue.JiraIssueType;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.LoggedInEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.LoggedInHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.LoggedOutEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.LoggedOutHandler;
 import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
 import edu.illinois.ncsa.mmdb.web.client.ui.DatasetWidget;
+import edu.illinois.ncsa.mmdb.web.client.ui.HomePage;
+import edu.illinois.ncsa.mmdb.web.client.ui.JiraIssuePage;
 import edu.illinois.ncsa.mmdb.web.client.ui.LoginPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.LoginStatusWidget;
+import edu.illinois.ncsa.mmdb.web.client.ui.RequestNewPasswordPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.SignupPage;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
-import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
-import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.event.AddAdapterEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
+import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
+import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter;
@@ -73,12 +84,15 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.PersonBean;
+import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
-	private final RegistryServiceAsync registryService = GWT.create(RegistryService.class);
+	
+	private final RegistryServiceAsync registryService = GWT
+			.create(RegistryService.class);
 
 	private HandlerManager eventBus;
 
@@ -96,107 +110,135 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	private TabPanel tabPanel;
 
-	private ScrollPanel mainContentScroll;
-
 	private SimplePanel centralPanel;
-	
-	public static final MyDispatchAsync dispatchAsync        = new MyDispatchAsync();
 
-	private static final boolean DISCLOSURE_OPEN = false;
+	public static final DispatchAsync dispatchAsync = new MyDispatchAsync();
 
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		
+
 		// HACK required by PreviewWidget
-		MMDB.getSessionState().setCurrentUser(new PersonBean());
-		
+//		MMDB.getSessionState().setCurrentUser(new PersonBean());
+
 		eventBus = new HandlerManager(null);
-		
+
 		// drag and drop
-		PickupDragController dragController = new PickupDragController(RootPanel.get(), true);
+		PickupDragController dragController = new PickupDragController(
+				RootPanel.get(), true);
 		appPanel = new DockLayoutPanel(Unit.EM);
-		
+
 		// header panel
 		headerPanel = new HorizontalPanel();
 		headerPanel.addStyleName("headerPanel");
 		Hyperlink homeLink = new Hyperlink("Versus", "");
 		homeLink.addStyleName("logo");
 		headerPanel.add(homeLink);
-		headerPanel.setCellHorizontalAlignment(homeLink, HasHorizontalAlignment.ALIGN_CENTER);
+		headerPanel.setCellHorizontalAlignment(homeLink,
+				HasHorizontalAlignment.ALIGN_CENTER);
 		headerPanel.setCellWidth(homeLink, "140px");
-		
+
 		headerPanel.add(homeLink);
 		
-		// footer
-		listThumbails = new ListThumbails(eventBus, dragController);
+		// login status widget
+		LoginStatusWidget loginStatusWidget = new LoginStatusWidget(eventBus);
+		loginStatusWidget.addStyleName("loginWidget");
+		headerPanel.add(loginStatusWidget);
+
+		centralPanel = new SimplePanel();
+		centralPanel.addStyleName("centralPanelLayout");
 		
-//		// drop box panel
-//		HorizontalPanel dropBoxPanel = new HorizontalPanel();
-//		dropBoxPanel.addStyleName("dropBoxesPanel");
-//		content.add(dropBoxPanel);
-//		// first drop box
-//		DropBoxView firstDropBox = new DropBoxView();
-//		DropBoxPresenter firstDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, firstDropBox);
-//		firstDropBoxPresenter.go(dropBoxPanel);
-//		dragController.registerDropController(firstDropBox.getDropController());
-//		// second drop box
-//		DropBoxView secondDropBox = new DropBoxView();
-//		DropBoxPresenter secondDropBoxPresenter  = new DropBoxPresenter(registryService, eventBus, secondDropBox);
-//		secondDropBoxPresenter.go(dropBoxPanel);
-//		dragController.registerDropController(secondDropBox.getDropController());metadata.getId(), metadata.getName()
-//		
+		// footer
+		listThumbails = new ListThumbails(dispatchAsync, eventBus, dragController);
+
+		// // drop box panel
+		// HorizontalPanel dropBoxPanel = new HorizontalPanel();
+		// dropBoxPanel.addStyleName("dropBoxesPanel");
+		// content.add(dropBoxPanel);
+		// // first drop box
+		// DropBoxView firstDropBox = new DropBoxView();
+		// DropBoxPresenter firstDropBoxPresenter = new
+		// DropBoxPresenter(registryService, eventBus, firstDropBox);
+		// firstDropBoxPresenter.go(dropBoxPanel);
+		// dragController.registerDropController(firstDropBox.getDropController());
+		// // second drop box
+		// DropBoxView secondDropBox = new DropBoxView();
+		// DropBoxPresenter secondDropBoxPresenter = new
+		// DropBoxPresenter(registryService, eventBus, secondDropBox);
+		// secondDropBoxPresenter.go(dropBoxPanel);
+		// dragController.registerDropController(secondDropBox.getDropController());metadata.getId(),
+		// metadata.getName()
+		//
+		// // testing drop targets
+		// HorizontalPanel dropTarget = new HorizontalPanel();
+		// dropTarget.setBorderWidth(1);
+		// dropTarget.setSize("500px", "100px");
+		// HorizontalPanelDropController dropController = new
+		// HorizontalPanelDropController(dropTarget);
+		// dragController.registerDropController(dropController);
+		// content.add(dropTarget);
+
+		appPanel.addNorth(headerPanel, 2);
+		appPanel.addSouth(listThumbails, 10);
+		appPanel.add(centralPanel);
+		RootLayoutPanel.get().add(appPanel);
+		
+		bind();
+
+		// history support
+		History.addValueChangeHandler(this);
+		History.fireCurrentHistoryState();
+	}
+	
+	private Widget createWorkflowTabs() {
 
 		VerticalPanel newExecutionPanel = new VerticalPanel();
 		newExecutionPanel.setWidth("100%");
-		
-//		// testing drop targets
-//		HorizontalPanel dropTarget = new HorizontalPanel();
-//		dropTarget.setBorderWidth(1);
-//		dropTarget.setSize("500px", "100px");
-//		HorizontalPanelDropController dropController = new HorizontalPanelDropController(dropTarget);
-//		dragController.registerDropController(dropController);
-//		content.add(dropTarget);
 		
 		HorizontalPanel selectionPanel = new HorizontalPanel();
 		selectionPanel.setBorderWidth(0);
 		selectionPanel.setWidth("100%");
 		newExecutionPanel.add(selectionPanel);
-		
+
 		// adapters
 		SelectAdapterView selectAdapterView = new SelectAdapterView();
-		SelectAdapterPresenter selectAdapterPresenter = new SelectAdapterPresenter(registryService, eventBus, selectAdapterView);
+		SelectAdapterPresenter selectAdapterPresenter = new SelectAdapterPresenter(
+				registryService, eventBus, selectAdapterView);
 		selectAdapterPresenter.go(selectionPanel);
-		
+
 		// extractors
 		SelectExtractorView selectExtractorView = new SelectExtractorView();
-		SelectExtractorPresenter selectExtractorPresenter = new SelectExtractorPresenter(registryService, eventBus, selectExtractorView);
+		SelectExtractorPresenter selectExtractorPresenter = new SelectExtractorPresenter(
+				registryService, eventBus, selectExtractorView);
 		selectExtractorPresenter.go(selectionPanel);
-		
+
 		// measures
 		SelectMeasureView selectMeasureView = new SelectMeasureView();
-		SelectMeasurePresenter selectMeasurePresenter = new SelectMeasurePresenter(registryService, eventBus, selectMeasureView);
+		SelectMeasurePresenter selectMeasurePresenter = new SelectMeasurePresenter(
+				registryService, eventBus, selectMeasureView);
 		selectMeasurePresenter.go(selectionPanel);
-		
+
 		// current selections
 		CurrentSelectionsView currentSelectionsView = new CurrentSelectionsView();
-		CurrentSelectionsPresenter currentSelectionsPresenter = new CurrentSelectionsPresenter(registryService, eventBus, currentSelectionsView); 
+		CurrentSelectionsPresenter currentSelectionsPresenter = new CurrentSelectionsPresenter(
+				registryService, eventBus, currentSelectionsView);
 		currentSelectionsPresenter.go(newExecutionPanel);
 
 		// previous executions
 		previousDisclosureBody = new VerticalPanel();
 		previousDisclosureBody.setWidth("95%");
 		ScrollPanel previousExecScroll = new ScrollPanel(previousDisclosureBody);
-		
+
 		// dataset selection
 		DynamicTableView datasetTableView = new DynamicTableView();
-		datasetTablePresenter = new DatasetTablePresenter(dispatchAsync, eventBus, datasetTableView);
+		datasetTablePresenter = new DatasetTablePresenter(dispatchAsync,
+				eventBus, datasetTableView);
 		datasetTablePresenter.bind();
 		VerticalPanel selectionDisclosureBody = new VerticalPanel();
 		selectionDisclosureBody.setWidth("100%");
 		selectionDisclosureBody.add(datasetTableView.asWidget());
-		
+
 		// upload widget
 		uploadWidget = new UploadWidget(false);
 		uploadWidget.addDatasetUploadedHandler(new DatasetUploadedHandler() {
@@ -206,13 +248,11 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 				GWT.log("Done uploading file");
 				datasetTablePresenter.refresh();
 			}
-			
+
 		});
 		selectionDisclosureBody.add(uploadWidget);
-		
-		centralPanel = new SimplePanel();
-		centralPanel.addStyleName("centralPanelLayout");
-		
+
+
 		// tab panel layout
 		tabPanel = new TabPanel();
 		tabPanel.setWidth("100%");
@@ -220,257 +260,166 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 		tabPanel.add(newExecutionPanel, "Compare");
 		tabPanel.add(previousExecScroll, "View Results");
 		tabPanel.selectTab(0);
-		centralPanel.add(tabPanel);
-		
-		appPanel.addNorth(headerPanel, 2);
-		appPanel.addSouth(listThumbails, 10);
-		appPanel.add(centralPanel);
-		RootLayoutPanel.get().add(appPanel);
-		
+
 		populate();
 		datasetTablePresenter.refresh();
-		
-		bind();
-		
-        // history support
-        History.addValueChangeHandler(this);
-        History.fireCurrentHistoryState();
+				
+		return tabPanel;
 	}
 
 	private void bind() {
 		eventBus.addHandler(NewJobEvent.TYPE, new NewJobHandler() {
-			
+
 			@Override
 			public void onNewJob(NewJobEvent newJobEvent) {
 				Job job = newJobEvent.getJob();
 				Submission submission = newJobEvent.getSubmission();
-				JobStatusView jobStatusView = new JobStatusView();
-				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(eventBus, jobStatusView, job, submission);
+				JobStatusView jobStatusView = new JobStatusView(dispatchAsync);
+				JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(
+						eventBus, jobStatusView, job, submission);
 				jobStatusPresenter.go(previousDisclosureBody);
-				previousDisclosureBody.add(jobStatusView);				
+				previousDisclosureBody.add(jobStatusView);
 			}
 		});
+		
+        eventBus.addHandler(LoggedInEvent.TYPE, new LoggedInHandler() {
+
+            @Override
+            public void onLoggedIn(LoggedInEvent loggedInEvent) {
+                parseHistoryToken(History.getToken());
+            }
+
+        });
+        
+        eventBus.addHandler(LoggedOutEvent.TYPE, new LoggedOutHandler() {
+
+            @Override
+            public void onLoggedOut(LoggedOutEvent loggedOutEvent) {
+                History.newItem("login");
+            }
+
+        });
 	}
 
 	private void populate() {
-		
-		registryService.getAdapters(new AsyncCallback<List<ComponentMetadata>>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				GWT.log("Error retrieving adapters", caught);
-			}
+		registryService
+				.getAdapters(new AsyncCallback<List<ComponentMetadata>>() {
 
-			@Override
-			public void onSuccess(List<ComponentMetadata> result) {
-				for (ComponentMetadata metadata : result) {
-					eventBus.fireEvent(new AddAdapterEvent(metadata));
-				}
-			}
-		});
-		
-		registryService.getExtractors(new AsyncCallback<List<ComponentMetadata>>() {
-			
-			@Override
-			public void onSuccess(List<ComponentMetadata> result) {
-				for (ComponentMetadata metadata : result) {
-					eventBus.fireEvent(new AddExtractorEvent(metadata));
-				}
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				GWT.log("Error retrieving extractors", caught);
-			}
-		});
-		
-		registryService.getMeasures(new AsyncCallback<List<ComponentMetadata>>() {
-			
-			@Override
-			public void onSuccess(List<ComponentMetadata> result) {
-				for (ComponentMetadata metadata : result) {
-					eventBus.fireEvent(new AddMeasureEvent(metadata));
-				}
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				GWT.log("Error retrieving measures", caught);
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("Error retrieving adapters", caught);
+					}
+
+					@Override
+					public void onSuccess(List<ComponentMetadata> result) {
+						for (ComponentMetadata metadata : result) {
+							eventBus.fireEvent(new AddAdapterEvent(metadata));
+						}
+					}
+				});
+
+		registryService
+				.getExtractors(new AsyncCallback<List<ComponentMetadata>>() {
+
+					@Override
+					public void onSuccess(List<ComponentMetadata> result) {
+						for (ComponentMetadata metadata : result) {
+							eventBus.fireEvent(new AddExtractorEvent(metadata));
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("Error retrieving extractors", caught);
+					}
+				});
+
+		registryService
+				.getMeasures(new AsyncCallback<List<ComponentMetadata>>() {
+
+					@Override
+					public void onSuccess(List<ComponentMetadata> result) {
+						for (ComponentMetadata metadata : result) {
+							eventBus.fireEvent(new AddMeasureEvent(metadata));
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("Error retrieving measures", caught);
+					}
+				});
 	}
 
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
         final String token = event.getValue();
+
         GWT.log("History changed: " + event.getValue(), null);
-        centralPanel.clear();
-        if (token.startsWith("dataset")) {
-        	DatasetWidget datasetWidget = new DatasetWidget(dispatchAsync);
-        	ScrollPanel scrollPanel = new ScrollPanel();
-        	scrollPanel.setSize("100%", "100%");
-        	scrollPanel.add(datasetWidget);
-        	centralPanel.add(scrollPanel);
-        	 String datasetUri = getParams().get("id");
-             if (datasetUri != null) {
-                 datasetWidget.showDataset(datasetUri);
-             }
+
+        if (token.startsWith("logout")) {
+            Authentication.logout(eventBus);
         } else if (token.startsWith("login")) {
-        	LoginPage loginPage = new LoginPage(dispatchAsync, new MMDB());
-        	centralPanel.add(loginPage);
+            showLoginPage();
+        } else if (token.startsWith("signup")) {
+        	centralPanel.clear();
+        	centralPanel.add(new SignupPage(dispatchAsync));
+        } else if (token.startsWith("requestNewPassword")) {
+        	centralPanel.clear();
+        	centralPanel.add(new RequestNewPasswordPage(dispatchAsync));
+        } else if (token.startsWith("jiraBug")) {
+        	centralPanel.clear();
+        	centralPanel.add(new JiraIssuePage(dispatchAsync, JiraIssueType.BUG));
+        } else if (token.startsWith("jiraFeature")) {
+        	centralPanel.clear();
+        	centralPanel.add(new JiraIssuePage(dispatchAsync, JiraIssueType.FEATURE));
         } else {
-        	centralPanel.add(tabPanel);
+            Authentication.checkLogin(dispatchAsync, eventBus);
         }
 	}
 	
-    public Map<String, String> getParams() {
-        Map<String, String> params = new HashMap<String, String>();
-        String paramString = History.getToken().substring(
-                History.getToken().indexOf("?") + 1);
-        if (!paramString.isEmpty()) {
-            for (String paramEntry : paramString.split("&") ) {
-                String[] terms = paramEntry.split("=");
-                if (terms.length == 2) {
-                    params.put(terms[0], terms[1]);
-                }
+	private void parseHistoryToken(String token) {
+        if (token.startsWith("home")) {
+        	centralPanel.clear();
+        	centralPanel.add(new HomePage(dispatchAsync));
+        } else if (token.startsWith("dataset")) {
+        	Map<String, String> params = getParams();
+            final String datasetUri = params.get("id");
+            final String section = params.get("section");
+            DatasetWidget datasetWidget = new DatasetWidget(dispatchAsync, eventBus);
+            centralPanel.clear();
+            centralPanel.add(datasetWidget);
+            if (datasetUri != null) {
+	            if (section != null) {
+	                datasetWidget.showDataset(datasetUri, URL.decode(section));
+	            } else {
+	                datasetWidget.showDataset(datasetUri, null);
+	            }
             }
+        } else {
+        	centralPanel.clear();
+        	centralPanel.add(createWorkflowTabs());
         }
-        return params;
-    }
-    
-    /**
-     * Authenticate against the REST endpoint to make sure user is
-     * authenticated on the server side. If successful, login local.
-     */
-    protected void authenticate(final String username, final String password) {
-        logout(new Command() { // ensure we're logged out before authenticating
-            public void execute() {
-                MMDB.dispatchAsync.execute(new Authenticate(username, password),
-                        new AsyncCallback<AuthenticateResult>() {
+	}
+	
+	protected void showLoginPage() {
+        centralPanel.clear();
+        centralPanel.add(new LoginPage(dispatchAsync, eventBus)); // FIXME should not have to instantiate MMDB
+	}
 
-                            @Override
-                            public void onFailure(Throwable arg0) {
-                                fail();
-                            }
-
-                            @Override
-                            public void onSuccess(final AuthenticateResult arg0) {
-                                if (arg0.getAuthenticated()) {
-                                    // now hit the REST authentication endpoint
-                                    String restUrl = "./api/authenticate";
-                                    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restUrl);
-                                    builder.setUser(TextFormatter.escapeEmailAddress(username));
-                                    builder.setPassword(password);
-                                    try {
-                                        GWT.log("attempting to authenticate " + username + " against " + restUrl, null);
-                                        builder.sendRequest("", new RequestCallback() {
-                                            public void onError(Request request, Throwable exception) {
-                                                fail();
-                                            }
-
-                                            public void onResponseReceived(Request request, Response response) {
-                                                // success!
-                                                String sessionKey = response.getText();
-                                                GWT.log("REST auth status code = " + response.getStatusCode(), null);
-                                                if (response.getStatusCode() > 300) {
-                                                    GWT.log("authentication failed: " + sessionKey, null);
-                                                    fail();
-                                                }
-                                                GWT.log("user " + username + " associated with session key " + sessionKey, null);
-                                                // login local
-                                                login(arg0.getSessionId(), sessionKey);
-//                                                redirect();
-                                            }
-                                        });
-                                    } catch (RequestException x) {
-                                        // another error condition
-                                        fail();
-                                    }
-                                } else {
-                                    fail();
-                                }
-                            }
-                        });
-            }
-        });
-    }
-    
-    public void login(final String userId, final String sessionKey) {
-        final UserSessionState state = MMDB.getSessionState();
-        state.setSessionKey(sessionKey);
-        // set cookie
-        // TODO move to more prominent place... MMDB? A class with static properties?
-        final long DURATION = 1000 * 60 * 60; // 60 minutes
-        final Date expires = new Date(System.currentTimeMillis() + DURATION);
-        Cookies.setCookie("sessionKey", sessionKey, expires);
-
-        GetUser getUser = new GetUser();
-        getUser.setUserId(userId);
-        MMDB.dispatchAsync.execute(getUser, new AsyncCallback<GetUserResult>() {
-
-            @Override
-            public void onFailure(Throwable caught) {
-                GWT.log("Error retrieving user with id " + userId);
-            }
-
-            @Override
-            public void onSuccess(GetUserResult result) {
-                PersonBean personBean = result.getPersonBean();
-                state.setCurrentUser(personBean);
-                MMDB.loginStatusWidget.login(personBean.getName());
-                GWT.log("Current user set to " + personBean.getUri());
-                Cookies.setCookie("sid", personBean.getUri(), expires);
-//                checkPermissions(History.getToken());
-            }
-        });
-
-    }
-    
-    void fail() {
-        GWT.log("Failed authenticating", null);
-        Label message = new Label(
-                "Incorrect username/password combination");
-        message.addStyleName("loginError");
-    }
-    
-    public static void logout(Command onSuccess) {
-        UserSessionState state = MMDB.getSessionState();
-        if (state.getCurrentUser() != null && state.getCurrentUser().getUri() != null) {
-            GWT.log("user " + state.getCurrentUser().getUri() + " logging out", null);
-            MMDB.clearSessionState();
-        }
-        // in case anyone is holding refs to the state, zero out the auth information in it
-        state.setCurrentUser(null);
-        state.setSessionKey(null);
-        Cookies.removeCookie("sid");
-        Cookies.removeCookie("sessionKey");
-        clearBrowserCreds(onSuccess);
-        MMDB.loginStatusWidget.logout();
-    }
-    
-    public static void clearBrowserCreds(final Command onSuccess) {
-        // now hit the REST authentication endpoint with bad creds
-        String restUrl = "./api/logout";
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restUrl);
-        builder.setUser("_badCreds_");
-        builder.setPassword("_reallyReallyBadCreds_");
-        try {
-            builder.sendRequest("", new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    // do something
-                    Window.alert("error logging out " + exception.getMessage());
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (onSuccess != null) {
-                        onSuccess.execute();
-                    }
-                }
-            });
-        } catch (RequestException x) {
-            // another error condition, do something
-            Window.alert("error logging out: " + x.getMessage());
-        }
-    }
-    
+	public Map<String, String> getParams() {
+		Map<String, String> params = new HashMap<String, String>();
+		String paramString = History.getToken().substring(
+				History.getToken().indexOf("?") + 1);
+		if (!paramString.isEmpty()) {
+			for (String paramEntry : paramString.split("&")) {
+				String[] terms = paramEntry.split("=");
+				if (terms.length == 2) {
+					params.put(terms[0], terms[1]);
+				}
+			}
+		}
+		return params;
+	}
 }

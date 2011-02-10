@@ -72,12 +72,12 @@
 	padding: 5px;
 }
 
-.measureAnchor {
+.listAnchor {
 	text-decoration: none;
 	padding: 5px;
 }
 
-.measureAnchor:hover {
+.listAnchor:hover {
 	text-decoration: none;
 }
 
@@ -163,6 +163,20 @@ HTML, BODY {
 	cursor: default;
 }
 
+.enabledMeasure {
+	border: 1px solid red;
+}
+
+.hideMeasure {
+	color: gray;
+	background: white;
+}
+
+.hideMeasure:hover {
+	color: gray;
+	cursor: default;
+}
+
 .logo {
     padding-left: 10px;	
 }
@@ -186,4 +200,12 @@ HTML, BODY {
 
 .centralPanelLayout {
 	overflow: auto;
+}
+
+.loginWidget {
+	float: right;
+}
+	
+.loginWidget a:visited {
+	color: black;
 }
