@@ -40,6 +40,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.mmdb.web.client.Authentication;
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
+import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
+import edu.illinois.ncsa.mmdb.web.client.PermissionUtil.PermissionCallback;
 import edu.illinois.ncsa.mmdb.web.client.TextFormatter;
 import edu.illinois.ncsa.mmdb.web.client.UploadWidget;
 import edu.illinois.ncsa.mmdb.web.client.UserSessionState;
@@ -62,7 +64,9 @@ import edu.illinois.ncsa.mmdb.web.client.ui.JiraIssuePage;
 import edu.illinois.ncsa.mmdb.web.client.ui.LoginPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.LoginStatusWidget;
 import edu.illinois.ncsa.mmdb.web.client.ui.RequestNewPasswordPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.RoleAdministrationPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.SignupPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.UserManagementPage;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
 import edu.illinois.ncsa.versus.web.client.event.AddAdapterEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
@@ -114,6 +118,8 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
 	public static final DispatchAsync dispatchAsync = new MyDispatchAsync();
 
+	private PermissionUtil permissionUtil;
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -123,6 +129,8 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 //		MMDB.getSessionState().setCurrentUser(new PersonBean());
 
 		eventBus = new HandlerManager(null);
+		
+		permissionUtil = new PermissionUtil(dispatchAsync);
 
 		// drag and drop
 		PickupDragController dragController = new PickupDragController(
@@ -397,6 +405,24 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 	                datasetWidget.showDataset(datasetUri, null);
 	            }
             }
+        } else if (token.startsWith("modifyPermissions")) {
+            permissionUtil.doIfAllowed(Permission.VIEW_ADMIN_PAGES, new PermissionCallback() {
+				
+				@Override
+				public void onAllowed() {
+					centralPanel.clear();
+					centralPanel.add(new UserManagementPage(dispatchAsync));
+				}
+			});
+        } else if (token.startsWith("accessControl")) {
+            permissionUtil.doIfAllowed(Permission.VIEW_ADMIN_PAGES, new PermissionCallback() {
+				
+				@Override
+				public void onAllowed() {
+					centralPanel.clear();
+					centralPanel.add(new RoleAdministrationPage(dispatchAsync));
+				}
+			});
         } else {
         	centralPanel.clear();
         	centralPanel.add(createWorkflowTabs());
