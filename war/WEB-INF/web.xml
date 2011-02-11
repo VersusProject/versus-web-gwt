@@ -136,7 +136,6 @@
 		<url-pattern>/webdav/*</url-pattern>
 	</servlet-mapping>
 	
-	
 	<!--  Restlet endpoint -->
 	<servlet>
 		<servlet-name>restlet</servlet-name>
