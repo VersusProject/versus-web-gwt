@@ -32,7 +32,7 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 /**
  * @author lmarini
- *
+ * 
  */
 public class SelectExtractorPresenter implements Presenter {
 
@@ -42,20 +42,26 @@ public class SelectExtractorPresenter implements Presenter {
 	private String selectedExtractorId;
 	private Map<ComponentMetadata, Integer> extractorToIndex = new HashMap<ComponentMetadata, Integer>();
 	private Map<Integer, ComponentMetadata> indexToExtractor = new HashMap<Integer, ComponentMetadata>();
-	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
+	private List<HandlerRegistration> clickHandlers = new ArrayList<HandlerRegistration>();
 	private Set<Integer> hiddenByAdapter = new HashSet<Integer>();
 	private Set<Integer> hiddenByMeasure = new HashSet<Integer>();
 
 	public interface Display {
 		int addExtractor(String extractor);
+
 		HasClickHandlers getExtractorAnchor(int index);
+
 		void selectExtractor(int index);
+
 		void unselectExtractor(int index);
+
 		void enableExtractors();
+
 		void disableExtractors(Set<Integer> extractors);
+
 		Widget asWidget();
 	}
-	
+
 	/**
 	 * 
 	 * @param registryService
@@ -64,60 +70,75 @@ public class SelectExtractorPresenter implements Presenter {
 	 */
 	public SelectExtractorPresenter(RegistryServiceAsync registryService,
 			HandlerManager eventBus, Display display) {
-				this.registryService = registryService;
-				this.eventBus = eventBus;
-				this.display = display;
+		this.registryService = registryService;
+		this.eventBus = eventBus;
+		this.display = display;
 	}
-	
+
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	void bind() {
-		eventBus.addHandler(AddExtractorEvent.TYPE, new AddExtractorEventHandler() {
-			
-			@Override
-			public void onAddExtractor(final AddExtractorEvent addExtractorEvent) {
-				final int index = display.addExtractor(addExtractorEvent.getExtractorMetadata().getName());
-				extractorToIndex.put(addExtractorEvent.getExtractorMetadata(), index);
-				indexToExtractor.put(index, addExtractorEvent.getExtractorMetadata());
-				HandlerRegistration handlerRegistration = display.getExtractorAnchor(index).addClickHandler(new SelectionHandler(index));
-				clickHandlers.add(handlerRegistration);
-			}
-		});
-		
-		eventBus.addHandler(AdapterSelectedEvent.TYPE, new AdapterSelectedHandler() {
+		eventBus.addHandler(AddExtractorEvent.TYPE,
+				new AddExtractorEventHandler() {
 
-			@Override
-			public void onAdapterSelected(AdapterSelectedEvent event) {
-				resetView();
-				Set<String> supportedOutputs = event.getAdapterMetadata().getSupportedOutputs();
-				for (ComponentMetadata extractor : extractorToIndex.keySet()) {
-					boolean found = false;
-					for (String supportedOut : supportedOutputs) {
-						if (extractor.getSupportedInputs().contains(supportedOut)) {
-							found = true;
-							break;
+					@Override
+					public void onAddExtractor(
+							final AddExtractorEvent addExtractorEvent) {
+						final int index = display
+								.addExtractor(addExtractorEvent
+										.getExtractorMetadata().getName());
+						extractorToIndex.put(
+								addExtractorEvent.getExtractorMetadata(), index);
+						indexToExtractor.put(index,
+								addExtractorEvent.getExtractorMetadata());
+						HandlerRegistration handlerRegistration = display
+								.getExtractorAnchor(index).addClickHandler(
+										new SelectionHandler(index));
+						clickHandlers.add(handlerRegistration);
+					}
+				});
+
+		eventBus.addHandler(AdapterSelectedEvent.TYPE,
+				new AdapterSelectedHandler() {
+
+					@Override
+					public void onAdapterSelected(AdapterSelectedEvent event) {
+						resetView();
+						Set<String> supportedOutputs = event
+								.getAdapterMetadata().getSupportedOutputs();
+						for (ComponentMetadata extractor : extractorToIndex
+								.keySet()) {
+							boolean found = false;
+							for (String supportedOut : supportedOutputs) {
+								if (extractor.getSupportedInputs().contains(
+										supportedOut)) {
+									found = true;
+									break;
+								}
+							}
+							if (!found) {
+								hiddenByAdapter.add(extractorToIndex
+										.get(extractor));
+							}
 						}
+						GWT.log("Hide " + hiddenByAdapter);
+						for (Integer index : hiddenByAdapter) {
+							removeClickHandler(index);
+						}
+						display.disableExtractors(hiddenByAdapter);
 					}
-					if (!found) {
-						hiddenByAdapter.add(extractorToIndex.get(extractor));
+				});
+
+		eventBus.addHandler(AdapterUnselectedEvent.TYPE,
+				new AdapterUnselectedHandler() {
+
+					@Override
+					public void onAdapterUnselected(AdapterUnselectedEvent event) {
+						resetView();
 					}
-				}
-				GWT.log("Hide " + hiddenByAdapter);
-				for (Integer index : hiddenByAdapter) {
-					removeClickHandler(index);
-				}
-				display.disableExtractors(hiddenByAdapter);
-			}
-		});
-		
-		eventBus.addHandler(AdapterUnselectedEvent.TYPE, new AdapterUnselectedHandler() {
-			
-			@Override
-			public void onAdapterUnselected(AdapterUnselectedEvent event) {
-				resetView();
-			}
-		});
+				});
 	}
 
 	/**
@@ -126,9 +147,11 @@ public class SelectExtractorPresenter implements Presenter {
 	protected void resetView() {
 		GWT.log("Refreshing all handlers");
 		if (selectedExtractorId != null) {
-			for (ComponentMetadata componentMetadata : extractorToIndex.keySet()) {
+			for (ComponentMetadata componentMetadata : extractorToIndex
+					.keySet()) {
 				if (componentMetadata.getId().equals(selectedExtractorId)) {
-					eventBus.fireEvent(new ExtractorUnselectedEvent(componentMetadata));
+					eventBus.fireEvent(new ExtractorUnselectedEvent(
+							componentMetadata));
 				}
 			}
 		}
@@ -138,7 +161,7 @@ public class SelectExtractorPresenter implements Presenter {
 			addClickHandler(index);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param index
@@ -150,11 +173,11 @@ public class SelectExtractorPresenter implements Presenter {
 			oldRegistration.removeHandler();
 			clickHandlers.set(index, null);
 		}
-		HandlerRegistration handlerRegistration = 
-			display.getExtractorAnchor(index).addClickHandler(new SelectionHandler(index));
+		HandlerRegistration handlerRegistration = display.getExtractorAnchor(
+				index).addClickHandler(new SelectionHandler(index));
 		clickHandlers.set(index, handlerRegistration);
 	}
-	
+
 	/**
 	 * 
 	 * @param index
@@ -164,42 +187,50 @@ public class SelectExtractorPresenter implements Presenter {
 		if (handlerRegistration != null) {
 			handlerRegistration.removeHandler();
 			clickHandlers.set(index, null);
-			GWT.log("SelectExtractorPresenter: Removed click handler for entry " + index);
+			GWT.log("SelectExtractorPresenter: Removed click handler for entry "
+					+ index);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.illinois.ncsa.versus.web.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.illinois.ncsa.versus.web.client.presenter.Presenter#go(com.google
+	 * .gwt.user.client.ui.HasWidgets)
 	 */
 	@Override
 	public void go(HasWidgets container) {
-		bind();hiddenByAdapter.clear();
+		bind();
+		hiddenByAdapter.clear();
 		container.add(display.asWidget());
 	}
 
 	class SelectionHandler implements ClickHandler {
 
 		private final int index;
-		
+
 		public SelectionHandler(int index) {
 			super();
 			this.index = index;
-			
+
 		}
-		
+
+		@SuppressWarnings("deprecation")
 		@Override
 		public void onClick(ClickEvent event) {
 			GWT.log("Clicked on " + this + " / " + index);
 			ComponentMetadata componentMetadata = indexToExtractor.get(index);
 			if (selectedExtractorId == componentMetadata.getId()) {
 				selectedExtractorId = null;
-				eventBus.fireEvent(new ExtractorUnselectedEvent(componentMetadata));
+				eventBus.fireEvent(new ExtractorUnselectedEvent(
+						componentMetadata));
 				display.unselectExtractor(index);
 			} else {
 				selectedExtractorId = componentMetadata.getId();
 				eventBus.fireEvent(new ExtractorSelectedEvent(componentMetadata));
 				display.selectExtractor(index);
-			}	
+			}
 		}
 	}
 }

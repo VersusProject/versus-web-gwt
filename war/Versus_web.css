@@ -62,7 +62,7 @@
 }
 
 .selectedLabel {
-	color: white;
+	color: white !important;
 	background: blue;
 	padding: 5px;
 }
@@ -154,7 +154,7 @@ HTML, BODY {
 }
 
 .hideExtractor {
-	color: gray;
+	color: gray !important;
 	background: white;
 }
 
@@ -168,7 +168,7 @@ HTML, BODY {
 }
 
 .hideMeasure {
-	color: gray;
+	color: gray !important;
 	background: white;
 }
 

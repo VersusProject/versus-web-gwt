@@ -22,28 +22,32 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 /**
  * @author lmarini
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class RegistryServiceImpl extends RemoteServiceServlet implements
 		RegistryService {
 
 	private static CompareRegistry registry = new CompareRegistry();
-    private static Log log = LogFactory.getLog(RegistryServiceImpl.class);
-    
+	private static Log log = LogFactory.getLog(RegistryServiceImpl.class);
+
 	@Override
-	public List<ComponentMetadata> getExtractors() {		
+	public List<ComponentMetadata> getExtractors() {
 		List<ComponentMetadata> extractors = new ArrayList<ComponentMetadata>();
-		Collection<Extractor> availableExtractors = registry.getAvailableExtractors();
+		Collection<Extractor> availableExtractors = registry
+				.getAvailableExtractors();
 		Iterator<Extractor> extractorIter = availableExtractors.iterator();
 		while (extractorIter.hasNext()) {
 			Extractor extractor = extractorIter.next();
-			ComponentMetadata extractorMetadata = new ComponentMetadata(extractor.getClass().getName(), extractor.getName(), "");
-			for(Class<? extends Adapter> type : extractor.supportedAdapters()) {
+			ComponentMetadata extractorMetadata = new ComponentMetadata(
+					extractor.getClass().getName(), extractor.getName(), "");
+			for (Class<? extends Adapter> type : extractor.supportedAdapters()) {
 				extractorMetadata.addSupportedInput(type.getName());
-				log.debug("Extractor " + extractor.getClass().getName() + " supports adapter " + type.getName());
+				log.debug("Extractor " + extractor.getClass().getName()
+						+ " supports adapter " + type.getName());
 			}
-			extractorMetadata.addSupportedOutputs(extractor.getFeatureType().getName());
+			extractorMetadata.addSupportedOutputs(extractor.getFeatureType()
+					.getName());
 			extractors.add(extractorMetadata);
 		}
 		return extractors;
@@ -56,7 +60,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Measure> measureIter = availableMeasures.iterator();
 		while (measureIter.hasNext()) {
 			Measure measure = measureIter.next();
-			ComponentMetadata measureMetadata = new ComponentMetadata(measure.getClass().getName(), measure.getName(), "");
+			ComponentMetadata measureMetadata = new ComponentMetadata(measure
+					.getClass().getName(), measure.getName(), "");
 			measureMetadata.addSupportedInput(measure.getFeatureType());
 			measures.add(measureMetadata);
 		}
@@ -70,14 +75,16 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Adapter> adapterIter = availableAdapters.iterator();
 		while (adapterIter.hasNext()) {
 			Adapter adapter = adapterIter.next();
-			ComponentMetadata adapterMetadata = new ComponentMetadata(adapter.getClass().getName(), adapter.getName(), "");
+			ComponentMetadata adapterMetadata = new ComponentMetadata(adapter
+					.getClass().getName(), adapter.getName(), "");
 			for (String mimeType : adapter.getSupportedMediaTypes()) {
 				adapterMetadata.addSupportedInput(mimeType);
 			}
 			Class<? extends Adapter> adapterClass = adapter.getClass();
 			Class<?>[] interfaces = adapterClass.getInterfaces();
 			for (Class<?> interfaceClass : interfaces) {
-				log.debug("Class " + adapterClass.getName() + " implements " + interfaceClass.getName());
+				log.debug("Class " + adapterClass.getName() + " implements "
+						+ interfaceClass.getName());
 				adapterMetadata.addSupportedOutputs(interfaceClass.getName());
 			}
 			adapters.add(adapterMetadata);

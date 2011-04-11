@@ -64,8 +64,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/pdfbox-svn.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/vecmath.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-api-0.5.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-impl-0.5.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/3DFu_Loaders.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/3DUtilities.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ImageUtilities.jar"/>
@@ -85,5 +83,8 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-audio.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-core-0.6.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-3d-0.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-image-0.5.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

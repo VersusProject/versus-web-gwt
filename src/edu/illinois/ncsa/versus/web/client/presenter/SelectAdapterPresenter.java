@@ -17,7 +17,7 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 /**
  * 
  * @author lmarini
- *
+ * 
  */
 public class SelectAdapterPresenter implements Presenter {
 
@@ -28,48 +28,60 @@ public class SelectAdapterPresenter implements Presenter {
 
 	public interface Display {
 		int addAdapter(String adapter);
+
 		int getNumAdapters();
+
 		HasClickHandlers getAdapterAnchor(int index);
+
 		void selectAdapter(int index);
+
 		void unselectAdapter(int index);
+
 		Widget asWidget();
 	}
-	
+
 	public SelectAdapterPresenter(RegistryServiceAsync registryService,
 			HandlerManager eventBus, Display display) {
-				this.registryService = registryService;
-				this.eventBus = eventBus;
-				this.display = display;
+		this.registryService = registryService;
+		this.eventBus = eventBus;
+		this.display = display;
 	}
-	
+
 	@Override
 	public void go(HasWidgets container) {
 		bind();
 		container.add(display.asWidget());
 	}
 
+	@SuppressWarnings("deprecation")
 	private void bind() {
 		eventBus.addHandler(AddAdapterEvent.TYPE, new AddAdapterEventHandler() {
-			
+
 			@Override
 			public void onAddAdapter(final AddAdapterEvent addAdapterEvent) {
-				final int index = display.addAdapter(addAdapterEvent.getAdapterMetadata().getName());
-				display.getAdapterAnchor(index).addClickHandler(new ClickHandler() {
-					
-					@Override
-					public void onClick(ClickEvent event) {
-						ComponentMetadata adapterMetadata = addAdapterEvent.getAdapterMetadata();
-						if (selectedAdapterId == adapterMetadata.getId()) {
-							selectedAdapterId = null;
-							eventBus.fireEvent(new AdapterUnselectedEvent(adapterMetadata));
-							display.unselectAdapter(index);
-						} else {
-							selectedAdapterId = adapterMetadata.getId();
-							eventBus.fireEvent(new AdapterSelectedEvent(adapterMetadata));
-							display.selectAdapter(index);
-						}
-					}
-				});
+				final int index = display.addAdapter(addAdapterEvent
+						.getAdapterMetadata().getName());
+				display.getAdapterAnchor(index).addClickHandler(
+						new ClickHandler() {
+
+							@Override
+							public void onClick(ClickEvent event) {
+								ComponentMetadata adapterMetadata = addAdapterEvent
+										.getAdapterMetadata();
+								if (selectedAdapterId == adapterMetadata
+										.getId()) {
+									selectedAdapterId = null;
+									eventBus.fireEvent(new AdapterUnselectedEvent(
+											adapterMetadata));
+									display.unselectAdapter(index);
+								} else {
+									selectedAdapterId = adapterMetadata.getId();
+									eventBus.fireEvent(new AdapterSelectedEvent(
+											adapterMetadata));
+									display.selectAdapter(index);
+								}
+							}
+						});
 			}
 		});
 	}
