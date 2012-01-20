@@ -80,11 +80,9 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/tupelo-sparql-2.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/tupelo-sql-2.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/tupelo-util-2.6.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-audio.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-core-0.6.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-3d-0.5.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-image-0.5.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/versus-core"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/versus-image-0.6.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

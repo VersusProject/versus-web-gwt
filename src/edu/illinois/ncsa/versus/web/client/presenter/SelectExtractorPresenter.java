@@ -106,23 +106,15 @@ public class SelectExtractorPresenter implements Presenter {
 					@Override
 					public void onAdapterSelected(AdapterSelectedEvent event) {
 						resetView();
-						Set<String> supportedOutputs = event
-								.getAdapterMetadata().getSupportedOutputs();
-						for (ComponentMetadata extractor : extractorToIndex
-								.keySet()) {
-							boolean found = false;
-							for (String supportedOut : supportedOutputs) {
-								if (extractor.getSupportedInputs().contains(
-										supportedOut)) {
-									found = true;
-									break;
-								}
-							}
-							if (!found) {
+						
+						String selectedAdapter = event.getAdapterMetadata().getId();
+						for (ComponentMetadata extractor : extractorToIndex.keySet()) {
+							if(!extractor.getSupportedInputs().contains(selectedAdapter)) {
 								hiddenByAdapter.add(extractorToIndex
 										.get(extractor));
 							}
 						}
+						
 						GWT.log("Hide " + hiddenByAdapter);
 						for (Integer index : hiddenByAdapter) {
 							removeClickHandler(index);
