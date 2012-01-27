@@ -1,0 +1,211 @@
+.sendButton {
+  display: block;
+  font-size: 16pt;
+}
+
+.dialogVPanel {
+  margin: 5px;
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}
+
+.panel {
+	border: 1px solid black;
+}
+
+.headerPanel {
+	width: 100%;
+	border-bottom: 1px solid gray;
+    text-align: left;
+    padding: 5px;
+}
+
+.navigation {
+	border-right: 1px solid black;
+}
+
+.footer {
+	border-top: 1px solid gray;
+}
+
+.titleLabel {
+	font-size: large;
+	color: orange;
+	margin: 0px;
+	padding: 0px;
+}
+
+.selectAdapterPanel {
+	width: 200px;
+	margin: 10px auto;
+}
+
+.selectMeasurePanel {
+	width: 200px;
+	margin: 10px auto;
+}
+
+.selectExtractorPanel {
+	width: 200px;
+	margin: 10px auto;
+}
+
+.contentPanel {
+	width: 100%;
+}
+
+.selectedLabel {
+	color: white !important;
+	background: blue;
+	padding: 5px;
+}
+
+.highlightLabel {
+	background: #FDD017;
+	padding: 5px;
+}
+
+.listAnchor {
+	text-decoration: none;
+	padding: 5px;
+}
+
+.listAnchor:hover {
+	text-decoration: none;
+}
+
+.listThumbnailsPanel {
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	border-top: 1px solid gray;
+}
+
+.listThumbnailsLabel {
+	color: gray;
+	margin-top: 5px;	
+}
+
+.thumbnail {
+	margin: 5px;
+	padding: 5px;
+}
+
+.dropBoxesPanel {
+	border: 1px solid black;
+	width: 500px;
+	margin: 5px auto;
+}
+
+.dropBoxPanel {
+	width: 100px;
+	height: 100px;
+	margin: 10px auto;
+	padding: 10px;
+	background: orange;
+	border: 1px black solid;
+	vertical-align: middle;
+}
+
+HTML, BODY {
+    height: 100%;
+}
+
+.box {
+	border: 1px dotted green;
+}
+
+.currentSelectionsView {
+	width: 800px;
+	margin: 5px auto;
+}
+
+.mainSection {
+	width: 95%;
+	margin: 15px 0px 15px 15px;
+}
+
+.jobStatusPanel {
+	width: 100%;
+	padding: 5px;
+}
+
+.jobStatusSubPanel {
+	margin: 0px 0px 10px 20px;
+	padding: 0px;
+}
+
+.pairwiseComparisonPanel {
+	display:inline;
+	position:relative;
+	width: 100%;
+	border:1px solid red;
+}
+
+.enabledExtractor {
+	border: 1px solid red;
+}
+
+.hideExtractor {
+	color: gray !important;
+	background: white;
+}
+
+.hideExtractor:hover {
+	color: gray;
+	cursor: default;
+}
+
+.enabledMeasure {
+	border: 1px solid red;
+}
+
+.hideMeasure {
+	color: gray !important;
+	background: white;
+}
+
+.hideMeasure:hover {
+	color: gray;
+	cursor: default;
+}
+
+.logo {
+    padding-left: 10px;	
+}
+
+.logo a {
+	color: #C4273A;
+	text-decoration: none;
+}
+
+.logo a:visited {
+	color: #C4273A;
+}
+
+.logo a:hover {
+	text-decoration: underline;
+}
+
+.resultDisclosurePanel {
+	margin: 10px
+}
+
+.centralPanelLayout {
+	overflow: auto;
+}
+
+.loginWidget {
+	float: right;
+}
+	
+.loginWidget a:visited {
+	color: black;
+}
