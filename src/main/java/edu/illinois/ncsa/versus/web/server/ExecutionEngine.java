@@ -35,7 +35,7 @@ public class ExecutionEngine {
 	 */
 	public void submit(Job job) {
 		jobs.add(job);
-		Set<PairwiseComparison> comparison = job.getComparison();
+		Set<PairwiseComparison> comparison = job.getComparisons();
 		for (PairwiseComparison pairwiseComparison : comparison) {
 			ComputeThread computeThread = new ComputeThread(pairwiseComparison, job, beanSession);
 			newFixedThreadPool.execute(computeThread);

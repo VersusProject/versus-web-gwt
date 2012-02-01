@@ -63,7 +63,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 		// submit job for execution
 		Job job = new Job();
 		job.setStarted(new Date());
-		job.setComparison(comparisons);
+		job.setComparisons(comparisons);
 		executionEngine.submit(job);
 		return job;
 	}

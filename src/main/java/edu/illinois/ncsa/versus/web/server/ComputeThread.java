@@ -122,7 +122,7 @@ public class ComputeThread extends Thread {
 			job.updateSimilarityValue(pairwiseComparison.getUri(), compare.getValue());
 			log.debug("Done computing similarity between " + file1 + " and " + file2);
 		} catch (Exception e1) {
-			job.setStatus(pairwiseComparison.getUri(), ComparisonStatus.FAILED);
+            job.updateError(pairwiseComparison.getUri(), e1.getMessage());
 			log.error("Error computing similarity between " + file1 + " and " 
 					+ file2 + " [" + pairwiseComparison.getUri() + "]", e1);
 		}

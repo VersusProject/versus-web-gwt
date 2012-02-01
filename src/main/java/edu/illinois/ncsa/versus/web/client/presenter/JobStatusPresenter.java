@@ -57,7 +57,7 @@ public class JobStatusPresenter implements Presenter {
 		this.job = job;
 		this.submission = submission;
 		display.setStart(job.getStarted());
-		display.setComparisons(job.getComparison());
+		display.setComparisons(job.getComparisons());
 		display.setAdapter(submission.getAdapter().getName());
 		display.setExtractor(submission.getExtraction().getName());
 		display.setMeasure(submission.getMeasure().getName());

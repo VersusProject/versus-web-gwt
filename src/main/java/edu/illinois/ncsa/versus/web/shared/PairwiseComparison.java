@@ -25,9 +25,10 @@ public class PairwiseComparison extends CETBean {
 	private String measureId;
 	
 	private Double similarity;
+    
+    private String error;
 	
 	public PairwiseComparison() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**
@@ -95,4 +96,12 @@ public class PairwiseComparison extends CETBean {
 	public String getMeasureId() {
 		return measureId;
 	}
+    
+    public void setError(String error) {
+        this.error = error;
+    }
+    
+    public String getError() {
+        return error;
+    }
 }

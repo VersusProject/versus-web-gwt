@@ -129,7 +129,7 @@ public class JobStatusView extends Composite implements Display {
 	@Override
 	public void showResults(Job job) {
 		disclosurePanel.setOpen(true);
-		Set<PairwiseComparison> comparisons = job.getComparison();
+		Set<PairwiseComparison> comparisons = job.getComparisons();
 		comparisonsPanel.clear();
 		List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(
 				comparisons);
@@ -173,8 +173,8 @@ public class JobStatusView extends Composite implements Display {
 					comparison.getUri());
 			if (comparisonStatus == ComparisonStatus.ENDED) {
 				text += "<b>" + comparison.getSimilarity() + "</b>";
-			} else {
-				text += "<b>" + comparisonStatus + "</b>";
+			} else if (comparisonStatus == ComparisonStatus.FAILED) {
+				text += "<b>" + comparisonStatus + "</b><br />" + comparison.getError();
 			}
 			HTML similarity = new HTML(text);
 			pairwiseComparisonPanel.add(similarity);
