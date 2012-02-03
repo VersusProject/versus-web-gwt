@@ -259,7 +259,12 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
             @Override
             public void onLoggedIn(LoggedInEvent loggedInEvent) {
-                parseHistoryToken(History.getToken());
+                final String token = History.getToken();
+                if (token.startsWith("login")) {
+                    History.newItem("listDatasets", true);
+                } else {
+                    parseHistoryToken(token);
+                }
             }
         });
 
