@@ -35,7 +35,6 @@ import edu.illinois.ncsa.mmdb.web.client.ui.DatasetWidget;
 import edu.illinois.ncsa.mmdb.web.client.ui.HomePage;
 import edu.illinois.ncsa.mmdb.web.client.ui.JiraIssuePage;
 import edu.illinois.ncsa.mmdb.web.client.ui.LoginPage;
-import edu.illinois.ncsa.mmdb.web.client.ui.LoginStatusWidget;
 import edu.illinois.ncsa.mmdb.web.client.ui.RequestNewPasswordPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.RoleAdministrationPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.SignupPage;
@@ -51,12 +50,7 @@ import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter;
-import edu.illinois.ncsa.versus.web.client.view.CurrentSelectionsView;
-import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
-import edu.illinois.ncsa.versus.web.client.view.ListThumbails;
-import edu.illinois.ncsa.versus.web.client.view.SelectAdapterView;
-import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
-import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
+import edu.illinois.ncsa.versus.web.client.view.*;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
@@ -84,6 +78,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
     /**
      * This is the entry point method.
      */
+    @Override
     public void onModuleLoad() {
 
         // HACK required by PreviewWidget
@@ -110,10 +105,10 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
         headerPanel.add(homeLink);
 
-        // login status widget
-        LoginStatusWidget loginStatusWidget = new LoginStatusWidget(eventBus);
-        loginStatusWidget.addStyleName("loginWidget");
-        headerPanel.add(loginStatusWidget);
+        // login status widget        
+        UserMenu userMenu = new UserMenu(eventBus, dispatchAsync);
+        userMenu.addStyleName("loginWidget");
+        headerPanel.add(userMenu);
 
         centralPanel = new SimpleLayoutPanel();
         centralPanel.addStyleName("centralPanelLayout");
@@ -272,6 +267,8 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
             @Override
             public void onLoggedOut(LoggedOutEvent loggedOutEvent) {
+                //FIXME: When logged out, clear permissions cache
+                permissionUtil = new PermissionUtil(dispatchAsync);
                 History.newItem("login");
             }
         });
