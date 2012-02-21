@@ -51,69 +51,69 @@
         <dependency>
             <groupId>edu.illinois.ncsa.isda</groupId>
             <artifactId>mmdb-web</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>edu.uiuc.ncsa.cet</groupId>
-            <artifactId>bean</artifactId>
-            <version>1.0</version>
+            <artifactId>cet-bean</artifactId>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>edu.uiuc.ncsa.cet</groupId>
-            <artifactId>bean.tupelo</artifactId>
-            <version>1.0</version>
+            <artifactId>cet-bean-tupelo</artifactId>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-kernel</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-server</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-util</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-client</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-rdf-ntriples</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-mysql</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-sql</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-jena</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tupeloproject</groupId>
             <artifactId>tupelo-sparql</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

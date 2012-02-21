@@ -178,7 +178,10 @@ HTML, BODY {
 }
 
 .logo {
+    width: auto;
+    height: auto;
     padding-left: 10px;	
+    padding-right: 15px;
 }
 
 .logo a {
@@ -208,4 +211,57 @@ HTML, BODY {
 
 .loginWidget a:visited {
     color: black;
+}
+
+.loginWidget .gwt-Label {
+    border: 1px solid black;
+    cursor: pointer;
+    padding: 3px;
+} 
+
+.gwt-PopupPanel {
+    border: 1px solid black;
+}
+
+.gwt-TabLayoutPanel {
+    height: 100%;
+    margin-top: 4px;
+}
+
+/** the tab bar */
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
+  padding-top: 2px;
+  border-bottom: 1px solid #888888;
+  background: white;
+}
+
+/** the individual tab in the tab bar */
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+  padding: 4px;
+  cursor: pointer;
+  background: white;
+  border: 1px solid #888888;
+  margin-right: 2px;
+  font-weight: normal;
+  margin-bottom: -1px;
+  float: left;
+  font-size: 0.9em;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+  font-weight: bold;
+  cursor: default;
+  border-bottom: 1px solid white;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
+    border: none;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabInner {
+    border: none;
+}
+
+.gwt-TabLayoutPanelContentContainer {
+    border: none;
 }
