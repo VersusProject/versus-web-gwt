@@ -16,9 +16,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
-import edu.illinois.ncsa.mmdb.web.client.UploadWidget;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedEvent;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetUploadedHandler;
 import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
 import edu.illinois.ncsa.versus.web.client.RegistryService;
@@ -101,19 +98,6 @@ public class Workflow extends Composite {
         VerticalPanel selectionDisclosureBody = new VerticalPanel();
         selectionDisclosureBody.setWidth("100%");
         selectionDisclosureBody.add(datasetTableView.asWidget());
-
-//        // upload widget
-//        uploadWidget = new UploadWidget(false);
-//        uploadWidget.addDatasetUploadedHandler(new DatasetUploadedHandler() {
-//
-//            @Override
-//            public void onDatasetUploaded(DatasetUploadedEvent event) {
-//                GWT.log("Done uploading file");
-//                datasetTablePresenter.refresh();
-//            }
-//        });
-//        selectionDisclosureBody.add(uploadWidget);
-
 
         // tab panel layout
         TabLayoutPanel tabPanel = new TabLayoutPanel(2, Style.Unit.EM);
