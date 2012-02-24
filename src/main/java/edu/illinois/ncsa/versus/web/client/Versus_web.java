@@ -10,6 +10,8 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.*;
+
+import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil.PermissionCallback;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
@@ -41,7 +43,7 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
  */
 public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
-    private HandlerManager eventBus;
+    private static final HandlerManager eventBus = MMDB.eventBus;
     private Workflow workflowWidget;
     private DockLayoutPanel appPanel;
     private ListThumbails listThumbails;
@@ -58,7 +60,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         // HACK required by PreviewWidget
 //		MMDB.getSessionState().setCurrentUser(new PersonBean());
 
-        eventBus = new HandlerManager(null);
+//        eventBus = new HandlerManager(null);
 
         permissionUtil = new PermissionUtil(dispatchAsync);
 
