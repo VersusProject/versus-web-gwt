@@ -15,6 +15,10 @@ import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil.PermissionCallback;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInHandler;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutEvent;
@@ -25,11 +29,12 @@ import edu.illinois.ncsa.mmdb.web.client.ui.admin.UserManagementWidget;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
+import edu.illinois.ncsa.versus.web.client.presenter.ListThumbnailsPresenter;
 import edu.illinois.ncsa.versus.web.client.ui.MainMenu;
 import edu.illinois.ncsa.versus.web.client.ui.UserMenu;
 import edu.illinois.ncsa.versus.web.client.ui.Workflow;
 import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
-import edu.illinois.ncsa.versus.web.client.view.ListThumbails;
+import edu.illinois.ncsa.versus.web.client.view.ListThumbnailsView;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
@@ -46,7 +51,6 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
     private static final HandlerManager eventBus = MMDB.eventBus;
     private Workflow workflowWidget;
     private DockLayoutPanel appPanel;
-    private ListThumbails listThumbails;
     private SimpleLayoutPanel centralPanel;
     public static final DispatchAsync dispatchAsync = new MyDispatchAsync();
     private PermissionUtil permissionUtil;
@@ -84,7 +88,9 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         centralPanel.addStyleName("centralPanelLayout");
 
         // footer
-        listThumbails = new ListThumbails(dispatchAsync, eventBus, dragController);
+        ListThumbnailsView listThumbnailsView = new ListThumbnailsView(dispatchAsync, eventBus, dragController);
+        ListThumbnailsPresenter listThumbnailsPresenter = new ListThumbnailsPresenter(eventBus, listThumbnailsView);
+//        listThumbnailsPresenter.go(appPanel);
 
         // // drop box panel
         // HorizontalPanel dropBoxPanel = new HorizontalPanel();
@@ -114,7 +120,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         // content.add(dropTarget);
 
         appPanel.addNorth(headerPanel, 2.5);
-        appPanel.addSouth(listThumbails, 10);
+        appPanel.addSouth(listThumbnailsPresenter.getWidget(), 10);
         appPanel.add(centralPanel);
         RootLayoutPanel.get().add(appPanel);
 
@@ -161,6 +167,24 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
                 //FIXME: When logged out, clear permissions cache
                 permissionUtil = new PermissionUtil(dispatchAsync);
                 History.newItem("login");
+            }
+        });
+
+        eventBus.addHandler(DatasetSelectedEvent.TYPE, new DatasetSelectedHandler() {
+
+            @Override
+            public void onDatasetSelected(DatasetSelectedEvent event) {
+                GWT.log("Dataset selected " + event.getUri());
+                MMDB.getSessionState().datasetSelected(event.getUri());
+            }
+        });
+
+        eventBus.addHandler(DatasetUnselectedEvent.TYPE, new DatasetUnselectedHandler() {
+
+            @Override
+            public void onDatasetUnselected(DatasetUnselectedEvent event) {
+                GWT.log("Dataset unselected " + event.getUri());
+                MMDB.getSessionState().datasetUnselected(event.getUri());
             }
         });
     }
@@ -226,6 +250,10 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         } else if (token.startsWith("listCollections")) {
             centralPanel.clear();
             centralPanel.add(new ListCollectionsPage(dispatchAsync, eventBus));
+        } else if (token.startsWith("collection")) {
+            centralPanel.clear();
+            centralPanel.add(new CollectionPage(getParams().get("uri"),
+                    dispatchAsync, eventBus));
         } else if (token.startsWith("upload")) {
             centralPanel.clear();
             centralPanel.add(new edu.illinois.ncsa.versus.web.client.ui.UploadPage(dispatchAsync));

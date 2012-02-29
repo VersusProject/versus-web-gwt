@@ -14,6 +14,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import edu.illinois.ncsa.mmdb.web.client.MMDB;
 
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
@@ -48,7 +49,6 @@ public class CurrentSelectionsPresenter implements Presenter {
 	private final RegistryServiceAsync registryService;
 	private final HandlerManager eventBus;
 	private final Display display;
-	private final Set<String> datasets;
 	protected ComponentMetadata adapter;
 	protected ComponentMetadata measure;
 	protected ComponentMetadata extractor;
@@ -72,7 +72,6 @@ public class CurrentSelectionsPresenter implements Presenter {
 				this.registryService = registryService;
 				this.eventBus = eventBus;
 				this.display = currentSelectionsView;
-				this.datasets = new HashSet<String>();
 	}
 
 	@Override
@@ -136,23 +135,6 @@ public class CurrentSelectionsPresenter implements Presenter {
 			}
 		});
 		
-		eventBus.addHandler(DatasetSelectedEvent.TYPE, new DatasetSelectedHandler() {
-			
-			@Override
-			public void onDatasetSelected(DatasetSelectedEvent event) {
-				datasets.add(event.getUri());
-			}
-		});
-		
-		eventBus.addHandler(DatasetUnselectedEvent.TYPE, new DatasetUnselectedHandler() {
-			
-			@Override
-			public void onDatasetUnselected(
-					DatasetUnselectedEvent datasetUnselectedEvent) {
-				datasets.remove(datasetUnselectedEvent.getUri());
-			}
-		});
-		
 		display.getExecuteButton().addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -167,7 +149,7 @@ public class CurrentSelectionsPresenter implements Presenter {
 	 */
 	protected void submitExecution() {
 		final Submission submission = new Submission();
-		submission.setDatasetsURI(datasets);
+		submission.setDatasetsURI(MMDB.getSessionState().getSelectedDatasets());
 		submission.setAdapter(adapter);
 		submission.setMeasure(measure);
 		submission.setExtraction(extractor);
