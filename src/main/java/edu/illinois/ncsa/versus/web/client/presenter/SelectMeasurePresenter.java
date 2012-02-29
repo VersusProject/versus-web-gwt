@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -56,6 +57,9 @@ public class SelectMeasurePresenter implements Presenter {
 		void disableMeasures(Set<Integer> measures);
 		Widget asWidget();
 		HasClickHandlers getMeasureAnchor(int index);
+		void hideTreeItemsChildren();
+		void displayTreeItemsChildren(String measure);
+		DialogBox createDialogBox();
 	}
 	
 	public SelectMeasurePresenter(RegistryServiceAsync registryService,
@@ -88,6 +92,7 @@ public class SelectMeasurePresenter implements Presenter {
 					boolean found = false;
 					for (String supportedOut : supportedOutputs) {
 						if (extractor.getSupportedInputs().contains(supportedOut)) {
+							display.displayTreeItemsChildren(event.getMeasureMetadata().getName());
 							found = true;
 							break;
 						}
@@ -124,6 +129,7 @@ public class SelectMeasurePresenter implements Presenter {
 		}
 		hiddenByExtractor.clear();
 		display.enableMeasures();
+		display.hideTreeItemsChildren();
 		for (Integer index : indexToMeasure.keySet()) {
 			addClickHandler(index);
 		}
