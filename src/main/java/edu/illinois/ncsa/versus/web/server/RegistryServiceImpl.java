@@ -17,6 +17,7 @@ import edu.illinois.ncsa.versus.adapter.Adapter;
 import edu.illinois.ncsa.versus.descriptor.Descriptor;
 import edu.illinois.ncsa.versus.extract.Extractor;
 import edu.illinois.ncsa.versus.measure.Measure;
+import edu.illinois.ncsa.versus.category.HasCategory;
 import edu.illinois.ncsa.versus.registry.CompareRegistry;
 import edu.illinois.ncsa.versus.web.client.RegistryService;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
@@ -41,7 +42,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		while (extractorIter.hasNext()) {
 			Extractor extractor = extractorIter.next();
 			ComponentMetadata extractorMetadata = new ComponentMetadata(
-					extractor.getClass().getName(), extractor.getName(), "");
+					extractor.getClass().getName(), extractor.getName(), "", "");
 			
 			for (Adapter adapter : registry.getAvailableAdapters(extractor)) {
 				extractorMetadata.addSupportedInput(adapter.getClass().getName());
@@ -62,8 +63,12 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Measure> measureIter = availableMeasures.iterator();
 		while (measureIter.hasNext()) {
 			Measure measure = measureIter.next();
+			String category = "Other";
+			if(measure instanceof HasCategory) {
+				category = ((HasCategory)measure).getCategory();
+			}
 			ComponentMetadata measureMetadata = new ComponentMetadata(measure
-					.getClass().getName(), measure.getName(), "");
+					.getClass().getName(), measure.getName(), "", category);
 			for(Class<? extends Descriptor> feature : measure.supportedFeaturesTypes()) {
 				measureMetadata.addSupportedInput(feature.getName());
 				log.debug("Measure " + measure.getClass().getName() + " supports feature " + feature.getName());
@@ -81,7 +86,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		while (adapterIter.hasNext()) {
 			Adapter adapter = adapterIter.next();
 			ComponentMetadata adapterMetadata = new ComponentMetadata(adapter
-					.getClass().getName(), adapter.getName(), "");
+					.getClass().getName(), adapter.getName(), "", "");
 			for (String mimeType : adapter.getSupportedMediaTypes()) {
 				adapterMetadata.addSupportedInput(mimeType);
 			}

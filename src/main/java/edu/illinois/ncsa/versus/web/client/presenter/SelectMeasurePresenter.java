@@ -16,7 +16,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -49,7 +48,7 @@ public class SelectMeasurePresenter implements Presenter {
 	private Set<Integer> hiddenByExtractor = new HashSet<Integer>();
 	
 	public interface Display {
-		int addMeasure(String measure);
+		int addMeasure(String measure, String category);
 		int getNumMeasures();
 		void enableMeasures();
 		void selectMeasure(int index);
@@ -57,9 +56,6 @@ public class SelectMeasurePresenter implements Presenter {
 		void disableMeasures(Set<Integer> measures);
 		Widget asWidget();
 		HasClickHandlers getMeasureAnchor(int index);
-		void hideTreeItemsChildren();
-		void displayTreeItemsChildren(String measure);
-		DialogBox createDialogBox();
 	}
 	
 	public SelectMeasurePresenter(RegistryServiceAsync registryService,
@@ -73,10 +69,11 @@ public class SelectMeasurePresenter implements Presenter {
 		eventBus.addHandler(AddMeasureEvent.TYPE, new AddMeasureEventHandler() {
 			
 			@Override
-			public void onAddMeasure(final AddMeasureEvent addMeasureEvent) {				
-				final int index = display.addMeasure(addMeasureEvent.getMeasureMetadata().getName());
-				measureToIndex.put(addMeasureEvent.getMeasureMetadata(), index);
-				indexToMeasure.put(index, addMeasureEvent.getMeasureMetadata());
+			public void onAddMeasure(final AddMeasureEvent addMeasureEvent) {			
+				ComponentMetadata measureMetada = addMeasureEvent.getMeasureMetadata();
+				final int index = display.addMeasure(measureMetada.getName(), measureMetada.getCategory());
+				measureToIndex.put(measureMetada, index);
+				indexToMeasure.put(index, measureMetada);
 				HandlerRegistration handlerRegistration = display.getMeasureAnchor(index).addClickHandler(new SelectionHandler(index));
 				clickHandlers.add(handlerRegistration);
 			}
@@ -92,7 +89,6 @@ public class SelectMeasurePresenter implements Presenter {
 					boolean found = false;
 					for (String supportedOut : supportedOutputs) {
 						if (extractor.getSupportedInputs().contains(supportedOut)) {
-							display.displayTreeItemsChildren(event.getMeasureMetadata().getName());
 							found = true;
 							break;
 						}
@@ -129,7 +125,6 @@ public class SelectMeasurePresenter implements Presenter {
 		}
 		hiddenByExtractor.clear();
 		display.enableMeasures();
-		display.hideTreeItemsChildren();
 		for (Integer index : indexToMeasure.keySet()) {
 			addClickHandler(index);
 		}
