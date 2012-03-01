@@ -92,10 +92,17 @@ public class Workflow extends Composite {
 
         // dataset selection
         DynamicTableView datasetTableView = new DynamicTableView();
-        DatasetTablePresenter datasetTablePresenter = new DatasetTablePresenter(dispatchAsync,
+        final DatasetTablePresenter datasetTablePresenter = new DatasetTablePresenter(dispatchAsync,
                 eventBus, datasetTableView);
         datasetTablePresenter.bind();
-        VerticalPanel selectionDisclosureBody = new VerticalPanel();
+        VerticalPanel selectionDisclosureBody = new VerticalPanel() {
+
+            @Override
+            protected void onDetach() {
+                super.onDetach();
+                datasetTablePresenter.unbind();
+            }
+        };
         selectionDisclosureBody.setWidth("100%");
         selectionDisclosureBody.add(datasetTableView.asWidget());
 
@@ -112,7 +119,7 @@ public class Workflow extends Composite {
         populate();
         datasetTablePresenter.refresh();
     }
-    
+
     public HasWidgets getResultWidget() {
         return previousDisclosureBody;
     }

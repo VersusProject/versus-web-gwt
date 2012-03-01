@@ -16,10 +16,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
 import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.presenter.ListThumbnailsPresenter.Display;
 
@@ -30,7 +26,7 @@ import edu.illinois.ncsa.versus.web.client.presenter.ListThumbnailsPresenter.Dis
 public class ListThumbnailsView extends Composite implements Display {
 
     private HorizontalPanel mainPanel;
-    private Map<String, PreviewWidget> previews = new HashMap<String, PreviewWidget>();
+    private Map<String, PreviewWidget> previews = new HashMap<String, PreviewWidget>(16);
     private DispatchAsync service;
 
     public ListThumbnailsView(DispatchAsync dispatchAsync, HandlerManager eventBus, final PickupDragController dragController) {
@@ -43,17 +39,25 @@ public class ListThumbnailsView extends Composite implements Display {
 
     @Override
     public void addThumbnail(String uri) {
-        PreviewWidget previewWidget = new PreviewWidget(uri,
-                GetPreviews.SMALL, "dataset?id=" + uri, service);
-        previewWidget.addStyleName("thumbnail");
-        mainPanel.add(previewWidget);
-        previews.put(uri, previewWidget);
+        if (!previews.containsKey(uri)) {
+            PreviewWidget previewWidget = new PreviewWidget(uri,
+                    GetPreviews.SMALL, "dataset?id=" + uri, service);
+            previewWidget.addStyleName("thumbnail");
+            mainPanel.add(previewWidget);
+            previews.put(uri, previewWidget);
+        } else {
+            GWT.log("Ignoring already added dataset: " + uri);
+        }
     }
 
     @Override
     public void removeThumbnail(String uri) {
-        PreviewWidget previewWidget = previews.get(uri);
-        mainPanel.remove(previewWidget);
-        previews.remove(uri);
+        if (previews.containsKey(uri)) {
+            PreviewWidget previewWidget = previews.get(uri);
+            mainPanel.remove(previewWidget);
+            previews.remove(uri);
+        } else {
+            GWT.log("Ignoring missing dataset: " + uri);
+        }
     }
 }

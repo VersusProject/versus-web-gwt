@@ -15,10 +15,7 @@ import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil.PermissionCallback;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
-import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.*;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInHandler;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutEvent;
@@ -38,8 +35,12 @@ import edu.illinois.ncsa.versus.web.client.view.ListThumbnailsView;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
+
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 /**
@@ -185,6 +186,20 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
             public void onDatasetUnselected(DatasetUnselectedEvent event) {
                 GWT.log("Dataset unselected " + event.getUri());
                 MMDB.getSessionState().datasetUnselected(event.getUri());
+            }
+        });
+
+        eventBus.addHandler(AllDatasetsUnselectedEvent.TYPE, new AllDatasetsUnselectedHandler() {
+
+            @Override
+            public void onAllDatasetsUnselected(AllDatasetsUnselectedEvent event) {
+                GWT.log("All datasets unselected");
+                Set<String> toDeselect = new HashSet<String>(MMDB.getSessionState().getSelectedDatasets());
+                for (String datasetUri : toDeselect) {
+                    DatasetUnselectedEvent ue = new DatasetUnselectedEvent();
+                    ue.setUri(datasetUri);
+                    eventBus.fireEvent(ue);
+                }
             }
         });
     }
