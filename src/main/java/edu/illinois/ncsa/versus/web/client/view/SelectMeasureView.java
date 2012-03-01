@@ -4,7 +4,7 @@
 package edu.illinois.ncsa.versus.web.client.view;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +45,7 @@ public class SelectMeasureView extends Composite implements Display {
 	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
-	private Hashtable<String, VerticalPanel> categories = new Hashtable<String, VerticalPanel>();
+	private HashMap<String, VerticalPanel> categories = new HashMap<String, VerticalPanel>();
 
 	public SelectMeasureView() {
 		mainPanel = new FlowPanel();
