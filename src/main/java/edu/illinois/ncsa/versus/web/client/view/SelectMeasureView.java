@@ -4,6 +4,7 @@
 package edu.illinois.ncsa.versus.web.client.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -37,13 +39,13 @@ import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter.Disp
 public class SelectMeasureView extends Composite implements Display {
 
 	private final FlowPanel mainPanel;
-	private final VerticalPanel listMeasuresPanel;
+	private final VerticalPanel listCategoriesPanel;
 	private final List<Anchor> measureAnchors = new ArrayList<Anchor>();
 	
 	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
-	private List<TreeItem> treeItems = new ArrayList<TreeItem>();
+	private HashMap<String, VerticalPanel> categories = new HashMap<String, VerticalPanel>();
 
 	public SelectMeasureView() {
 		mainPanel = new FlowPanel();
@@ -51,20 +53,10 @@ public class SelectMeasureView extends Composite implements Display {
 		Label titleLabel = new Label("Measures");
 		titleLabel.addStyleName("titleLabel");
 		mainPanel.add(titleLabel);
-		listMeasuresPanel = new VerticalPanel();
-		listMeasuresPanel.setSpacing(10);
-		
-		treeItems.add(new TreeItem("Lp Minkowski family")); //index 0
-		treeItems.add(new TreeItem("L1 family")); //index 1
-		treeItems.add(new TreeItem("Intersection family")); //index 2
-		treeItems.add(new TreeItem("Inner Product family")); //index 3
-		treeItems.add(new TreeItem("Fidelity family or Squared-chord family")); //index 4
-		treeItems.add(new TreeItem("Squared L2 family or X2 family")); //index 5
-		treeItems.add(new TreeItem("Shannon's entropy family")); //index 6
-		treeItems.add(new TreeItem("Combinations")); //index 7
-		treeItems.add(new TreeItem("Other")); //index 8
-		
-		mainPanel.add(listMeasuresPanel);
+		listCategoriesPanel = new VerticalPanel();
+		listCategoriesPanel.setSpacing(10);
+				
+		mainPanel.add(listCategoriesPanel);
 		initWidget(mainPanel);
 	}
 	
@@ -74,56 +66,22 @@ public class SelectMeasureView extends Composite implements Display {
 	}
 
 	@Override
-	public int addMeasure(String measure) {
+	public int addMeasure(String measure, String category) {
 		final Anchor measureAnchor = new Anchor(measure);
 		measureAnchors.add(measureAnchor);
-		listMeasuresPanel.add(measureAnchor);
+		listCategoriesPanel.add(measureAnchor);
 		
-		if ((measureAnchor.getText().contains("EuclideanL2")) || (measureAnchor.getText().contains("CityBlock"))) {
-			treeItems.get(0).addItem(measureAnchor); //index 0 = Lp Minkowski family
-		} else if ((measureAnchor.getText().contains("Sorensen")) || (measureAnchor.getText().contains("Soergel")) || (measureAnchor.getText().equals("KulczynskiMeasure")) || (measureAnchor.getText().contains("Canberra")) || (measureAnchor.getText().contains("Lorentzian"))) {
-			treeItems.get(1).addItem(measureAnchor); //index 1 = L1 family
-		} else if ((measureAnchor.getText().contains("Czekanowski") || (measureAnchor.getText().contains("Motyka")) || (measureAnchor.getText().equals("KulczynskiSMeasure")) || (measureAnchor.getText().contains("Ruzicka")) || (measureAnchor.getText().contains("Tanimoto"))) || measureAnchor.getText().contains("Hedges") || (measureAnchor.getText().equals("IntersectionMeasure"))) {
-			treeItems.get(2).addItem(measureAnchor); //index 2 = Intersection family
-		} else if ((measureAnchor.getText().contains("InnerProduct")) || (measureAnchor.getText().contains("Harmonic")) || (measureAnchor.getText().contains("Cosine")) || (measureAnchor.getText().contains("KumarHassebrook")) || (measureAnchor.getText().contains("Jaccard")) || (measureAnchor.getText().contains("Dice"))) {
-			treeItems.get(3).addItem(measureAnchor); //index 3 = Inner Product family
-		} else if ((measureAnchor.getText().contains("Bhattacharyya")) || (measureAnchor.getText().contains("Fidelity")) || (measureAnchor.getText().contains("Hellinger")) || (measureAnchor.getText().contains("Matusita")) || (measureAnchor.getText().contains("SquaredChord"))){
-			treeItems.get(4).addItem(measureAnchor); //index 4 = Fidelity family or Squared-chord family
-		} else if ((measureAnchor.getText().contains("SquaredEuclidean")) || (measureAnchor.getText().contains("Pearson")) || (measureAnchor.getText().contains("Neyman")) || (measureAnchor.getText().contains("ProbSym")) || (measureAnchor.getText().equals("DivergenceMeasure")) || (measureAnchor.getText().contains("Clark")) || (measureAnchor.getText().contains("Additive"))) {
-			treeItems.get(5).addItem(measureAnchor); //index 5 = Squared L2 family or X2 family
-		} else if ((measureAnchor.getText().contains("Kullback")) || (measureAnchor.getText().contains("Jeffrey")) || ((measureAnchor.getText().contains("KDivergenceMeasure"))) || ((measureAnchor.getText().contains("Topsoe"))) || ((measureAnchor.getText().contains("Jensen")))) {
-			treeItems.get(6).addItem(measureAnchor); //index 6 = Shannon's entropy family
-		} else if ((measureAnchor.getText().contains("Taneja")) || (measureAnchor.getText().contains("Taneja")) || ((measureAnchor.getText().contains("KumarJohnson"))) || ((measureAnchor.getText().contains("AvgDifference")))) {
-			treeItems.get(7).addItem(measureAnchor); //index 7 = Combinations
+		VerticalPanel categoryPanel = null;
+		if(categories.containsKey(category)) {
+			categoryPanel = categories.get(category);
 		} else {
-			treeItems.get(8).addItem(measureAnchor); //index 8 = other
+			categoryPanel = new VerticalPanel(); 
+			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
+			disclosurePanel.add(categoryPanel);
+			listCategoriesPanel.add(disclosurePanel);
+			categories.put(category, categoryPanel);
 		}
-		
-//		for (Anchor anchor : measureAnchors) {
-//			GWT.log("################");
-//			GWT.log("Measure Text1 from List: "+ anchor.getText());
-//			GWT.log("Measure Text2: "+ measureAnchor.getText());
-//			GWT.log("Measure Anchors List Size: "+measureAnchors.size());
-//			GWT.log("################");
-////			if (anchor.getClass().getInterfaces().equals("HasCategory")) {
-////				if (anchor.getText().equals(measureAnchor.getText())) {
-////					
-////				}
-////			}
-//		}
-//		
-		Tree t = new Tree();
-		t.addItem(treeItems.get(0));
-		t.addItem(treeItems.get(1));
-		t.addItem(treeItems.get(2));
-		t.addItem(treeItems.get(3));
-		t.addItem(treeItems.get(4));
-		t.addItem(treeItems.get(5));
-		t.addItem(treeItems.get(6));
-		t.addItem(treeItems.get(7));
-		t.addItem(treeItems.get(8));
-		
-		mainPanel.add(t);
+		categoryPanel.add(measureAnchor);
 		
 		int index = measureAnchors.indexOf(measureAnchor);
 		addStyleAndHandlers(index);
@@ -254,97 +212,5 @@ public class SelectMeasureView extends Composite implements Display {
 			measureAnchors.get(index).addStyleName("hideMeasure");
 			removeStyleAndHandlers(index);
 		}
-	}
-
-	@Override
-	public void hideTreeItemsChildren() {
-		//When the view is reset or no measure is highlighted  
-		for (int i = 0; i < treeItems.size(); i++) {
-			treeItems.get(i).setState(false);
-		}
-		
-	}
-
-	@Override
-	public void displayTreeItemsChildren(String measure) {
-		//Display tree children if measures of these trees items are highlighted
-				GWT.log("measure in select measure view:"+ measure);
-				
-				if (measure.contains("Array")) {
-					treeItems.get(8).setState(true); //index 8
-					
-					treeItems.get(0).setState(false);
-					treeItems.get(1).setState(false);
-					treeItems.get(2).setState(false);
-					treeItems.get(3).setState(false);
-					treeItems.get(4).setState(false);
-					treeItems.get(5).setState(false);
-					treeItems.get(6).setState(false);
-					treeItems.get(7).setState(false);
-				} else if ((measure.contains("MD5")) || (measure.contains("Dummy"))) {
-					treeItems.get(8).setState(true); //index 8
-					
-					treeItems.get(0).setState(false);
-					treeItems.get(1).setState(false);
-					treeItems.get(2).setState(false);
-					treeItems.get(3).setState(false);
-					treeItems.get(4).setState(false);
-					treeItems.get(5).setState(false);
-					treeItems.get(6).setState(false);
-					treeItems.get(7).setState(false);
-				} else if (measure.contains("LabeledArray")) {
-					treeItems.get(8).setState(true); //index 8
-					
-					treeItems.get(0).setState(false);
-					treeItems.get(1).setState(false);
-					treeItems.get(2).setState(false);
-					treeItems.get(3).setState(false);
-					treeItems.get(4).setState(false);
-					treeItems.get(5).setState(false);
-					treeItems.get(6).setState(false);
-					treeItems.get(7).setState(false);
-				} else if (measure.contains("Grayscale Histogram")) {
-					treeItems.get(0).setState(true); //index 0
-					treeItems.get(1).setState(true); //index 1
-					treeItems.get(2).setState(true); //index 2
-					treeItems.get(3).setState(true); //index 3
-					treeItems.get(4).setState(true); //index 4
-					treeItems.get(5).setState(true); //index 5
-					treeItems.get(6).setState(true); //index 6
-					treeItems.get(7).setState(true); //index 7
-					treeItems.get(8).setState(true); //index 8
-				} else if (measure.contains("RGB Histogram")) {
-					treeItems.get(0).setState(true); //index 0
-					treeItems.get(1).setState(true); //index 1
-					treeItems.get(2).setState(true); //index 2
-					treeItems.get(3).setState(true); //index 3
-					treeItems.get(4).setState(true); //index 4
-					treeItems.get(5).setState(true); //index 5
-					treeItems.get(6).setState(true); //index 6
-					treeItems.get(7).setState(true); //index 7
-					treeItems.get(8).setState(true); //index 8
-				} else if (measure.contains("Signature Vector")) {
-					this.hideTreeItemsChildren(); // no measures
-				} else if (measure.contains("Pixel Histogram")) {
-					treeItems.get(5).setState(true); //index 7
-					treeItems.get(8).setState(true); //index 8
-					
-					treeItems.get(0).setState(false);
-					treeItems.get(1).setState(false);
-					treeItems.get(2).setState(false);
-					treeItems.get(3).setState(false);
-					treeItems.get(4).setState(false);
-					treeItems.get(6).setState(false);
-					treeItems.get(7).setState(false);
-				} else if (measure.contains("Vector")) {
-					this.hideTreeItemsChildren(); // no measures
-				}
-		
-	}
-
-	@Override
-	public DialogBox createDialogBox() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

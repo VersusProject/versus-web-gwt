@@ -16,15 +16,17 @@ public class ComponentMetadata implements Serializable {
 	private String id;
 	private String name;
 	private String description;
+	private String category;
 	private Set<String> supportedInputs = new HashSet<String>();
 	private Set<String> supportedOutputs = new HashSet<String>();
 	
 	public ComponentMetadata() {}
 	
-	public ComponentMetadata(String id, String name, String description) {
+	public ComponentMetadata(String id, String name, String description, String category) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
+		this.category = category;
 	}
 
 	public String getId() {
@@ -37,6 +39,10 @@ public class ComponentMetadata implements Serializable {
 
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getCategory() {
+		return category;
 	}
 
 	public void setSupportedInputs(Set<String> supportedInputs) {
