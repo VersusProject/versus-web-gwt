@@ -15,6 +15,7 @@
         <gwt.version>2.4.0</gwt.version>
         <runTarget>Versus_web.html</runTarget>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
 
 

@@ -3,13 +3,6 @@
  */
 package edu.illinois.ncsa.versus.web.client.presenter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,17 +11,10 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
-import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
-import edu.illinois.ncsa.versus.web.client.event.AddMeasureEventHandler;
-import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedEvent;
-import edu.illinois.ncsa.versus.web.client.event.ExtractorSelectedHandler;
-import edu.illinois.ncsa.versus.web.client.event.ExtractorUnselectedEvent;
-import edu.illinois.ncsa.versus.web.client.event.ExtractorUnselectedHandler;
-import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedEvent;
-import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedEvent;
+import edu.illinois.ncsa.versus.web.client.event.*;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
+import java.util.*;
 
 /**
  * @author lmarini
@@ -88,8 +74,10 @@ public class SelectMeasurePresenter implements Presenter {
 				for (ComponentMetadata extractor : measureToIndex.keySet()) {
 					boolean found = false;
 					for (String supportedOut : supportedOutputs) {
+                                                System.out.println("## supportedOut ##:"+ supportedOut);
 						if (extractor.getSupportedInputs().contains(supportedOut)) {
-							found = true;
+                                                        //display.makeCategoryVisible(event.getMeasureMetadata().getName());
+                                                        found = true;
 							break;
 						}
 					}

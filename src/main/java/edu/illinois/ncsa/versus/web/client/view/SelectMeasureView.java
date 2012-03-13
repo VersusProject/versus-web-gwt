@@ -19,13 +19,10 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -46,7 +43,7 @@ public class SelectMeasureView extends Composite implements Display {
 	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
 	private HashMap<String, VerticalPanel> categories = new HashMap<String, VerticalPanel>();
-
+        
 	public SelectMeasureView() {
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName("selectMeasurePanel");
@@ -70,17 +67,19 @@ public class SelectMeasureView extends Composite implements Display {
 		final Anchor measureAnchor = new Anchor(measure);
 		measureAnchors.add(measureAnchor);
 		listCategoriesPanel.add(measureAnchor);
-		
+
 		VerticalPanel categoryPanel = null;
 		if(categories.containsKey(category)) {
 			categoryPanel = categories.get(category);
 		} else {
-			categoryPanel = new VerticalPanel(); 
+			categoryPanel = new VerticalPanel();
+			categoryPanel.addStyleName("selectMeasurePanel");
 			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
 			disclosurePanel.add(categoryPanel);
 			listCategoriesPanel.add(disclosurePanel);
 			categories.put(category, categoryPanel);
-		}
+                        //makeCategoryVisible(disclosurePanel, category);		
+                }
 		categoryPanel.add(measureAnchor);
 		
 		int index = measureAnchors.indexOf(measureAnchor);
@@ -213,4 +212,12 @@ public class SelectMeasureView extends Composite implements Display {
 			removeStyleAndHandlers(index);
 		}
 	}
+
+
+//        public void makeCategoryVisible(DisclosurePanel disclosurePanel, String category) {
+//
+//            if (category.contains("Dummy")) {
+//            disclosurePanel.setOpen(true);
+//            } 
+//        }
 }

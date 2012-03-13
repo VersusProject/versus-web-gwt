@@ -48,8 +48,9 @@
 }
 
 .selectMeasurePanel {
-    width: 200px;
+    width: 300px;
     margin: 10px auto;
+    line-height: 2.0;
 }
 
 .selectExtractorPanel {

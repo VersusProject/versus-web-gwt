@@ -1,7 +1,6 @@
 package edu.illinois.ncsa.versus.web.client.event;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 
 public class AddMeasureEvent extends GwtEvent<AddMeasureEventHandler> {

@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.illinois.ncsa.versus.adapter.Adapter;
@@ -65,7 +66,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 			Measure measure = measureIter.next();
 			String category = "Other";
 			if(measure instanceof HasCategory) {
-				category = ((HasCategory)measure).getCategory();
+				category = ((HasCategory) measure).getCategory();
 			}
 			ComponentMetadata measureMetadata = new ComponentMetadata(measure
 					.getClass().getName(), measure.getName(), "", category);
