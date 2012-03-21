@@ -1,3 +1,11 @@
+html {
+	overflow-y: auto; 
+}
+
+.page {
+    padding: 0px;
+}
+
 .sendButton {
     display: block;
     font-size: 16pt;
@@ -226,7 +234,6 @@ HTML, BODY {
 
 .gwt-TabLayoutPanel {
     height: 100%;
-    margin-top: 4px;
 }
 
 /** the tab bar */

@@ -105,11 +105,12 @@ public class Workflow extends Composite {
         };
         selectionDisclosureBody.setWidth("100%");
         selectionDisclosureBody.add(datasetTableView.asWidget());
+        ScrollPanel selectedDataScroll = new ScrollPanel(selectionDisclosureBody);
 
         // tab panel layout
         TabLayoutPanel tabPanel = new TabLayoutPanel(2, Style.Unit.EM);
         tabPanel.setWidth("100%");
-        tabPanel.add(selectionDisclosureBody, "Select Data");
+        tabPanel.add(selectedDataScroll, "Selected Data");
         tabPanel.add(comparePanel, "Compare");
         tabPanel.add(previousExecScroll, "View Results");
         tabPanel.selectTab(0);

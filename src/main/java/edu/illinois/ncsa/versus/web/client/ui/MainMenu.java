@@ -31,28 +31,33 @@ public class MainMenu extends Composite {
         logoLink.addStyleName("logo");
         navMenu.add(logoLink);
 
-        // datasets
-        Hyperlink listLink = new Hyperlink("Workflow", "");
-        listLink.addStyleName("navMenuLink");
-        navMenu.add(listLink);
         HTML bullet = new HTML("&bull;");
         bullet.addStyleName("navMenuText");
-        navMenu.add(bullet);
         
+        // workflow
+        Hyperlink workflowLink = new Hyperlink("Workflow", "");
+        workflowLink.addStyleName("navMenuLink");
+        navMenu.add(workflowLink);
+        navMenu.add(bullet);
+
+        // data
+        Hyperlink dataLink = new Hyperlink("Data", "listDatasets");
+        dataLink.addStyleName("navMenuLink");
+        navMenu.add(dataLink);
+        navMenu.add(bullet);
+
         // collections
         Hyperlink collectionsLink = new Hyperlink("Collections",
                 "listCollections");
         collectionsLink.addStyleName("navMenuLink");
         navMenu.add(collectionsLink);
-        bullet = new HTML("&bull;");
-        bullet.addStyleName("navMenuText");
         navMenu.add(bullet);
-        
+
         // upload link
         Hyperlink uploadLink = new Hyperlink("Upload", "upload");
         uploadLink.addStyleName("navMenuLink");
         navMenu.add(uploadLink);
-               
+
         initWidget(navMenu);
     }
 }

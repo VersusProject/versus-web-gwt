@@ -1,6 +1,5 @@
 package edu.illinois.ncsa.versus.web.client;
 
-import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -10,37 +9,32 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.*;
-
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil.PermissionCallback;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
 import edu.illinois.ncsa.mmdb.web.client.event.*;
+import edu.illinois.ncsa.mmdb.web.client.ui.*;
+import edu.illinois.ncsa.mmdb.web.client.ui.admin.RoleAdministrationWidget;
+import edu.illinois.ncsa.mmdb.web.client.ui.admin.UserManagementWidget;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInHandler;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutHandler;
-import edu.illinois.ncsa.mmdb.web.client.ui.*;
-import edu.illinois.ncsa.mmdb.web.client.ui.admin.RoleAdministrationWidget;
-import edu.illinois.ncsa.mmdb.web.client.ui.admin.UserManagementWidget;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
-import edu.illinois.ncsa.versus.web.client.presenter.ListThumbnailsPresenter;
 import edu.illinois.ncsa.versus.web.client.ui.MainMenu;
 import edu.illinois.ncsa.versus.web.client.ui.UserMenu;
 import edu.illinois.ncsa.versus.web.client.ui.Workflow;
 import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
-import edu.illinois.ncsa.versus.web.client.view.ListThumbnailsView;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 /**
@@ -52,7 +46,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
     private static final HandlerManager eventBus = MMDB.eventBus;
     private Workflow workflowWidget;
     private DockLayoutPanel appPanel;
-    private SimpleLayoutPanel centralPanel;
+    private ScrollPanel centralPanel;
     public static final DispatchAsync dispatchAsync = new MyDispatchAsync();
     private PermissionUtil permissionUtil;
 
@@ -62,16 +56,8 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
     @Override
     public void onModuleLoad() {
 
-        // HACK required by PreviewWidget
-//		MMDB.getSessionState().setCurrentUser(new PersonBean());
-
-//        eventBus = new HandlerManager(null);
-
         permissionUtil = new PermissionUtil(dispatchAsync);
 
-        // drag and drop
-        PickupDragController dragController = new PickupDragController(
-                RootPanel.get(), true);
         appPanel = new DockLayoutPanel(Unit.EM);
 
         // header panel
@@ -79,49 +65,15 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         headerPanel.addStyleName("headerPanel");
         headerPanel.add(new MainMenu());
 
-
         // login status widget        
         UserMenu userMenu = new UserMenu(eventBus, dispatchAsync);
         userMenu.addStyleName("loginWidget");
         headerPanel.add(userMenu);
 
-        centralPanel = new SimpleLayoutPanel();
+        centralPanel = new ScrollPanel();
         centralPanel.addStyleName("centralPanelLayout");
 
-        // footer
-        ListThumbnailsView listThumbnailsView = new ListThumbnailsView(dispatchAsync, eventBus, dragController);
-        ListThumbnailsPresenter listThumbnailsPresenter = new ListThumbnailsPresenter(eventBus, listThumbnailsView);
-//        listThumbnailsPresenter.go(appPanel);
-
-        // // drop box panel
-        // HorizontalPanel dropBoxPanel = new HorizontalPanel();
-        // dropBoxPanel.addStyleName("dropBoxesPanel");
-        // content.add(dropBoxPanel);
-        // // first drop box
-        // DropBoxView firstDropBox = new DropBoxView();
-        // DropBoxPresenter firstDropBoxPresenter = new
-        // DropBoxPresenter(registryService, eventBus, firstDropBox);
-        // firstDropBoxPresenter.go(dropBoxPanel);
-        // dragController.registerDropController(firstDropBox.getDropController());
-        // // second drop box
-        // DropBoxView secondDropBox = new DropBoxView();
-        // DropBoxPresenter secondDropBoxPresenter = new
-        // DropBoxPresenter(registryService, eventBus, secondDropBox);
-        // secondDropBoxPresenter.go(dropBoxPanel);
-        // dragController.registerDropController(secondDropBox.getDropController());metadata.getId(),
-        // metadata.getName()
-        //
-        // // testing drop targets
-        // HorizontalPanel dropTarget = new HorizontalPanel();
-        // dropTarget.setBorderWidth(1);
-        // dropTarget.setSize("500px", "100px");
-        // HorizontalPanelDropController dropController = new
-        // HorizontalPanelDropController(dropTarget);
-        // dragController.registerDropController(dropController);
-        // content.add(dropTarget);
-
         appPanel.addNorth(headerPanel, 2.5);
-        appPanel.addSouth(listThumbnailsPresenter.getWidget(), 10);
         appPanel.add(centralPanel);
         RootLayoutPanel.get().add(appPanel);
 
@@ -262,6 +214,9 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         } else if (token.startsWith("profile")) {
             centralPanel.clear();
             centralPanel.add(new ProfileWidget(dispatchAsync));
+        } else if (token.startsWith("listDatasets")) {
+            centralPanel.clear();
+            centralPanel.add(new ListDatasetsPage(dispatchAsync, eventBus));
         } else if (token.startsWith("listCollections")) {
             centralPanel.clear();
             centralPanel.add(new ListCollectionsPage(dispatchAsync, eventBus));
