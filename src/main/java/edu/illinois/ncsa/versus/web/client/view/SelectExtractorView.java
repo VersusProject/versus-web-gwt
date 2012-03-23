@@ -56,7 +56,7 @@ public class SelectExtractorView extends Composite implements Display {
 			categoryPanel = categories.get(category).getVerticalPanel();
 		} else {
 			categoryPanel = new VerticalPanel();
-			categoryPanel.addStyleName("selectMeasurePanel");
+			categoryPanel.addStyleName("selectExtractorPanel");
 			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
 			disclosurePanel.add(categoryPanel);
 			listCategoriesPanel.add(disclosurePanel);

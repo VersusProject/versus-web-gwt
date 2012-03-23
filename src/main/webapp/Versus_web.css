@@ -51,8 +51,9 @@ html {
 }
 
 .selectAdapterPanel {
-    width: 200px;
+    width: 300px;
     margin: 10px auto;
+    line-height: 2.0;
 }
 
 .selectMeasurePanel {
@@ -62,8 +63,9 @@ html {
 }
 
 .selectExtractorPanel {
-    width: 200px;
+    width: 300px;
     margin: 10px auto;
+    line-height: 2.0;
 }
 
 .contentPanel {

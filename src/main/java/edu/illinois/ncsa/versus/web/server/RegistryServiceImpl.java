@@ -90,8 +90,12 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Adapter> adapterIter = availableAdapters.iterator();
 		while (adapterIter.hasNext()) {
 			Adapter adapter = adapterIter.next();
+                        String category = "Other";
+			if(adapter instanceof HasCategory) {
+				category = ((HasCategory) adapter).getCategory();
+			}
 			ComponentMetadata adapterMetadata = new ComponentMetadata(adapter
-					.getClass().getName(), adapter.getName(), "", "");
+					.getClass().getName(), adapter.getName(), "", category);
 			for (String mimeType : adapter.getSupportedMediaTypes()) {
 				adapterMetadata.addSupportedInput(mimeType);
 			}

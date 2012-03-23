@@ -8,20 +8,18 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 
 import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter.Display;
+import java.util.HashMap;
 
 public class SelectAdapterView extends Composite implements Display {
 
 	private FlowPanel mainPanel;
-	private VerticalPanel listAdaptersPanel;
+	private VerticalPanel listCategoriesPanel;
 	private final List<Anchor> adapterAnchors = new ArrayList<Anchor>();
+        private HashMap<String, CategoriesWidget> categories = new HashMap<String, CategoriesWidget>();
+
 
 	public SelectAdapterView() {
 		mainPanel = new FlowPanel();
@@ -29,9 +27,9 @@ public class SelectAdapterView extends Composite implements Display {
 		Label titleLabel = new Label("Adapters");
 		titleLabel.addStyleName("titleLabel");
 		mainPanel.add(titleLabel);
-		listAdaptersPanel = new VerticalPanel();
-		listAdaptersPanel.setSpacing(10);
-		mainPanel.add(listAdaptersPanel);
+		listCategoriesPanel = new VerticalPanel();
+		listCategoriesPanel.setSpacing(10);
+		mainPanel.add(listCategoriesPanel);
 		initWidget(mainPanel);
 	}
 	
@@ -41,7 +39,7 @@ public class SelectAdapterView extends Composite implements Display {
 	}
 
 	@Override
-	public int addAdapter(String adapter) {
+	public int addAdapter(String adapter, String category) {
 		final Anchor adapterAnchor = new Anchor(adapter);
 		adapterAnchor.addStyleName("measureAnchor");
 		adapterAnchors.add(adapterAnchor);
@@ -60,7 +58,21 @@ public class SelectAdapterView extends Composite implements Display {
 			}
 		});
 		adapterAnchors.add(adapterAnchor);
-		listAdaptersPanel.add(adapterAnchor);
+		listCategoriesPanel.add(adapterAnchor);
+                
+                VerticalPanel categoryPanel = null;
+		if(categories.containsKey(category)) {
+			categoryPanel = categories.get(category).getVerticalPanel();
+		} else {
+			categoryPanel = new VerticalPanel();
+			categoryPanel.addStyleName("selectAdapterPanel");
+			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
+			disclosurePanel.add(categoryPanel);
+			listCategoriesPanel.add(disclosurePanel);
+			categories.put(category, new CategoriesWidget(disclosurePanel, categoryPanel));		
+                }
+                categoryPanel.add(adapterAnchor);
+                
 		return adapterAnchors.indexOf(adapterAnchor);
 	}
 

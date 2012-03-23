@@ -27,7 +27,7 @@ public class SelectAdapterPresenter implements Presenter {
 	private String selectedAdapterId;
 
 	public interface Display {
-		int addAdapter(String adapter);
+		int addAdapter(String adapter, String category);
 
 		int getNumAdapters();
 
@@ -60,7 +60,7 @@ public class SelectAdapterPresenter implements Presenter {
 			@Override
 			public void onAddAdapter(final AddAdapterEvent addAdapterEvent) {
 				final int index = display.addAdapter(addAdapterEvent
-						.getAdapterMetadata().getName());
+						.getAdapterMetadata().getName(), addAdapterEvent.getAdapterMetadata().getCategory());
 				display.getAdapterAnchor(index).addClickHandler(
 						new ClickHandler() {
 
