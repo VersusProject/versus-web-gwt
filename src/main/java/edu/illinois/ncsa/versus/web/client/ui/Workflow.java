@@ -27,10 +27,12 @@ import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter;
+import edu.illinois.ncsa.versus.web.client.presenter.SelectedDatasetsPresenter;
 import edu.illinois.ncsa.versus.web.client.view.CurrentSelectionsView;
 import edu.illinois.ncsa.versus.web.client.view.SelectAdapterView;
 import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
 import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
+import edu.illinois.ncsa.versus.web.client.view.SelectedDatasetsView;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import java.util.List;
 import net.customware.gwt.dispatch.client.DispatchAsync;
@@ -91,20 +93,20 @@ public class Workflow extends Composite {
         ScrollPanel previousExecScroll = new ScrollPanel(previousDisclosureBody);
 
         // dataset selection
-        DynamicTableView datasetTableView = new DynamicTableView();
-        final DatasetTablePresenter datasetTablePresenter = new DatasetTablePresenter(dispatchAsync,
-                eventBus, datasetTableView);
-        datasetTablePresenter.bind();
+        SelectedDatasetsView selectedDatasetsView = new SelectedDatasetsView();
+        final SelectedDatasetsPresenter selectedDatasetsPresenter = new SelectedDatasetsPresenter(dispatchAsync,
+                eventBus, selectedDatasetsView);
+        selectedDatasetsPresenter.bind();
         VerticalPanel selectionDisclosureBody = new VerticalPanel() {
 
             @Override
             protected void onDetach() {
                 super.onDetach();
-                datasetTablePresenter.unbind();
+                selectedDatasetsPresenter.unbind();
             }
         };
         selectionDisclosureBody.setWidth("100%");
-        selectionDisclosureBody.add(datasetTableView.asWidget());
+        selectionDisclosureBody.add(selectedDatasetsView.asWidget());
         ScrollPanel selectedDataScroll = new ScrollPanel(selectionDisclosureBody);
 
         // tab panel layout
@@ -118,7 +120,7 @@ public class Workflow extends Composite {
         initWidget(tabPanel);
 
         populate();
-        datasetTablePresenter.refresh();
+        selectedDatasetsPresenter.refresh();
     }
 
     public HasWidgets getResultWidget() {
