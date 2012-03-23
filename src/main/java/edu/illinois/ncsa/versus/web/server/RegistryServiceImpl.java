@@ -42,8 +42,12 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 		Iterator<Extractor> extractorIter = availableExtractors.iterator();
 		while (extractorIter.hasNext()) {
 			Extractor extractor = extractorIter.next();
+                        String category = "Other";
+			if(extractor instanceof HasCategory) {
+				category = ((HasCategory) extractor).getCategory();
+			}
 			ComponentMetadata extractorMetadata = new ComponentMetadata(
-					extractor.getClass().getName(), extractor.getName(), "", "");
+					extractor.getClass().getName(), extractor.getName(), "", category);
 			
 			for (Adapter adapter : registry.getAvailableAdapters(extractor)) {
 				extractorMetadata.addSupportedInput(adapter.getClass().getName());

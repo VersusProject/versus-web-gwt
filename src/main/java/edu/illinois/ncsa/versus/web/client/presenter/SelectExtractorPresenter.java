@@ -47,7 +47,7 @@ public class SelectExtractorPresenter implements Presenter {
 	private Set<Integer> hiddenByMeasure = new HashSet<Integer>();
 
 	public interface Display {
-		int addExtractor(String extractor);
+		int addExtractor(String extractor, String category);
 
 		HasClickHandlers getExtractorAnchor(int index);
 
@@ -88,7 +88,7 @@ public class SelectExtractorPresenter implements Presenter {
 							final AddExtractorEvent addExtractorEvent) {
 						final int index = display
 								.addExtractor(addExtractorEvent
-										.getExtractorMetadata().getName());
+										.getExtractorMetadata().getName(), addExtractorEvent.getExtractorMetadata().getCategory());
 						extractorToIndex.put(
 								addExtractorEvent.getExtractorMetadata(), index);
 						indexToExtractor.put(index,

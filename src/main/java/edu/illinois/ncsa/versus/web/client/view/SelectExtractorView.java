@@ -3,29 +3,16 @@
  */
 package edu.illinois.ncsa.versus.web.client.view;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
+import com.google.gwt.user.client.ui.*;
 import edu.illinois.ncsa.versus.web.client.InfoPopup;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter.Display;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author lmarini
@@ -34,11 +21,12 @@ import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter.Di
 public class SelectExtractorView extends Composite implements Display {
 
 	private final FlowPanel mainPanel;
-	private final VerticalPanel listExtractorPanel;
+	private final VerticalPanel listCategoriesPanel;
 	private final List<Anchor> extractorAnchors = new ArrayList<Anchor>();
 	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
+        private HashMap<String, CategoriesWidget> categories = new HashMap<String, CategoriesWidget>();
 	
 	public SelectExtractorView() {
 		mainPanel = new FlowPanel();
@@ -46,9 +34,9 @@ public class SelectExtractorView extends Composite implements Display {
 		Label titleLabel = new Label("Extractors");
 		titleLabel.addStyleName("titleLabel");
 		mainPanel.add(titleLabel);
-		listExtractorPanel = new VerticalPanel();
-		listExtractorPanel.setSpacing(10);
-		mainPanel.add(listExtractorPanel);
+		listCategoriesPanel = new VerticalPanel();
+		listCategoriesPanel.setSpacing(10);
+		mainPanel.add(listCategoriesPanel);
 		initWidget(mainPanel);
 	}
 	
@@ -58,10 +46,24 @@ public class SelectExtractorView extends Composite implements Display {
 	}
 
 	@Override
-	public int addExtractor(String extractor) {
+	public int addExtractor(String extractor, String category) {
 		final Anchor extractorAnchor = new Anchor(extractor);
 		extractorAnchors.add(extractorAnchor);
-		listExtractorPanel.add(extractorAnchor);
+		listCategoriesPanel.add(extractorAnchor);
+                
+                VerticalPanel categoryPanel = null;
+		if(categories.containsKey(category)) {
+			categoryPanel = categories.get(category).getVerticalPanel();
+		} else {
+			categoryPanel = new VerticalPanel();
+			categoryPanel.addStyleName("selectMeasurePanel");
+			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
+			disclosurePanel.add(categoryPanel);
+			listCategoriesPanel.add(disclosurePanel);
+			categories.put(category, new CategoriesWidget(disclosurePanel, categoryPanel));		
+                }
+                categoryPanel.add(extractorAnchor);
+                
 		int index = extractorAnchors.indexOf(extractorAnchor);
 		addStyleAndHandlers(index);
 		return index;
@@ -176,6 +178,10 @@ public class SelectExtractorView extends Composite implements Display {
 		for (Anchor anchor : extractorAnchors) {
 			anchor.removeStyleName("hideExtractor");
 		}
+                
+                for (CategoriesWidget widgets : categories.values()) {
+                        widgets.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
+                }
 	}
 
 	@Override
@@ -184,6 +190,21 @@ public class SelectExtractorView extends Composite implements Display {
 			extractorAnchors.get(index).addStyleName("hideExtractor");
 			removeStyleAndHandlers(index);
 		}
+                
+                for (CategoriesWidget widgets : categories.values()) {
+                        Boolean allHidden = true;
+                        VerticalPanel panel = widgets.getVerticalPanel();
+                        for (int i = 0; i < panel.getWidgetCount(); i++) {
+                            Anchor extractor = (Anchor) panel.getWidget(i);
+                            if (!extractor.getStyleName().contains("hideExtractor")) {
+                                allHidden = false;
+                                break;
+                            }
+                        }
+                        if (allHidden) {
+                            widgets.getDisclosurePanel().getHeader().addStyleName("applyOpacityToCategory");
+                        }
+                }
 	}
 
 }

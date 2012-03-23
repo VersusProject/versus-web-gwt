@@ -42,28 +42,8 @@ public class SelectMeasureView extends Composite implements Display {
 	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
-	private HashMap<String, CategoriesWidgets> categories = new HashMap<String, CategoriesWidgets>();
-        
-        private class CategoriesWidgets {
-
-        private DisclosurePanel disclosurePanel;
-        private VerticalPanel verticalPanel;
-
-        public CategoriesWidgets(DisclosurePanel disclosurePanel, VerticalPanel verticalPanel) {
-            this.disclosurePanel = disclosurePanel;
-            this.verticalPanel = verticalPanel;
-        }
-
-        public DisclosurePanel getDisclosurePanel() {
-            return disclosurePanel;
-        }
-
-        public VerticalPanel getVerticalPanel() {
-            return verticalPanel;
-        }
-    }
-
-        
+	private HashMap<String, CategoriesWidget> categories = new HashMap<String, CategoriesWidget>();
+                
 	public SelectMeasureView() {
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName("selectMeasurePanel");
@@ -97,7 +77,7 @@ public class SelectMeasureView extends Composite implements Display {
 			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
 			disclosurePanel.add(categoryPanel);
 			listCategoriesPanel.add(disclosurePanel);
-			categories.put(category, new CategoriesWidgets(disclosurePanel, categoryPanel));		
+			categories.put(category, new CategoriesWidget(disclosurePanel, categoryPanel));		
                 }
 		categoryPanel.add(measureAnchor);
 		
@@ -223,7 +203,7 @@ public class SelectMeasureView extends Composite implements Display {
 			anchor.removeStyleName("hideMeasure");
 		}
                 
-                for (CategoriesWidgets widgets : categories.values()) {
+                for (CategoriesWidget widgets : categories.values()) {
                         widgets.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
         }
 
@@ -236,7 +216,7 @@ public class SelectMeasureView extends Composite implements Display {
 			removeStyleAndHandlers(index);
 		}
                 
-                for (CategoriesWidgets widgets : categories.values()) {
+                for (CategoriesWidget widgets : categories.values()) {
                         Boolean allHidden = true;
                         VerticalPanel panel = widgets.getVerticalPanel();
                         for (int i = 0; i < panel.getWidgetCount(); i++) {
