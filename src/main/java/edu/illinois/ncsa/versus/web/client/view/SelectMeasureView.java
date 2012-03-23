@@ -42,7 +42,27 @@ public class SelectMeasureView extends Composite implements Display {
 	private List<HandlerRegistration> clickHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOverHandlers  = new ArrayList<HandlerRegistration>();
 	private List<HandlerRegistration> mouseOutHandlers  = new ArrayList<HandlerRegistration>();
-	private HashMap<String, VerticalPanel> categories = new HashMap<String, VerticalPanel>();
+	private HashMap<String, CategoriesWidgets> categories = new HashMap<String, CategoriesWidgets>();
+        
+        private class CategoriesWidgets {
+
+        private DisclosurePanel disclosurePanel;
+        private VerticalPanel verticalPanel;
+
+        public CategoriesWidgets(DisclosurePanel disclosurePanel, VerticalPanel verticalPanel) {
+            this.disclosurePanel = disclosurePanel;
+            this.verticalPanel = verticalPanel;
+        }
+
+        public DisclosurePanel getDisclosurePanel() {
+            return disclosurePanel;
+        }
+
+        public VerticalPanel getVerticalPanel() {
+            return verticalPanel;
+        }
+    }
+
         
 	public SelectMeasureView() {
 		mainPanel = new FlowPanel();
@@ -70,15 +90,14 @@ public class SelectMeasureView extends Composite implements Display {
 
 		VerticalPanel categoryPanel = null;
 		if(categories.containsKey(category)) {
-			categoryPanel = categories.get(category);
+			categoryPanel = categories.get(category).getVerticalPanel();
 		} else {
 			categoryPanel = new VerticalPanel();
 			categoryPanel.addStyleName("selectMeasurePanel");
 			DisclosurePanel disclosurePanel = new DisclosurePanel(category);
 			disclosurePanel.add(categoryPanel);
 			listCategoriesPanel.add(disclosurePanel);
-			categories.put(category, categoryPanel);
-                        //makeCategoryVisible(disclosurePanel, category);		
+			categories.put(category, new CategoriesWidgets(disclosurePanel, categoryPanel));		
                 }
 		categoryPanel.add(measureAnchor);
 		
@@ -203,6 +222,11 @@ public class SelectMeasureView extends Composite implements Display {
 		for (Anchor anchor : measureAnchors) {
 			anchor.removeStyleName("hideMeasure");
 		}
+                
+                for (CategoriesWidgets widgets : categories.values()) {
+                        widgets.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
+        }
+
 	}
 
 	@Override
@@ -211,13 +235,21 @@ public class SelectMeasureView extends Composite implements Display {
 			measureAnchors.get(index).addStyleName("hideMeasure");
 			removeStyleAndHandlers(index);
 		}
-	}
+                
+                for (CategoriesWidgets widgets : categories.values()) {
+                        Boolean allHidden = true;
+                        VerticalPanel panel = widgets.getVerticalPanel();
+                        for (int i = 0; i < panel.getWidgetCount(); i++) {
+                            Anchor measure = (Anchor) panel.getWidget(i);
+                            if (!measure.getStyleName().contains("hideMeasure")) {
+                                allHidden = false;
+                                break;
+                            }
+                        }
+                        if (allHidden) {
+                            widgets.getDisclosurePanel().getHeader().addStyleName("applyOpacityToCategory");
+                        }
+                }
 
-
-//        public void makeCategoryVisible(DisclosurePanel disclosurePanel, String category) {
-//
-//            if (category.contains("Dummy")) {
-//            disclosurePanel.setOpen(true);
-//            } 
-//        }
+          }
 }

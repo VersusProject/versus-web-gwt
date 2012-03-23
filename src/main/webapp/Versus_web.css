@@ -266,3 +266,8 @@ HTML, BODY {
 .gwt-TabLayoutPanelContentContainer {
     border: none;
 }
+
+.applyOpacityToCategory{
+    opacity: 0.4;
+    font-style: italic ;
+}

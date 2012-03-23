@@ -76,7 +76,6 @@ public class SelectMeasurePresenter implements Presenter {
 					for (String supportedOut : supportedOutputs) {
                                                 System.out.println("## supportedOut ##:"+ supportedOut);
 						if (extractor.getSupportedInputs().contains(supportedOut)) {
-                                                        //display.makeCategoryVisible(event.getMeasureMetadata().getName());
                                                         found = true;
 							break;
 						}
