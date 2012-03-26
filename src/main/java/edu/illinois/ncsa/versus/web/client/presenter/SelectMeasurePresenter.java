@@ -34,7 +34,7 @@ public class SelectMeasurePresenter implements Presenter {
 	private Set<Integer> hiddenByExtractor = new HashSet<Integer>();
 	
 	public interface Display {
-		int addMeasure(String measure, String category);
+		int addMeasure(String measure, String category, String helpLink);
 		int getNumMeasures();
 		void enableMeasures();
 		void selectMeasure(int index);
@@ -57,7 +57,7 @@ public class SelectMeasurePresenter implements Presenter {
 			@Override
 			public void onAddMeasure(final AddMeasureEvent addMeasureEvent) {			
 				ComponentMetadata measureMetada = addMeasureEvent.getMeasureMetadata();
-				final int index = display.addMeasure(measureMetada.getName(), measureMetada.getCategory());
+				final int index = display.addMeasure(measureMetada.getName(), measureMetada.getCategory(), measureMetada.getHelpLink());
 				measureToIndex.put(measureMetada, index);
 				indexToMeasure.put(index, measureMetada);
 				HandlerRegistration handlerRegistration = display.getMeasureAnchor(index).addClickHandler(new SelectionHandler(index));

@@ -31,19 +31,20 @@ public class MainMenu extends Composite {
         logoLink.addStyleName("logo");
         navMenu.add(logoLink);
 
-        HTML bullet = new HTML("&bull;");
-        bullet.addStyleName("navMenuText");
-        
         // workflow
         Hyperlink workflowLink = new Hyperlink("Workflow", "");
         workflowLink.addStyleName("navMenuLink");
         navMenu.add(workflowLink);
+        HTML bullet = new HTML("&bull;");
+        bullet.addStyleName("navMenuText");
         navMenu.add(bullet);
 
         // data
         Hyperlink dataLink = new Hyperlink("Data", "listDatasets");
         dataLink.addStyleName("navMenuLink");
         navMenu.add(dataLink);
+        bullet = new HTML("&bull;");
+        bullet.addStyleName("navMenuText");
         navMenu.add(bullet);
 
         // collections
@@ -51,6 +52,8 @@ public class MainMenu extends Composite {
                 "listCollections");
         collectionsLink.addStyleName("navMenuLink");
         navMenu.add(collectionsLink);
+        bullet = new HTML("&bull;");
+        bullet.addStyleName("navMenuText");
         navMenu.add(bullet);
 
         // upload link
