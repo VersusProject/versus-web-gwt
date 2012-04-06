@@ -93,11 +93,6 @@ public class SelectAdapterView extends Composite implements Display {
     }
 
     @Override
-    public int getNumAdapters() {
-        return adapterAnchors.size();
-    }
-
-    @Override
     public HasClickHandlers getAdapterAnchor(int index) {
         return adapterAnchors.get(index);
     }
@@ -109,7 +104,7 @@ public class SelectAdapterView extends Composite implements Display {
     }
 
     @Override
-    public void unselectAdapter(int index) {
+    public void unselectAdapter() {
         clearSelection();
     }
 }

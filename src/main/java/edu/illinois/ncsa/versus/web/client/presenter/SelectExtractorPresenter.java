@@ -37,14 +37,20 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 public class SelectExtractorPresenter implements Presenter {
 
     private final RegistryServiceAsync registryService;
+
     private final HandlerManager eventBus;
+
     private final Display display;
+
     private String selectedExtractorId;
+
     private Map<ComponentMetadata, Integer> extractorToIndex = new HashMap<ComponentMetadata, Integer>();
+
     private Map<Integer, ComponentMetadata> indexToExtractor = new HashMap<Integer, ComponentMetadata>();
+
     private List<HandlerRegistration> clickHandlers = new ArrayList<HandlerRegistration>();
-    private Set<Integer> hiddenByAdapter = new HashSet<Integer>();
-    private Set<Integer> hiddenByMeasure = new HashSet<Integer>();
+
+    private Set<Integer> activatedByAdapter = new HashSet<Integer>();
 
     public interface Display {
 
@@ -54,11 +60,11 @@ public class SelectExtractorPresenter implements Presenter {
 
         void selectExtractor(int index);
 
-        void unselectExtractor(int index);
+        void unselectExtractor();
 
-        void enableExtractors();
+        void enableExtractors(Set<Integer> extractors);
 
-        void disableExtractors(Set<Integer> extractors);
+        void disableExtractors();
 
         Widget asWidget();
     }
@@ -110,16 +116,14 @@ public class SelectExtractorPresenter implements Presenter {
 
                         String selectedAdapter = event.getAdapterMetadata().getId();
                         for (ComponentMetadata extractor : extractorToIndex.keySet()) {
-                            if (!extractor.getSupportedInputs().contains(selectedAdapter)) {
-                                hiddenByAdapter.add(extractorToIndex.get(extractor));
+                            if (extractor.getSupportedInputs().contains(selectedAdapter)) {
+                                activatedByAdapter.add(extractorToIndex.get(extractor));
                             }
                         }
-
-                        GWT.log("Hide " + hiddenByAdapter);
-                        for (Integer index : hiddenByAdapter) {
-                            removeClickHandler(index);
+                        for (Integer index : activatedByAdapter) {
+                            addClickHandler(index);
                         }
-                        display.disableExtractors(hiddenByAdapter);
+                        display.enableExtractors(activatedByAdapter);
                     }
                 });
 
@@ -141,15 +145,18 @@ public class SelectExtractorPresenter implements Presenter {
         if (selectedExtractorId != null) {
             for (ComponentMetadata componentMetadata : extractorToIndex.keySet()) {
                 if (componentMetadata.getId().equals(selectedExtractorId)) {
+                    selectedExtractorId = null;
                     eventBus.fireEvent(new ExtractorUnselectedEvent(
                             componentMetadata));
+                    display.unselectExtractor();
+                    break;
                 }
             }
         }
-        hiddenByAdapter.clear();
-        display.enableExtractors();
+        activatedByAdapter.clear();
+        display.disableExtractors();
         for (Integer index : indexToExtractor.keySet()) {
-            addClickHandler(index);
+            removeClickHandler(index);
         }
     }
 
@@ -193,7 +200,6 @@ public class SelectExtractorPresenter implements Presenter {
     @Override
     public void go(HasWidgets container) {
         bind();
-        hiddenByAdapter.clear();
         container.add(display.asWidget());
     }
 
@@ -216,7 +222,7 @@ public class SelectExtractorPresenter implements Presenter {
                 selectedExtractorId = null;
                 eventBus.fireEvent(new ExtractorUnselectedEvent(
                         componentMetadata));
-                display.unselectExtractor(index);
+                display.unselectExtractor();
             } else {
                 selectedExtractorId = componentMetadata.getId();
                 eventBus.fireEvent(new ExtractorSelectedEvent(componentMetadata));

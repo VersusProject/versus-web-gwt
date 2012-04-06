@@ -23,11 +23,17 @@ import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter.Di
 public class SelectExtractorView extends Composite implements Display {
 
     private final FlowPanel mainPanel;
+
     private final VerticalPanel listCategoriesPanel;
+
     private final List<Anchor> extractorAnchors = new ArrayList<Anchor>();
+
     private List<HandlerRegistration> clickHandlers = new ArrayList<HandlerRegistration>();
+
     private List<HandlerRegistration> mouseOverHandlers = new ArrayList<HandlerRegistration>();
+
     private List<HandlerRegistration> mouseOutHandlers = new ArrayList<HandlerRegistration>();
+
     private HashMap<String, CategoriesWidget> categories = new HashMap<String, CategoriesWidget>();
 
     public SelectExtractorView() {
@@ -75,6 +81,9 @@ public class SelectExtractorView extends Composite implements Display {
 
         int index = extractorAnchors.indexOf(extractorAnchor);
         addStyleAndHandlers(index);
+        removeStyleAndHandlers(index);
+        extractorAnchor.addStyleName("hideExtractor");
+        enableDisableCategories();
         return index;
     }
 
@@ -107,6 +116,7 @@ public class SelectExtractorView extends Composite implements Display {
                 extractorAnchor.addStyleName("highlightLabel");
                 popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 
+                    @Override
                     public void setPosition(int offsetWidth, int offsetHeight) {
                         popup.setPopupPosition(event.getClientX() + 50, event.getClientY());
                     }
@@ -176,44 +186,55 @@ public class SelectExtractorView extends Composite implements Display {
     }
 
     @Override
-    public void unselectExtractor(int index) {
+    public void unselectExtractor() {
         clearSelection();
     }
 
     @Override
-    public void enableExtractors() {
-        for (int i = 0; i < extractorAnchors.size(); i++) {
-            addStyleAndHandlers(i);
+    public void enableExtractors(Set<Integer> extractors) {
+        for (Integer index : extractors) {
+            addStyleAndHandlers(index);
+            extractorAnchors.get(index).removeStyleName("hideExtractor");
         }
-        for (Anchor anchor : extractorAnchors) {
-            anchor.removeStyleName("hideExtractor");
-        }
-
-        for (CategoriesWidget widgets : categories.values()) {
-            widgets.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
-        }
+        enableDisableCategories();
     }
 
     @Override
-    public void disableExtractors(Set<Integer> extractors) {
-        for (Integer index : extractors) {
-            extractorAnchors.get(index).addStyleName("hideExtractor");
-            removeStyleAndHandlers(index);
+    public void disableExtractors() {
+        for (int i = 0; i < extractorAnchors.size(); i++) {
+            extractorAnchors.get(i).addStyleName("hideExtractor");
+            removeStyleAndHandlers(i);
         }
 
         for (CategoriesWidget widgets : categories.values()) {
-            Boolean allHidden = true;
-            VerticalPanel panel = widgets.getVerticalPanel();
-            for (int i = 0; i < panel.getWidgetCount(); i++) {
-                Anchor extractor = (Anchor) panel.getWidget(i);
-                if (!extractor.getStyleName().contains("hideExtractor")) {
-                    allHidden = false;
-                    break;
-                }
+            setCategoryEnabled(widgets, false);
+        }
+    }
+    private void enableDisableCategories() {
+        for (CategoriesWidget widgets : categories.values()) {
+            enableDisableCategory(widgets);
+        }
+    }
+    
+    private void enableDisableCategory(CategoriesWidget widget) {
+        Boolean allHidden = true;
+        VerticalPanel panel = widget.getVerticalPanel();
+        for (int i = 0; i < panel.getWidgetCount(); i++) {
+            FlowPanel flowPanel = (FlowPanel) panel.getWidget(i);
+            Anchor measure = (Anchor) flowPanel.getWidget(0);
+            if (!measure.getStyleName().contains("hideExtractor")) {
+                allHidden = false;
+                break;
             }
-            if (allHidden) {
-                widgets.getDisclosurePanel().getHeader().addStyleName("applyOpacityToCategory");
-            }
+        }
+        setCategoryEnabled(widget, !allHidden);
+    }
+
+    private void setCategoryEnabled(CategoriesWidget widget, boolean enabled) {
+        if (enabled) {
+            widget.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
+        } else {
+            widget.getDisclosurePanel().getHeader().addStyleName("applyOpacityToCategory");
         }
     }
 }

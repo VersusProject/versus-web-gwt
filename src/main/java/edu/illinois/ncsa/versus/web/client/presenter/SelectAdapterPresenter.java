@@ -30,13 +30,11 @@ public class SelectAdapterPresenter implements Presenter {
 
         int addAdapter(String adapter, String category, String helpLink);
 
-        int getNumAdapters();
-
         HasClickHandlers getAdapterAnchor(int index);
 
         void selectAdapter(int index);
 
-        void unselectAdapter(int index);
+        void unselectAdapter();
 
         Widget asWidget();
     }
@@ -74,7 +72,7 @@ public class SelectAdapterPresenter implements Presenter {
                                     selectedAdapterId = null;
                                     eventBus.fireEvent(new AdapterUnselectedEvent(
                                             adapterMetadata));
-                                    display.unselectAdapter(index);
+                                    display.unselectAdapter();
                                 } else {
                                     selectedAdapterId = adapterMetadata.getId();
                                     eventBus.fireEvent(new AdapterSelectedEvent(

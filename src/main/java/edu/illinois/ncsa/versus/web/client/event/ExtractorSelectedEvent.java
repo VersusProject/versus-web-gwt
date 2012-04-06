@@ -22,7 +22,7 @@ public class ExtractorSelectedEvent extends GwtEvent<ExtractorSelectedHandler> {
 		handler.onExtractorSelected(this);
 	}
 
-	public ComponentMetadata getMeasureMetadata() {
+	public ComponentMetadata getExtractorMetadata() {
 		return extractorMetadata;
 	}
 }

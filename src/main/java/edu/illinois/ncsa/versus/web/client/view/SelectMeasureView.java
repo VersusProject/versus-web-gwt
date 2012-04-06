@@ -37,11 +37,17 @@ import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter.Disp
 public class SelectMeasureView extends Composite implements Display {
 
     private final FlowPanel mainPanel;
+
     private final VerticalPanel listCategoriesPanel;
+
     private final List<Anchor> measureAnchors = new ArrayList<Anchor>();
+
     private List<HandlerRegistration> clickHandlers = new ArrayList<HandlerRegistration>();
+
     private List<HandlerRegistration> mouseOverHandlers = new ArrayList<HandlerRegistration>();
+
     private List<HandlerRegistration> mouseOutHandlers = new ArrayList<HandlerRegistration>();
+
     private HashMap<String, CategoriesWidget> categories = new HashMap<String, CategoriesWidget>();
 
     public SelectMeasureView() {
@@ -90,6 +96,9 @@ public class SelectMeasureView extends Composite implements Display {
 
         int index = measureAnchors.indexOf(measureAnchor);
         addStyleAndHandlers(index);
+        removeStyleAndHandlers(index);
+        measureAnchor.addStyleName("hideMeasure");
+        enableDisableCategories();
         return index;
     }
 
@@ -122,6 +131,7 @@ public class SelectMeasureView extends Composite implements Display {
                 measureAnchor.addStyleName("highlightLabel");
                 popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 
+                    @Override
                     public void setPosition(int offsetWidth, int offsetHeight) {
                         popup.setPopupPosition(event.getClientX() + 50, event.getClientY());
                     }
@@ -180,18 +190,13 @@ public class SelectMeasureView extends Composite implements Display {
     }
 
     @Override
-    public int getNumMeasures() {
-        return measureAnchors.size();
-    }
-
-    @Override
     public void selectMeasure(int index) {
         clearSelection();
         measureAnchors.get(index).addStyleName("selectedLabel");
     }
 
     @Override
-    public void unselectMeasure(int index) {
+    public void unselectMeasure() {
         clearSelection();
     }
 
@@ -201,39 +206,51 @@ public class SelectMeasureView extends Composite implements Display {
     }
 
     @Override
-    public void enableMeasures() {
-        for (int i = 0; i < measureAnchors.size(); i++) {
-            addStyleAndHandlers(i);
+    public void enableMeasures(Set<Integer> measures) {
+        for (Integer index : measures) {
+            addStyleAndHandlers(index);
+            measureAnchors.get(index).removeStyleName("hideMeasure");
         }
-        for (Anchor anchor : measureAnchors) {
-            anchor.removeStyleName("hideMeasure");
-        }
-
-        for (CategoriesWidget widgets : categories.values()) {
-            widgets.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
-        }
+        enableDisableCategories();
     }
 
     @Override
-    public void disableMeasures(Set<Integer> measures) {
-        for (Integer index : measures) {
-            measureAnchors.get(index).addStyleName("hideMeasure");
-            removeStyleAndHandlers(index);
+    public void disableMeasures() {
+        for (int i = 0; i < measureAnchors.size(); i++) {
+            measureAnchors.get(i).addStyleName("hideMeasure");
+            removeStyleAndHandlers(i);
         }
 
         for (CategoriesWidget widgets : categories.values()) {
-            Boolean allHidden = true;
-            VerticalPanel panel = widgets.getVerticalPanel();
-            for (int i = 0; i < panel.getWidgetCount(); i++) {
-                Anchor measure = (Anchor) panel.getWidget(i);
-                if (!measure.getStyleName().contains("hideMeasure")) {
-                    allHidden = false;
-                    break;
-                }
+            setCategoryEnabled(widgets, false);
+        }
+    }
+
+    private void enableDisableCategories() {
+        for (CategoriesWidget widgets : categories.values()) {
+            enableDisableCategory(widgets);
+        }
+    }
+    
+    private void enableDisableCategory(CategoriesWidget widget) {
+        Boolean allHidden = true;
+        VerticalPanel panel = widget.getVerticalPanel();
+        for (int i = 0; i < panel.getWidgetCount(); i++) {
+            FlowPanel flowPanel = (FlowPanel) panel.getWidget(i);
+            Anchor measure = (Anchor) flowPanel.getWidget(0);
+            if (!measure.getStyleName().contains("hideMeasure")) {
+                allHidden = false;
+                break;
             }
-            if (allHidden) {
-                widgets.getDisclosurePanel().getHeader().addStyleName("applyOpacityToCategory");
-            }
+        }
+        setCategoryEnabled(widget, !allHidden);
+    }
+
+    private void setCategoryEnabled(CategoriesWidget widget, boolean enabled) {
+        if (enabled) {
+            widget.getDisclosurePanel().getHeader().removeStyleName("applyOpacityToCategory");
+        } else {
+            widget.getDisclosurePanel().getHeader().addStyleName("applyOpacityToCategory");
         }
     }
 }
