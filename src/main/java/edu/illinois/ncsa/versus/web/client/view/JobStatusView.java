@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import net.customware.gwt.dispatch.client.DispatchAsync;
-
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -29,6 +27,7 @@ import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter.Display;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
+import net.customware.gwt.dispatch.client.DispatchAsync;
 
 /**
  * @author lmarini
@@ -169,8 +168,7 @@ public class JobStatusView extends Composite implements Display {
 
 			String text = " = ";
 
-			ComparisonStatus comparisonStatus = job.getComparisonStatus().get(
-					comparison.getUri());
+			ComparisonStatus comparisonStatus = job.getStatus(comparison);
 			if (comparisonStatus == ComparisonStatus.ENDED) {
 				text += "<b>" + comparison.getSimilarity() + "</b>";
 			} else if (comparisonStatus == ComparisonStatus.FAILED) {

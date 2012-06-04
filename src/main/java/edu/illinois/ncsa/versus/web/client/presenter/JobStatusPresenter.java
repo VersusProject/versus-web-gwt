@@ -4,6 +4,7 @@
 package edu.illinois.ncsa.versus.web.client.presenter;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
@@ -70,13 +71,15 @@ public class JobStatusPresenter implements Presenter {
 			
 			@Override
 			public void run() {
-				executionService.getStatus(job.getUri(), new AsyncCallback<Job>() {
+				executionService.getStatus(job.getId(), new AsyncCallback<Job>() {
 					
 					@Override
 					public void onSuccess(Job job) {
 						int done = 0;
 						int failed = 0;
-						for (ComparisonStatus status : job.getComparisonStatus().values()) {
+                        Map<String, ComparisonStatus> comparisonStatus =
+                                job.getComparisonStatus();
+						for (ComparisonStatus status : comparisonStatus.values()) {
 							if (status == ComparisonStatus.ENDED) {
 								done++;
 							}
@@ -84,10 +87,10 @@ public class JobStatusPresenter implements Presenter {
 								failed++;
 							}
 						}
-						display.setStatus("Done: " + done + " / " + job.getComparisonStatus().size() 
-								+ " Failed: " + failed + " / " + job.getComparisonStatus().size());
+						display.setStatus("Done: " + done + " / " + comparisonStatus.size() 
+								+ " Failed: " + failed + " / " + comparisonStatus.size());
 						display.showResults(job);
-						if (done + failed == job.getComparisonStatus().size()) {
+						if (done + failed == comparisonStatus.size()) {
 							cancel();
 						}
 					}

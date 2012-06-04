@@ -3,17 +3,18 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
-import edu.illinois.ncsa.versus.measure.Similarity;
-import edu.uiuc.ncsa.cet.bean.CETBean;
+import java.io.Serializable;
+
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
 /**
  * @author lmarini
  *
  */
-@SuppressWarnings("serial")
-public class PairwiseComparison extends CETBean {
+public class PairwiseComparison implements Serializable {
 	
+    private String id;
+    
 	private DatasetBean firstDataset;
 
 	private DatasetBean secondDataset;
@@ -31,6 +32,14 @@ public class PairwiseComparison extends CETBean {
 	public PairwiseComparison() {
 	}
 	
+    public String getId() {
+        return id;
+    }
+    
+    public void setId(String id) {
+        this.id = id;
+    }
+    
 	/**
 	 * @return the firstDataset
 	 */

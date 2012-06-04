@@ -22,6 +22,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>versus-service-client</artifactId>
+            <version>0.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <version>${gwt.version}</version>
@@ -32,17 +37,6 @@
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>versus-image</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>versus-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.allen_sauer.gwt.dnd</groupId>
@@ -181,12 +175,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>edu.illinois.ncsa.isda</groupId>
-            <artifactId>Utilities</artifactId>
-            <version>1.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.3</version>
@@ -208,18 +196,6 @@
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
             <version>2.0.8</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.jee</groupId>
-            <artifactId>org.restlet</artifactId>
-            <version>2.0.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.jee</groupId>
-            <artifactId>org.restlet.ext.servlet</artifactId>
-            <version>2.0.5</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -250,12 +226,6 @@
             <groupId>com.ettrema</groupId>
             <artifactId>milton-servlet</artifactId>
             <version>1.5.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>edu.illinois.ncsa.isda</groupId>
-            <artifactId>MatrixUtilities</artifactId>
-            <version>1.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -328,12 +298,6 @@
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>iri</artifactId>
             <version>0.7</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>edu.illinois.ncsa.isda</groupId>
-            <artifactId>ImageUtilities</artifactId>
-            <version>1.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

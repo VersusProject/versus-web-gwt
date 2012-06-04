@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package edu.illinois.ncsa.versus.web.server;
 
@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.tupeloproject.kernel.BeanSession;
 import org.tupeloproject.kernel.OperatorException;
 import org.tupeloproject.rdf.Resource;
 
@@ -29,47 +30,54 @@ import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
  */
 @SuppressWarnings("serial")
 public class ExecutionServiceImpl extends RemoteServiceServlet implements
-		ExecutionService {
-	
-	private static ExecutionEngine executionEngine = new ExecutionEngine(TupeloStore.getInstance().getBeanSession());
-	
-    /** Commons logging **/
-    private static Log log = LogFactory.getLog(ExecutionServiceImpl.class);
-	
-	@Override
-	public Job submit(Submission set) {
-		
-		// create comparison
-		Set<PairwiseComparison> comparisons = new HashSet<PairwiseComparison>();
-		DatasetBeanUtil dbu = new DatasetBeanUtil(TupeloStore.getInstance().getBeanSession());
-		
-		List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
-		for (int i=0; i<datasetsURI.size(); i++) {
-			for (int j=i+1; j<datasetsURI.size(); j++) {
-				PairwiseComparison pairwiseComparison = new PairwiseComparison();
-				try {
-					pairwiseComparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
-					pairwiseComparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
-					pairwiseComparison.setAdapterId(set.getAdapter().getId());
-					pairwiseComparison.setMeasureId(set.getMeasure().getId());
-					pairwiseComparison.setExtractorId(set.getExtraction().getId());
-				} catch (OperatorException e) {
-					log.error("Error setting up comparison",e);
-				}
-				comparisons.add(pairwiseComparison);
-			}
-		}
-		
-		// submit job for execution
-		Job job = new Job();
-		job.setStarted(new Date());
-		job.setComparisons(comparisons);
-		executionEngine.submit(job);
-		return job;
-	}
+        ExecutionService {
 
-	@Override
-	public Job getStatus(String jobId) {
-		return executionEngine.getJob(jobId);
-	}
+    private static final ExecutionEngine executionEngine = new ExecutionEngine();
+
+    /**
+     * Commons logging *
+     */
+    private static final Log log = LogFactory.getLog(ExecutionServiceImpl.class);
+
+    @Override
+    public Job submit(Submission set) {
+        BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
+        
+        // create comparison
+        Set<PairwiseComparison> comparisons = new HashSet<PairwiseComparison>();
+        DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
+
+        final String adapterId = set.getAdapter().getId();
+        final String extractorId = set.getExtraction().getId();
+        final String measureId = set.getMeasure().getId();
+        
+        List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
+        for (int i = 0; i < datasetsURI.size(); i++) {
+            for (int j = i + 1; j < datasetsURI.size(); j++) {
+                PairwiseComparison comparison = new PairwiseComparison();
+                try {
+                    comparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
+                    comparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
+                    comparison.setAdapterId(adapterId);
+                    comparison.setExtractorId(extractorId);
+                    comparison.setMeasureId(measureId);
+                } catch (OperatorException e) {
+                    log.error("Error setting up comparison", e);
+                }
+                comparisons.add(comparison);
+            }
+        }
+
+        // submit job for execution
+        Job job = new Job();
+        job.setStarted(new Date());
+        job.setComparisons(comparisons);
+        executionEngine.submit(job);
+        return job;
+    }
+
+    @Override
+    public Job getStatus(String jobId) {
+        return executionEngine.getJob(jobId);
+    }
 }

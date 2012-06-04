@@ -3,41 +3,54 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import edu.uiuc.ncsa.cet.bean.CETBean;
+import java.util.UUID;
 
 /**
  * @author lmarini
  *
  */
-@SuppressWarnings("serial")
-public class Job extends CETBean {
+public class Job implements Serializable {
 
+    private String id;
+    
     private Set<PairwiseComparison> comparisons;
-    private Date started;
-    private Date ended;
+
+    private volatile Date started;
+
+    private volatile Date ended;
 
     public enum ComparisonStatus {
 
         STARTED, ENDED, FAILED, ABORTED
+
     }
     private Map<String, ComparisonStatus> comparisonStatus;
 
     public Job() {
+        id = UUID.randomUUID().toString();
         comparisonStatus = new HashMap<String, ComparisonStatus>();
     }
-
-    public void setComparisons(Set<PairwiseComparison> comparison) {
-        this.comparisons = comparison;
+    
+    public String getId() {
+        return id;
     }
 
-    public Set<PairwiseComparison> getComparisons() {
-        return comparisons;
+    public synchronized void setComparisons(Set<PairwiseComparison> comparison) {
+        this.comparisons = new HashSet(comparison);
+    }
+
+    public synchronized Set<PairwiseComparison> getComparisons() {
+        return new HashSet<PairwiseComparison>(comparisons);
+    }
+    
+    public synchronized Map<String, ComparisonStatus> getComparisonStatus() {
+        return new HashMap<String, ComparisonStatus>(comparisonStatus);
     }
 
     public void setStarted(Date started) {
@@ -56,19 +69,15 @@ public class Job extends CETBean {
         return ended;
     }
 
-    public Map<String, ComparisonStatus> getComparisonStatus() {
-        return comparisonStatus;
-    }
-
     public synchronized void setStatus(String comparisonId, ComparisonStatus status) {
-        if (getComparisonStatus().containsKey(comparisonId)) {
-            getComparisonStatus().remove(comparisonId);
+        if (comparisonStatus.containsKey(comparisonId)) {
+            comparisonStatus.remove(comparisonId);
         }
-        getComparisonStatus().put(comparisonId, status);
+        comparisonStatus.put(comparisonId, status);
     }
 
-    public ComparisonStatus getStatus(PairwiseComparison comparison) {
-        return getComparisonStatus().get(comparison);
+    public synchronized ComparisonStatus getStatus(PairwiseComparison comparison) {
+        return comparisonStatus.get(comparison.getId());
     }
 
     public synchronized void updateSimilarityValue(String comparisonId, Double similarity) {
@@ -89,7 +98,7 @@ public class Job extends CETBean {
 
     private synchronized PairwiseComparison getComparison(String comparisonId) {
         for (PairwiseComparison comparison : comparisons) {
-            if (comparison.getUri().equals(comparisonId)) {
+            if (comparison.getId().equals(comparisonId)) {
                 return comparison;
             }
         }
