@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.illinois.ncsa.versus.core.adapter.AdapterDescriptor;

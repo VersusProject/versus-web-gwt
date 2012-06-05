@@ -169,6 +169,12 @@
 			edu.illinois.ncsa.mmdb.web.server.MyActionHandlersConfig
 		</listener-class>
 	</listener>
+    
+    <listener>
+        <listener-class>
+            edu.illinois.ncsa.versus.web.server.PropertiesManager
+        </listener-class>
+    </listener>
 
 	<!-- Default page to serve -->
 	<welcome-file-list>

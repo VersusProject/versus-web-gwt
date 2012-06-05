@@ -18,21 +18,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.illinois.ncsa.mmdb.web.server.TupeloStore;
-import javax.naming.ConfigurationException;
+import edu.illinois.ncsa.versus.core.ClientResourceFactory;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  *
  * @author antoinev
  */
-public class PropertiesManager {
+public class PropertiesManager implements ServletContextListener {
 
-    private static final Properties props;
+    private static final Logger log = Logger.getLogger(PropertiesManager.class.getName());
 
-    private static final Logger log;
+    private static String webServicesUrl;
 
-    static {
-        log = Logger.getLogger(PropertiesManager.class.getName());
-        props = new Properties();
+    public static String getWebServicesUrl() {
+        return webServicesUrl;
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        Properties props = new Properties();
         String path = "/server.properties";
         log.log(Level.INFO, "Loading server property file: {0}", path);
 
@@ -50,14 +56,27 @@ public class PropertiesManager {
                 log.log(Level.WARNING, "Could not close server.properties.", exc);
             }
         }
+
+        if (props.containsKey("webservices.url")) {
+            webServicesUrl = props.getProperty("webservices.url");
+            log.log(Level.INFO, "Using Web Services URL {0}", webServicesUrl);
+        } else {
+            webServicesUrl = "http://localhost:8182/versus/api";
+            log.log(Level.WARNING, "No Web Services URL specified, using default one: {0}", webServicesUrl);
+        }
+
+        if (props.containsKey("webservices.retrydelay")) {
+            try {
+                long retryDelay = new Long(props.getProperty("webservices.retrydelay"));
+                ClientResourceFactory.setRetryDelay(retryDelay);
+                log.log(Level.INFO, "Using retry delay: {0}", retryDelay);
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Could not set the retrydelay property.", e);
+            }
+        }
     }
 
-    public static String getWebServicesUrl() {
-        if (props.containsKey("webservices.url")) {
-            return props.getProperty("webservices.url");
-        }
-        final String defaultUrl = "http://localhost:8182/versus/api";
-        log.log(Level.WARNING, "No Web Services URL specified, using default one: {0}", defaultUrl);
-        return defaultUrl;
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
     }
 }
