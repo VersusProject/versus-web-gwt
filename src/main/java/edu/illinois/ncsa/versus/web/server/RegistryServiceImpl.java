@@ -3,9 +3,23 @@
  */
 package edu.illinois.ncsa.versus.web.server;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -27,7 +41,52 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         RegistryService {
 
     private static final String serviceUrl = PropertiesManager.getWebServicesUrl();
-    
+
+    private interface ZippedHelpStreamProvider {
+
+        String getHelpSha1(String componentId);
+
+        InputStream getZippedHelpStream(String componentId) throws IOException;
+    }
+    private static final ZippedHelpStreamProvider adapterHelpProvider = new ZippedHelpStreamProvider() {
+
+        @Override
+        public String getHelpSha1(String componentId) {
+            return new AdaptersClient(serviceUrl).getAdapterHelpSha1(componentId);
+        }
+
+        @Override
+        public InputStream getZippedHelpStream(String componentId) throws IOException {
+            return new AdaptersClient(serviceUrl).getAdapterZippedHelp(componentId);
+        }
+    };
+
+    private static final ZippedHelpStreamProvider extractorHelpProvider = new ZippedHelpStreamProvider() {
+
+        @Override
+        public String getHelpSha1(String componentId) {
+            return new ExtractorsClient(serviceUrl).getExtractorHelpSha1(componentId);
+        }
+
+        @Override
+        public InputStream getZippedHelpStream(String componentId) throws IOException {
+            return new ExtractorsClient(serviceUrl).getExtractorZippedHelp(componentId);
+        }
+    };
+
+    private static final ZippedHelpStreamProvider measureHelpProvider = new ZippedHelpStreamProvider() {
+
+        @Override
+        public String getHelpSha1(String componentId) {
+            return new MeasuresClient(serviceUrl).getMeasureHelpSha1(componentId);
+        }
+
+        @Override
+        public InputStream getZippedHelpStream(String componentId) throws IOException {
+            return new MeasuresClient(serviceUrl).getMeasureZippedHelp(componentId);
+        }
+    };
+
     @Override
     public List<ComponentMetadata> getAdapters() {
         List<ComponentMetadata> adapters = new ArrayList<ComponentMetadata>();
@@ -38,7 +97,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
             AdapterDescriptor adapterDescriptor = adc.getAdapterDescriptor(id);
             String category = adapterDescriptor.getCategory().isEmpty()
                     ? "Other" : adapterDescriptor.getCategory();
-            String helpLink = getHelpLink(adapterDescriptor.getId(), adapterDescriptor.hasHelp());
+            String helpLink = getHelpLink(adapterDescriptor.getId(),
+                    adapterHelpProvider, adapterDescriptor.hasHelp());
             ComponentMetadata adapter = new ComponentMetadata(id,
                     adapterDescriptor.getName(), "", category, helpLink);
             for (String mimeType : adapterDescriptor.getSupportedMediaTypes()) {
@@ -59,7 +119,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
             ExtractorDescriptor extractorDescriptor = exc.getExtractorDescriptor(id);
             String category = extractorDescriptor.getCategory().isEmpty()
                     ? "Other" : extractorDescriptor.getCategory();
-            String helpLink = getHelpLink(extractorDescriptor.getType(), extractorDescriptor.hasHelp());
+            String helpLink = getHelpLink(extractorDescriptor.getType(),
+                    extractorHelpProvider, extractorDescriptor.hasHelp());
             ComponentMetadata extractor = new ComponentMetadata(id,
                     extractorDescriptor.getName(), "", category, helpLink);
             for (String adpater : extractorDescriptor.getSupportedAdapters()) {
@@ -81,7 +142,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
             MeasureDescriptor measureDescriptor = mec.getMeasureDescriptor(id);
             String category = measureDescriptor.getCategory().isEmpty()
                     ? "Other" : measureDescriptor.getCategory();
-            String helpLink = getHelpLink(measureDescriptor.getType(), measureDescriptor.hasHelp());
+            String helpLink = getHelpLink(measureDescriptor.getType(),
+                    measureHelpProvider, measureDescriptor.hasHelp());
             ComponentMetadata extractor = new ComponentMetadata(id,
                     measureDescriptor.getName(), "", category, helpLink);
             for (String feature : measureDescriptor.getSupportedFeatures()) {
@@ -92,112 +154,120 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         return measures;
     }
 
-//    private String getHelpLink(HasHelp hasHelp, String name) {
-//        String applicationPath = getServletContext().getRealPath("");
-//        File helpDirectory = new File(applicationPath, "help");
-//        if (!helpDirectory.isDirectory()) {
-//            if (helpDirectory.exists()) {
-//                helpDirectory.delete();
-//            }
-//            helpDirectory.mkdir();
-//        }
-//
-//        File help = new File(helpDirectory, name);
-//        if (!help.isDirectory()) {
-//            if (help.exists()) {
-//                help.delete();
-//            }
-//            help.mkdir();
-//        }
-//
-//        extractIfNeeded(hasHelp, help, name);
-//        String helpLink = "help/" + name + "/index.html";
-//        return new File(help, "index.html").exists() ? helpLink : "";
-//    }
-//
-//    private void extractIfNeeded(HasHelp hasHelp, File help, String name) {
-//        boolean needExtraction = true;
-//        String sha1 = hasHelp.getHelpSHA1();
-//        File zipFile = new File(help, name + ".zip");
-//        if (zipFile.exists()) {
-//            String existingHash = "";
-//            try {
-//                existingHash = Hasher.getHash(zipFile, "SHA1");
-//            } catch (NoSuchAlgorithmException ex) {
-//                Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (FileNotFoundException ex) {
-//                Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (IOException ex) {
-//                Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//            needExtraction = !existingHash.equalsIgnoreCase(sha1);
-//        }
-//
-//        if (!needExtraction) {
-//            return;
-//        }
-//
-//        try {
-//            FileUtils.cleanDirectory(help);
-//
-//            final int BUFFER = 2048;
-//
-//            // Save the zip file on server
-//            InputStream is = null;
-//            FileOutputStream zipFos = null;
-//            try {
-//                is = hasHelp.getHelpZipped();
-//                zipFos = new FileOutputStream(zipFile);
-//                int len;
-//                byte buf[] = new byte[BUFFER];
-//
-//                while ((len = is.read(buf)) > 0) {
-//                    zipFos.write(buf, 0, len);
-//                }
-//            } finally {
-//                if (is != null) {
-//                    is.close();
-//                }
-//                if (zipFos != null) {
-//                    zipFos.close();
-//                }
-//            }
-//
-//            // Extract the zip file
-//            ZipInputStream helpZipped = null;
-//            try {
-//                helpZipped = new ZipInputStream(new FileInputStream(zipFile));
-//
-//                ZipEntry entry;
-//                while ((entry = helpZipped.getNextEntry()) != null) {
-//                    FileOutputStream fos = new FileOutputStream(new File(help, entry.getName()));
-//                    BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
-//                    int count;
-//                    byte data[] = new byte[BUFFER];
-//                    while ((count = helpZipped.read(data, 0, BUFFER)) != -1) {
-//                        dest.write(data, 0, count);
-//                    }
-//                    dest.close();
-//                }
-//            } finally {
-//                if (helpZipped != null) {
-//                    try {
-//                        helpZipped.close();
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                }
-//            }
-//        } catch (Exception ex) {
-//            Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.WARNING, "Cannot extract help of " + name, ex);
-//
-//            //Delete the eventual zip file, so that the extraction is rerun next time
-//            if (zipFile.exists()) {
-//                zipFile.delete();
-//            }
-//        }
-//    }
-    private String getHelpLink(String id, boolean hasHelp) {
-        return hasHelp ? id : "";
+    private String getHelpLink(String id, ZippedHelpStreamProvider helpProvider, boolean hasHelp) {
+        if (!hasHelp) {
+            return "";
+        }
+
+        String applicationPath = getServletContext().getRealPath("");
+        File helpDirectory = new File(applicationPath, "help");
+        if (!helpDirectory.isDirectory()) {
+            if (helpDirectory.exists()) {
+                helpDirectory.delete();
+            }
+            helpDirectory.mkdir();
+        }
+
+        File help = new File(helpDirectory, id);
+        if (!help.isDirectory()) {
+            if (help.exists()) {
+                help.delete();
+            }
+            help.mkdir();
+        }
+
+        extractIfNeeded(id, helpProvider, help);
+        String helpLink = "help/" + id + "/index.html";
+        return new File(help, "index.html").exists() ? helpLink : "";
+    }
+
+    private void extractIfNeeded(String id, ZippedHelpStreamProvider helpProvider, File help) {
+        File zipFile = new File(help, id + ".zip");
+
+        boolean needExtraction = true;
+        String sha1 = helpProvider.getHelpSha1(id);
+        if (zipFile.exists()) {
+            String existingHash = "";
+            try {
+                existingHash = Hasher.getHash(zipFile, "SHA1");
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            needExtraction = !existingHash.equalsIgnoreCase(sha1);
+        }
+
+        if (!needExtraction) {
+            return;
+        }
+
+        try {
+            FileUtils.cleanDirectory(help);
+
+            final int BUFFER = 2048;
+
+            // Save the zip file on server
+            InputStream is = null;
+            FileOutputStream zipFos = null;
+            try {
+                is = helpProvider.getZippedHelpStream(id);
+                zipFos = new FileOutputStream(zipFile);
+                int len;
+                byte buf[] = new byte[BUFFER];
+
+                while ((len = is.read(buf)) > 0) {
+                    zipFos.write(buf, 0, len);
+                }
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+                if (zipFos != null) {
+                    zipFos.close();
+                }
+            }
+
+            // Extract the zip file
+            ZipInputStream helpZipped = null;
+            try {
+                helpZipped = new ZipInputStream(new FileInputStream(zipFile));
+
+                ZipEntry entry;
+                while ((entry = helpZipped.getNextEntry()) != null) {
+                    File file = new File(help, entry.getName());
+                    if (entry.isDirectory()) {
+                        file.mkdirs();
+                    } else {
+                        FileOutputStream fos = new FileOutputStream(file);
+                        BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
+                        int count;
+                        byte data[] = new byte[BUFFER];
+                        while ((count = helpZipped.read(data, 0, BUFFER)) != -1) {
+                            dest.write(data, 0, count);
+                        }
+                        dest.close();
+                    }
+                    helpZipped.closeEntry();
+                }
+            } finally {
+                if (helpZipped != null) {
+                    try {
+                        helpZipped.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RegistryServiceImpl.class.getName()).log(Level.WARNING, "Cannot extract help of " + id, ex);
+
+            //Delete the eventual zip file, so that the extraction is rerun next time
+            if (zipFile.exists()) {
+                zipFile.delete();
+            }
+        }
     }
 }
