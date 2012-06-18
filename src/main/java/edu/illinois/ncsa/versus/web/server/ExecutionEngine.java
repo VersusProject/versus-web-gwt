@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.restlet.resource.ResourceException;
 import org.tupeloproject.kernel.BeanSession;
 import org.tupeloproject.kernel.OperatorException;
 import org.tupeloproject.rdf.Resource;
@@ -53,7 +54,14 @@ public class ExecutionEngine {
                         job.getComparisonStatus();
                 for (String id : comparisonStatus.keySet()) {
                     if (comparisonStatus.get(id) == Job.ComparisonStatus.STARTED) {
-                        Comparison comparison = client.getComparison(id);
+                        Comparison comparison;
+                        try {
+                            comparison = client.getComparison(id);
+                        } catch (ResourceException e) {
+                            job.updateError(id, "Cannot get result: " + e);
+                            continue;
+                        }
+                        
                         Comparison.ComparisonStatus status = comparison.getStatus();
                         if (status != null) {
                             switch (status) {
@@ -61,7 +69,7 @@ public class ExecutionEngine {
                                     job.updateSimilarityValue(id, new Double(comparison.getValue()));
                                     break;
                                 case FAILED:
-                                    job.updateError(id, "Error");
+                                    job.updateError(id, comparison.getError());
                                     break;
                                 case ABORTED:
                                     job.setStatus(id, ComparisonStatus.ABORTED);
