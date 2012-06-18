@@ -1,5 +1,10 @@
 package edu.illinois.ncsa.versus.web.client;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -8,13 +13,28 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil.PermissionCallback;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.MyDispatchAsync;
-import edu.illinois.ncsa.mmdb.web.client.event.*;
-import edu.illinois.ncsa.mmdb.web.client.ui.*;
+import edu.illinois.ncsa.mmdb.web.client.event.AllDatasetsUnselectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.AllDatasetsUnselectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.ui.CollectionPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.DatasetWidget;
+import edu.illinois.ncsa.mmdb.web.client.ui.ListDatasetsPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.ProfileWidget;
+import edu.illinois.ncsa.mmdb.web.client.ui.RequestNewPasswordPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.SignupPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.admin.RoleAdministrationWidget;
 import edu.illinois.ncsa.mmdb.web.client.ui.admin.UserManagementWidget;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInEvent;
@@ -24,6 +44,8 @@ import edu.illinois.ncsa.versus.web.client.event.LoggedOutHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
+import edu.illinois.ncsa.versus.web.client.ui.ListCollectionsPage;
+import edu.illinois.ncsa.versus.web.client.ui.LoginPage;
 import edu.illinois.ncsa.versus.web.client.ui.MainMenu;
 import edu.illinois.ncsa.versus.web.client.ui.UserMenu;
 import edu.illinois.ncsa.versus.web.client.ui.Workflow;
@@ -31,10 +53,6 @@ import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 /**
@@ -166,7 +184,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
             Authentication.logout(eventBus);
         } else if (token.startsWith("login")) {
             centralPanel.clear();
-            centralPanel.add(new edu.illinois.ncsa.versus.web.client.ui.LoginPage(dispatchAsync, eventBus)); // FIXME should not have to instantiate MMDB
+            centralPanel.add(new LoginPage(dispatchAsync, eventBus)); // FIXME should not have to instantiate MMDB
         } else if (token.startsWith("signup")) {
             centralPanel.clear();
             centralPanel.add(new SignupPage(dispatchAsync));

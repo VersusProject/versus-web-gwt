@@ -172,6 +172,12 @@
     
     <listener>
         <listener-class>
+            edu.illinois.ncsa.versus.web.server.VersusActionHandlersConfig
+        </listener-class>
+    </listener>
+    
+    <listener>
+        <listener-class>
             edu.illinois.ncsa.versus.web.server.PropertiesManager
         </listener-class>
     </listener>

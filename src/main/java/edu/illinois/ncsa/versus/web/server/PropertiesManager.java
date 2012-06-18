@@ -37,7 +37,7 @@ public class PropertiesManager implements ServletContextListener {
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    public void contextInitialized(ServletContextEvent sce) {        
         Properties props = new Properties();
         String path = "/server.properties";
         log.log(Level.INFO, "Loading server property file: {0}", path);
