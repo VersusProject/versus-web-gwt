@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +62,7 @@ public class ExecutionEngine {
                             job.updateError(id, "Cannot get result: " + e);
                             continue;
                         }
-                        
+
                         Comparison.ComparisonStatus status = comparison.getStatus();
                         if (status != null) {
                             switch (status) {
@@ -95,25 +96,26 @@ public class ExecutionEngine {
         Set<PairwiseComparison> comparisons = job.getComparisons();
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
         for (PairwiseComparison pairwiseComparison : comparisons) {
-            DatasetBean firstDataset = pairwiseComparison.getFirstDataset();
-            DatasetBean secondDataset = pairwiseComparison.getSecondDataset();
-            String dataset1 = firstDataset.getFilename();
-            String dataset2 = secondDataset.getFilename();
-            String adapterId = pairwiseComparison.getAdapterId();
-            String extractorId = pairwiseComparison.getExtractorId();
-            String measureId = pairwiseComparison.getMeasureId();
-            Comparison comparison = new Comparison(dataset1, dataset2,
-                    adapterId, extractorId, measureId);
             try {
+                DatasetBean firstDataset = pairwiseComparison.getFirstDataset();
+                DatasetBean secondDataset = pairwiseComparison.getSecondDataset();
+                String dataset1 = firstDataset.getFilename();
+                String dataset2 = secondDataset.getFilename();
+                String adapterId = pairwiseComparison.getAdapterId();
+                String extractorId = pairwiseComparison.getExtractorId();
+                String measureId = pairwiseComparison.getMeasureId();
+                Comparison comparison = new Comparison(dataset1, dataset2,
+                        adapterId, extractorId, measureId);
                 InputStream stream1 = beanSession.fetchBlob(Resource.uriRef(firstDataset.getUri()));
                 InputStream stream2 = beanSession.fetchBlob(Resource.uriRef(secondDataset.getUri()));
                 String id = client.submit(comparison, stream1, stream2);
                 comparison.setId(id);
                 pairwiseComparison.setId(id);
                 job.setStatus(id, ComparisonStatus.STARTED);
-            } catch (OperatorException ex) {
-                Logger.getLogger(ExecutionEngine.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
+                String id = UUID.randomUUID().toString();
+                pairwiseComparison.setId(id);
+                job.updateError(id, "Error submitting comparison: " + ex.getMessage());
                 Logger.getLogger(ExecutionEngine.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

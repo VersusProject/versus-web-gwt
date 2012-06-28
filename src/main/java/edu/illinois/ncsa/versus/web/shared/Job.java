@@ -98,7 +98,7 @@ public class Job implements Serializable {
 
     private synchronized PairwiseComparison getComparison(String comparisonId) {
         for (PairwiseComparison comparison : comparisons) {
-            if (comparison.getId().equals(comparisonId)) {
+            if (comparisonId.equals(comparison.getId())) {
                 return comparison;
             }
         }
