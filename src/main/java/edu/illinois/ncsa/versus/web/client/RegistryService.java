@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package edu.illinois.ncsa.versus.web.client;
 
@@ -16,7 +16,12 @@ import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
  */
 @RemoteServiceRelativePath("registry")
 public interface RegistryService extends RemoteService {
-	List<ComponentMetadata> getMeasures();
-	List<ComponentMetadata> getExtractors();
-	List<ComponentMetadata> getAdapters();
+
+    List<ComponentMetadata> getMeasures();
+
+    List<ComponentMetadata> getExtractors();
+
+    List<ComponentMetadata> getAdapters();
+    
+    List<ComponentMetadata> getSamplers();
 }

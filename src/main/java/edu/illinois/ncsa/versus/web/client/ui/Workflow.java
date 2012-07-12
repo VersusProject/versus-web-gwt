@@ -11,30 +11,24 @@
  */
 package edu.illinois.ncsa.versus.web.client.ui;
 
+import java.util.Iterator;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
-import edu.illinois.ncsa.mmdb.web.client.presenter.DatasetTablePresenter;
-import edu.illinois.ncsa.mmdb.web.client.view.DynamicTableView;
+
 import edu.illinois.ncsa.versus.web.client.RegistryService;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.AddAdapterEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
-import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter;
-import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter;
-import edu.illinois.ncsa.versus.web.client.presenter.SelectExtractorPresenter;
-import edu.illinois.ncsa.versus.web.client.presenter.SelectMeasurePresenter;
+import edu.illinois.ncsa.versus.web.client.event.AddSamplerEvent;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectedDatasetsPresenter;
-import edu.illinois.ncsa.versus.web.client.view.CurrentSelectionsView;
-import edu.illinois.ncsa.versus.web.client.view.SelectAdapterView;
-import edu.illinois.ncsa.versus.web.client.view.SelectExtractorView;
-import edu.illinois.ncsa.versus.web.client.view.SelectMeasureView;
 import edu.illinois.ncsa.versus.web.client.view.SelectedDatasetsView;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
-import java.util.List;
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 /**
@@ -50,42 +44,14 @@ public class Workflow extends Composite {
     public Workflow(final DispatchAsync dispatchAsync, final HandlerManager eventBus) {
         this.eventBus = eventBus;
 
-        VerticalPanel newExecutionPanel = new VerticalPanel();
-        newExecutionPanel.setWidth("100%");
-
-        HorizontalPanel selectionPanel = new HorizontalPanel();
-        selectionPanel.setBorderWidth(0);
-        selectionPanel.setWidth("100%");
-        newExecutionPanel.add(selectionPanel);
-
-        // adapters
-        SelectAdapterView selectAdapterView = new SelectAdapterView();
-        SelectAdapterPresenter selectAdapterPresenter = new SelectAdapterPresenter(
-                registryService, eventBus, selectAdapterView);
-        selectAdapterPresenter.go(selectionPanel);
-
-        // extractors
-        SelectExtractorView selectExtractorView = new SelectExtractorView();
-        SelectExtractorPresenter selectExtractorPresenter = new SelectExtractorPresenter(
-                registryService, eventBus, selectExtractorView);
-        selectExtractorPresenter.go(selectionPanel);
-
-        // measures
-        SelectMeasureView selectMeasureView = new SelectMeasureView();
-        SelectMeasurePresenter selectMeasurePresenter = new SelectMeasurePresenter(
-                registryService, eventBus, selectMeasureView);
-        selectMeasurePresenter.go(selectionPanel);
-
-        // current selections
-        SimplePanel currentSelectionPanel = new SimplePanel();
-        CurrentSelectionsView currentSelectionsView = new CurrentSelectionsView();
-        CurrentSelectionsPresenter currentSelectionsPresenter = new CurrentSelectionsPresenter(
-                registryService, eventBus, currentSelectionsView);
-        currentSelectionsPresenter.go(currentSelectionPanel);
-
-        DockLayoutPanel comparePanel = new DockLayoutPanel(Style.Unit.EM);
-        comparePanel.addSouth(currentSelectionPanel, 8);
-        comparePanel.add(new ScrollPanel(newExecutionPanel));
+        // Workflow selection
+        StackLayoutPanel workflowSelection = new StackLayoutPanel(Style.Unit.EM);
+        HTML comparisonHeader = new HTML("Comparison");
+        workflowSelection.add(new ComparisonWorkflow(dispatchAsync, eventBus, registryService), comparisonHeader, 2);
+        HTML samplingHeader = new HTML("Sampling");
+        workflowSelection.add(new SamplingWorkflow(dispatchAsync, eventBus, registryService), samplingHeader, 2);
+        comparisonHeader.addStyleName("workflowHeader");
+        samplingHeader.addStyleName("workflowHeader");
 
         // previous executions
         previousDisclosureBody = new VerticalPanel();
@@ -113,7 +79,7 @@ public class Workflow extends Composite {
         TabLayoutPanel tabPanel = new TabLayoutPanel(2, Style.Unit.EM);
         tabPanel.setWidth("100%");
         tabPanel.add(selectedDataScroll, "Selected Data");
-        tabPanel.add(comparePanel, "Compare");
+        tabPanel.add(workflowSelection, "Worflow selection");
         tabPanel.add(previousExecScroll, "View Results");
         tabPanel.selectTab(0);
 
@@ -171,6 +137,21 @@ public class Workflow extends Composite {
             @Override
             public void onFailure(Throwable caught) {
                 GWT.log("Error retrieving measures", caught);
+            }
+        });
+        
+        registryService.getSamplers(new AsyncCallback<List<ComponentMetadata>>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                GWT.log("Error retrieving samplers", caught);
+            }
+
+            @Override
+            public void onSuccess(List<ComponentMetadata> result) {
+                for (ComponentMetadata metadata : result) {
+                    eventBus.fireEvent(new AddSamplerEvent(metadata));
+                }
             }
         });
     }

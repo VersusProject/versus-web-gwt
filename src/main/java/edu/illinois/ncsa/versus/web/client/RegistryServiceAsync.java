@@ -20,4 +20,6 @@ public interface RegistryServiceAsync {
 	void getExtractors(AsyncCallback<List<ComponentMetadata>> callback);
 
 	void getAdapters(AsyncCallback<List<ComponentMetadata>> callback);
+    
+    void getSamplers(AsyncCallback<List<ComponentMetadata>> callback);
 }

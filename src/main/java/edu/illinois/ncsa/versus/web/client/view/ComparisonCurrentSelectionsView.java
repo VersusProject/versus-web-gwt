@@ -14,13 +14,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.illinois.ncsa.versus.web.client.presenter.CurrentSelectionsPresenter.Display;
+import edu.illinois.ncsa.versus.web.client.presenter.ComparisonCurrentSelectionsPresenter.Display;
 
 /**
  * @author lmarini
  *
  */
-public class CurrentSelectionsView extends Composite implements Display {
+public class ComparisonCurrentSelectionsView extends Composite implements Display {
 	
 	private static final String NO_EXTRACTOR_SELECTED = "No extractor selected";
 	private static final String NO_MEASURE_SELECTED = "No measure selected";
@@ -32,7 +32,7 @@ public class CurrentSelectionsView extends Composite implements Display {
 	private HorizontalPanel selectionsPanel;
 	private SimplePanel selectedAdapterPanel;
 
-	public CurrentSelectionsView() {
+	public ComparisonCurrentSelectionsView() {
 		mainPanel = new VerticalPanel();
 		mainPanel.addStyleName("currentSelectionsView");
 		mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

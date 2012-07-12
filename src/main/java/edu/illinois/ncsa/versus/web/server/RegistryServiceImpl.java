@@ -31,6 +31,8 @@ import edu.illinois.ncsa.versus.core.measure.MeasureDescriptor;
 import edu.illinois.ncsa.versus.core.measure.MeasuresClient;
 import edu.illinois.ncsa.versus.web.client.RegistryService;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
+import gov.nist.itl.ssd.sampling.SamplerDescriptor;
+import gov.nist.itl.ssd.sampling.SamplersClient;
 
 /**
  * @author lmarini
@@ -95,8 +97,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         HashSet<String> adaptersId = adc.getAdapters();
         for (String id : adaptersId) {
             AdapterDescriptor adapterDescriptor = adc.getAdapterDescriptor(id);
-            String category = adapterDescriptor.getCategory().isEmpty()
-                    ? "Other" : adapterDescriptor.getCategory();
+            String category = getCategory(adapterDescriptor.getCategory());
             String helpLink = getHelpLink(adapterDescriptor.getId(),
                     adapterHelpProvider, adapterDescriptor.hasHelp());
             ComponentMetadata adapter = new ComponentMetadata(id,
@@ -117,8 +118,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         HashSet<String> extractorsId = exc.getExtractors();
         for (String id : extractorsId) {
             ExtractorDescriptor extractorDescriptor = exc.getExtractorDescriptor(id);
-            String category = extractorDescriptor.getCategory().isEmpty()
-                    ? "Other" : extractorDescriptor.getCategory();
+            String category = getCategory(extractorDescriptor.getCategory());
             String helpLink = getHelpLink(extractorDescriptor.getType(),
                     extractorHelpProvider, extractorDescriptor.hasHelp());
             ComponentMetadata extractor = new ComponentMetadata(id,
@@ -140,8 +140,7 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         HashSet<String> measuresId = mec.getMeasures();
         for (String id : measuresId) {
             MeasureDescriptor measureDescriptor = mec.getMeasureDescriptor(id);
-            String category = measureDescriptor.getCategory().isEmpty()
-                    ? "Other" : measureDescriptor.getCategory();
+            String category = getCategory(measureDescriptor.getCategory());
             String helpLink = getHelpLink(measureDescriptor.getType(),
                     measureHelpProvider, measureDescriptor.hasHelp());
             ComponentMetadata extractor = new ComponentMetadata(id,
@@ -154,6 +153,28 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         return measures;
     }
 
+    @Override
+    public List<ComponentMetadata> getSamplers() {
+        List<ComponentMetadata> samplers = new ArrayList<ComponentMetadata>();
+
+        SamplersClient sc = new SamplersClient(serviceUrl);
+        HashSet<String> samplersId = sc.getSamplers();
+        for (String id : samplersId) {
+            SamplerDescriptor samplerDescriptor = sc.getSamplerDescriptor(id);
+            String category = getCategory(samplerDescriptor.getCategory());
+            String helpLink = getHelpLink(samplerDescriptor.getId(),
+                    measureHelpProvider, samplerDescriptor.hasHelp());
+            ComponentMetadata sampler = new ComponentMetadata(id,
+                    samplerDescriptor.getName(), "", category, helpLink);
+            samplers.add(sampler);
+        }
+        return samplers;
+    }
+
+    private String getCategory(String category) {
+        return category == null || category.isEmpty() ? "Other" : category;
+    }
+    
     private String getHelpLink(String id, ZippedHelpStreamProvider helpProvider, boolean hasHelp) {
         if (!hasHelp) {
             return "";

@@ -37,7 +37,7 @@ import edu.illinois.ncsa.versus.web.shared.Submission;
  * @author lmarini
  *
  */
-public class CurrentSelectionsPresenter implements Presenter {
+public class ComparisonCurrentSelectionsPresenter implements Presenter {
 
     private final RegistryServiceAsync registryService;
 
@@ -66,7 +66,7 @@ public class CurrentSelectionsPresenter implements Presenter {
         HasClickHandlers getExecuteButton();
     }
 
-    public CurrentSelectionsPresenter(RegistryServiceAsync registryService,
+    public ComparisonCurrentSelectionsPresenter(RegistryServiceAsync registryService,
             HandlerManager eventBus, Display currentSelectionsView) {
         this.registryService = registryService;
         this.eventBus = eventBus;

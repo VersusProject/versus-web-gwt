@@ -68,6 +68,12 @@ html {
     line-height: 2.0;
 }
 
+.selectSamplerPanel {
+    width: 300px;
+    margin: 10px auto;
+    line-height: 2.0;
+}
+
 .contentPanel {
     width: 100%;
 }
@@ -229,6 +235,15 @@ HTML, BODY {
     cursor: pointer;
     padding: 3px;
 } 
+
+.gwt-stacklayoutpanel .workflowHeader {
+    font-size: 0.9em;
+    background: #F0F0F0;
+    text-align: left;
+    line-height: 2em;
+    padding: 0px;
+    padding-left: 0.4em;
+}
 
 .gwt-PopupPanel {
     border: 1px solid black;
