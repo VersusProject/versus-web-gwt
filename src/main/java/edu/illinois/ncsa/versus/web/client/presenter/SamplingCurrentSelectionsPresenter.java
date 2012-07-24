@@ -11,6 +11,7 @@
  */
 package edu.illinois.ncsa.versus.web.client.presenter;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -18,15 +19,20 @@ import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
+import edu.illinois.ncsa.versus.web.client.ExecutionService;
+import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.SamplerUnselectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerUnselectedHandler;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
+import edu.illinois.ncsa.versus.web.shared.SamplingJob;
+import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
 
 /**
  *
@@ -38,7 +44,14 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
 
     private final Display display;
 
+    private ComponentMetadata individual = new ComponentMetadata(
+            "gov.nist.itl.ssd.sampling.impl.BasicIndividual",
+            "Basic individual", "", "", "");
+
     private ComponentMetadata sampler;
+
+    private final ExecutionServiceAsync executionService =
+            GWT.create(ExecutionService.class);
 
     public interface Display {
 
@@ -91,9 +104,7 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
 
                     @Override
                     public void onValueChange(ValueChangeEvent<String> event) {
-                        boolean validSampleSize = isValidSampleSize(event.getValue());
-                        String error = validSampleSize ? "" : getSampleSizeErrorMessage();
-                        display.setSamplingSizeErrorMessage(error);
+                        checkSampleSize(event.getValue());
                     }
                 });
 
@@ -104,6 +115,13 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
                 submitExecution();
             }
         });
+    }
+
+    private boolean checkSampleSize(String value) {
+        boolean validSampleSize = isValidSampleSize(value);
+        String error = validSampleSize ? "" : getSampleSizeErrorMessage();
+        display.setSamplingSizeErrorMessage(error);
+        return validSampleSize;
     }
 
     private boolean isValidSampleSize(String value) {
@@ -121,15 +139,40 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
         }
         return true;
     }
-    
+
     private String getSampleSizeErrorMessage() {
         int maxSize = MMDB.getSessionState().getSelectedDatasets().size();
-        if(maxSize == 0) {
+        if (maxSize == 0) {
             return "Select data before setting the sample size.";
         }
         return "The sample size must be an integer between 1 and " + maxSize + ".";
     }
 
     private void submitExecution() {
+        String sampleSizeString = display.getSampleSize();
+        if (!checkSampleSize(sampleSizeString)) {
+            return;
+        }
+        int sampleSize = Integer.parseInt(sampleSizeString);
+
+        final SamplingSubmission submission = new SamplingSubmission();
+        submission.setDatasetsURI(MMDB.getSessionState().getSelectedDatasets());
+        submission.setIndividual(individual);
+        submission.setSampler(sampler);
+        submission.setSampleSize(sampleSize);
+
+        executionService.submit(submission, new AsyncCallback<SamplingJob>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                GWT.log("Error submitting execution", caught);
+            }
+
+            @Override
+            public void onSuccess(SamplingJob result) {
+                GWT.log("Execution successfully submitted");
+                //TODO: fire event
+            }
+        });
     }
 }

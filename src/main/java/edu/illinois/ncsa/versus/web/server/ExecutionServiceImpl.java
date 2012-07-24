@@ -21,7 +21,11 @@ import edu.illinois.ncsa.mmdb.web.server.TupeloStore;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
+import edu.illinois.ncsa.versus.web.shared.SamplingJob;
+import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
+import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
 import edu.illinois.ncsa.versus.web.shared.Submission;
+import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
 /**
@@ -34,6 +38,8 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
 
     private static final ExecutionEngine executionEngine = new ExecutionEngine();
 
+    private static final SamplingExecutionEngine see = new SamplingExecutionEngine();
+
     /**
      * Commons logging *
      */
@@ -42,7 +48,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     @Override
     public Job submit(Submission set) {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
-        
+
         // create comparison
         Set<PairwiseComparison> comparisons = new HashSet<PairwiseComparison>();
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
@@ -50,7 +56,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
         final String adapterId = set.getAdapter().getId();
         final String extractorId = set.getExtraction().getId();
         final String measureId = set.getMeasure().getId();
-        
+
         List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
         for (int i = 0; i < datasetsURI.size(); i++) {
             for (int j = i + 1; j < datasetsURI.size(); j++) {
@@ -79,5 +85,38 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     @Override
     public Job getStatus(String jobId) {
         return executionEngine.getJob(jobId);
+    }
+
+    @Override
+    public SamplingJob submit(SamplingSubmission submission) {
+        BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
+        DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
+        Set<String> datasetsURI = submission.getDatasetsURI();
+        Set<DatasetBean> beans = new HashSet<DatasetBean>(datasetsURI.size());
+        for (String uri : datasetsURI) {
+            try {
+                beans.add(dbu.get(Resource.uriRef(uri)));
+            } catch (OperatorException ex) {
+                log.error("Error setting up sampling", ex);
+            }
+        }
+        SamplingRequest sr = new SamplingRequest();
+        sr.setDatasets(beans);
+        sr.setIndividualId(submission.getIndividual().getId());
+        sr.setSamplerId(submission.getSampler().getId());
+        sr.setSampleSize(submission.getSampleSize());
+        Set<SamplingRequest> samplings = new HashSet<SamplingRequest>(1);
+        samplings.add(sr);
+
+        SamplingJob job = new SamplingJob();
+        job.setStarted(new Date());
+        job.setSamplings(samplings);
+        see.submit(job);
+        return job;
+    }
+
+    @Override
+    public SamplingJob getSamplingStatus(String samplingJobId) {
+        return see.getJob(samplingJobId);
     }
 }

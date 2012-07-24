@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package edu.illinois.ncsa.versus.web.client;
 
@@ -7,6 +7,8 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.illinois.ncsa.versus.web.shared.SamplingJob;
+import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
@@ -15,8 +17,12 @@ import edu.illinois.ncsa.versus.web.shared.Submission;
  */
 @RemoteServiceRelativePath("execution")
 public interface ExecutionService extends RemoteService {
-	
-	Job submit(Submission submission);
-	
-	Job getStatus(String jobId);
+
+    Job submit(Submission submission);
+
+    Job getStatus(String jobId);
+
+    SamplingJob submit(SamplingSubmission submission);
+
+    SamplingJob getSamplingStatus(String samplingJobId);
 }
