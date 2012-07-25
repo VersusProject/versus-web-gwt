@@ -13,6 +13,7 @@ package edu.illinois.ncsa.versus.web.server;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,10 +85,11 @@ public class SamplingExecutionEngine {
                                     Set<DatasetBean> datasets = sr.getDatasets();
                                     Set<DatasetBean> result = new HashSet<DatasetBean>(sr.getSampleSize());
                                     for (DatasetBean ds : datasets) {
-                                        if (sampling.getSample().contains(ds.getFilename())) {
+                                        if (sampling.getSample().contains(ds.getUri())) {
                                             result.add(ds);
                                         }
                                     }
+                                    job.setEnded(new Date());
                                     job.updateSample(id, result);
                                     break;
                                 case FAILED:

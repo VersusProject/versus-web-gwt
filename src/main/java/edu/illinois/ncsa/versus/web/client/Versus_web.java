@@ -43,13 +43,17 @@ import edu.illinois.ncsa.versus.web.client.event.LoggedOutEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
+import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobEvent;
+import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobHandler;
 import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
+import edu.illinois.ncsa.versus.web.client.presenter.SamplingJobStatusPresenter;
 import edu.illinois.ncsa.versus.web.client.ui.ListCollectionsPage;
 import edu.illinois.ncsa.versus.web.client.ui.LoginPage;
 import edu.illinois.ncsa.versus.web.client.ui.MainMenu;
 import edu.illinois.ncsa.versus.web.client.ui.UserMenu;
 import edu.illinois.ncsa.versus.web.client.ui.Workflow;
 import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
+import edu.illinois.ncsa.versus.web.client.view.SamplingJobStatusView;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
@@ -111,10 +115,23 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
                 Submission submission = newJobEvent.getSubmission();
                 JobStatusView jobStatusView = new JobStatusView(dispatchAsync);
                 JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(
-                        eventBus, jobStatusView, job, submission);
+                        jobStatusView, job, submission);
                 HasWidgets resultWidget = workflowWidget.getResultWidget();
                 jobStatusPresenter.go(resultWidget);
-                resultWidget.add(jobStatusView);
+            }
+        });
+
+        eventBus.addHandler(NewSamplingJobEvent.TYPE, new NewSamplingJobHandler() {
+
+            @Override
+            public void onNewJob(NewSamplingJobEvent newSamplingJobEvent) {
+                SamplingJobStatusView samplingJobStatusView =
+                        new SamplingJobStatusView(dispatchAsync);
+                SamplingJobStatusPresenter samplingJobStatusPresenter =
+                        new SamplingJobStatusPresenter(samplingJobStatusView,
+                        newSamplingJobEvent.getJob());
+                HasWidgets resultWidget = workflowWidget.getResultWidget();
+                samplingJobStatusPresenter.go(resultWidget);
             }
         });
 

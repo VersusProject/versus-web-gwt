@@ -111,8 +111,15 @@ html {
 }
 
 .thumbnail {
+    width: auto;
     margin: 5px;
     padding: 5px;
+}
+
+.inlinethumbnail {
+    margin: 5px;
+    padding: 5px;
+    display: inline-block;
 }
 
 .dropBoxesPanel {

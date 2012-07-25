@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
+import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.SamplerUnselectedEvent;
@@ -171,7 +172,7 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
             @Override
             public void onSuccess(SamplingJob result) {
                 GWT.log("Execution successfully submitted");
-                //TODO: fire event
+                eventBus.fireEvent(new NewSamplingJobEvent(result, submission));
             }
         });
     }

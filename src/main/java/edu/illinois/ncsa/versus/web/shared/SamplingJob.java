@@ -27,7 +27,7 @@ import edu.uiuc.ncsa.cet.bean.DatasetBean;
  */
 public class SamplingJob implements Serializable {
 
-    private final String id;
+    private String id;
 
     private Set<SamplingRequest> samplings;
 
@@ -40,7 +40,7 @@ public class SamplingJob implements Serializable {
         STARTED, ENDED, FAILED, ABORTED
 
     }
-    private final Map<String, SamplingStatus> samplingStatus;
+    private Map<String, SamplingStatus> samplingStatus;
 
     public SamplingJob() {
         id = UUID.randomUUID().toString();

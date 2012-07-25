@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -41,7 +40,7 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
  */
 public class JobStatusView extends Composite implements Display {
 
-    FlowPanel mainPanel;
+    private FlowPanel mainPanel;
 
     private final SimplePanel startPanel;
 
@@ -99,6 +98,7 @@ public class JobStatusView extends Composite implements Display {
         disclosurePanel.setWidth("100%");
         disclosurePanel.setAnimationEnabled(true);
         disclosurePanel.setContent(mainPanel);
+        disclosurePanel.setOpen(true);
 
         initWidget(disclosurePanel);
     }
@@ -106,11 +106,6 @@ public class JobStatusView extends Composite implements Display {
     @Override
     public Widget asWidget() {
         return this;
-    }
-
-    @Override
-    public void setComparisons(Set<PairwiseComparison> datasets) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -144,7 +139,6 @@ public class JobStatusView extends Composite implements Display {
 
     @Override
     public void showResults(Job job) {
-        disclosurePanel.setOpen(true);
         Set<PairwiseComparison> comparisons = job.getComparisons();
         comparisonsPanel.clear();
         clearPopups();
