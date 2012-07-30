@@ -35,6 +35,7 @@ import edu.illinois.ncsa.mmdb.web.client.ui.ListDatasetsPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.ProfileWidget;
 import edu.illinois.ncsa.mmdb.web.client.ui.RequestNewPasswordPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.SignupPage;
+import edu.illinois.ncsa.mmdb.web.client.ui.UploadPage;
 import edu.illinois.ncsa.mmdb.web.client.ui.admin.RoleAdministrationWidget;
 import edu.illinois.ncsa.mmdb.web.client.ui.admin.UserManagementWidget;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInEvent;
@@ -261,7 +262,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
                     dispatchAsync, eventBus));
         } else if (token.startsWith("upload")) {
             centralPanel.clear();
-            centralPanel.add(new edu.illinois.ncsa.versus.web.client.ui.UploadPage(dispatchAsync));
+            centralPanel.add(new UploadPage(dispatchAsync));
         } else {
             centralPanel.clear();
             workflowWidget = new Workflow(dispatchAsync, eventBus);
