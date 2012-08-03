@@ -27,10 +27,12 @@ import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobEvent;
+import edu.illinois.ncsa.versus.web.client.event.NewSubmissionEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.SamplerUnselectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerUnselectedHandler;
+import edu.illinois.ncsa.versus.web.client.event.SubmissionFailureEvent;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
@@ -162,11 +164,14 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
         submission.setSampler(sampler);
         submission.setSampleSize(sampleSize);
 
+        eventBus.fireEvent(new NewSubmissionEvent(submission));
+        
         executionService.submit(submission, new AsyncCallback<SamplingJob>() {
 
             @Override
             public void onFailure(Throwable caught) {
                 GWT.log("Error submitting execution", caught);
+                eventBus.fireEvent(new SubmissionFailureEvent(submission, caught));
             }
 
             @Override

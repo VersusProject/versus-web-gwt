@@ -14,7 +14,8 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -28,7 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
 import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.InfoPopup;
-import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter.Display;
+import edu.illinois.ncsa.versus.web.client.presenter.ComparisonJobStatusPresenter.Display;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
@@ -93,7 +94,7 @@ public class JobStatusView extends Composite implements Display {
         comparisonsPanel = new FlowPanel();
         mainPanel.add(comparisonsPanel);
 
-        disclosurePanel = new DisclosurePanel("Result");
+        disclosurePanel = new DisclosurePanel("Comparison");
         disclosurePanel.addStyleName("resultDisclosurePanel");
         disclosurePanel.setWidth("100%");
         disclosurePanel.setAnimationEnabled(true);
@@ -102,7 +103,7 @@ public class JobStatusView extends Composite implements Display {
 
         initWidget(disclosurePanel);
     }
-
+    
     @Override
     public Widget asWidget() {
         return this;
@@ -110,8 +111,10 @@ public class JobStatusView extends Composite implements Display {
 
     @Override
     public void setStart(Date date) {
-        String dateString = DateTimeFormat.getMediumDateTimeFormat().format(date);
-        disclosurePanel.getHeaderTextAccessor().setText(dateString);
+        String dateString = DateTimeFormat.getFormat(
+                PredefinedFormat.DATE_TIME_MEDIUM).format(date);
+        disclosurePanel.getHeaderTextAccessor().setText(
+                "Comparison - " + dateString);
         startPanel.setWidget(new Label(dateString));
     }
 

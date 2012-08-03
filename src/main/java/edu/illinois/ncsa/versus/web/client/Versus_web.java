@@ -14,7 +14,6 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -42,21 +41,11 @@ import edu.illinois.ncsa.versus.web.client.event.LoggedInEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedInHandler;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutEvent;
 import edu.illinois.ncsa.versus.web.client.event.LoggedOutHandler;
-import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
-import edu.illinois.ncsa.versus.web.client.event.NewJobHandler;
-import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobEvent;
-import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobHandler;
-import edu.illinois.ncsa.versus.web.client.presenter.JobStatusPresenter;
-import edu.illinois.ncsa.versus.web.client.presenter.SamplingJobStatusPresenter;
 import edu.illinois.ncsa.versus.web.client.ui.ListCollectionsPage;
 import edu.illinois.ncsa.versus.web.client.ui.LoginPage;
 import edu.illinois.ncsa.versus.web.client.ui.MainMenu;
 import edu.illinois.ncsa.versus.web.client.ui.UserMenu;
 import edu.illinois.ncsa.versus.web.client.ui.Workflow;
-import edu.illinois.ncsa.versus.web.client.view.JobStatusView;
-import edu.illinois.ncsa.versus.web.client.view.SamplingJobStatusView;
-import edu.illinois.ncsa.versus.web.shared.Job;
-import edu.illinois.ncsa.versus.web.shared.Submission;
 import edu.uiuc.ncsa.cet.bean.rbac.medici.Permission;
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
@@ -67,10 +56,15 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
 public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
 
     private static final HandlerManager eventBus = MMDB.eventBus;
+
     private Workflow workflowWidget;
+
     private DockLayoutPanel appPanel;
+
     private ScrollPanel centralPanel;
+
     public static final DispatchAsync dispatchAsync = new MyDispatchAsync();
+
     private PermissionUtil permissionUtil;
 
     /**
@@ -99,7 +93,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
         appPanel.addNorth(headerPanel, 2.5);
         appPanel.add(centralPanel);
         RootLayoutPanel.get().add(appPanel);
-
+        
         bind();
 
         // history support
@@ -108,34 +102,6 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
     }
 
     private void bind() {
-        eventBus.addHandler(NewJobEvent.TYPE, new NewJobHandler() {
-
-            @Override
-            public void onNewJob(NewJobEvent newJobEvent) {
-                Job job = newJobEvent.getJob();
-                Submission submission = newJobEvent.getSubmission();
-                JobStatusView jobStatusView = new JobStatusView(dispatchAsync);
-                JobStatusPresenter jobStatusPresenter = new JobStatusPresenter(
-                        jobStatusView, job, submission);
-                HasWidgets resultWidget = workflowWidget.getResultWidget();
-                jobStatusPresenter.go(resultWidget);
-            }
-        });
-
-        eventBus.addHandler(NewSamplingJobEvent.TYPE, new NewSamplingJobHandler() {
-
-            @Override
-            public void onNewJob(NewSamplingJobEvent newSamplingJobEvent) {
-                SamplingJobStatusView samplingJobStatusView =
-                        new SamplingJobStatusView(dispatchAsync);
-                SamplingJobStatusPresenter samplingJobStatusPresenter =
-                        new SamplingJobStatusPresenter(samplingJobStatusView,
-                        newSamplingJobEvent.getJob());
-                HasWidgets resultWidget = workflowWidget.getResultWidget();
-                samplingJobStatusPresenter.go(resultWidget);
-            }
-        });
-
         eventBus.addHandler(LoggedInEvent.TYPE, new LoggedInHandler() {
 
             @Override

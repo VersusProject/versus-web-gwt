@@ -11,7 +11,6 @@
  */
 package edu.illinois.ncsa.versus.web.client.ui;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -26,7 +25,9 @@ import edu.illinois.ncsa.versus.web.client.event.AddAdapterEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddExtractorEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddMeasureEvent;
 import edu.illinois.ncsa.versus.web.client.event.AddSamplerEvent;
+import edu.illinois.ncsa.versus.web.client.presenter.ResultPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectedDatasetsPresenter;
+import edu.illinois.ncsa.versus.web.client.view.ResultView;
 import edu.illinois.ncsa.versus.web.client.view.SelectedDatasetsView;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import net.customware.gwt.dispatch.client.DispatchAsync;
@@ -38,10 +39,11 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
 public class Workflow extends Composite {
 
     private final RegistryServiceAsync registryService = GWT.create(RegistryService.class);
-    private final HandlerManager eventBus;
-    private final VerticalPanel previousDisclosureBody;
 
-    public Workflow(final DispatchAsync dispatchAsync, final HandlerManager eventBus) {
+    private final HandlerManager eventBus;
+
+    public Workflow(final DispatchAsync dispatchAsync, 
+            final HandlerManager eventBus) {
         this.eventBus = eventBus;
 
         // Workflow selection
@@ -54,13 +56,21 @@ public class Workflow extends Composite {
         samplingHeader.addStyleName("workflowHeader");
 
         // previous executions
-        previousDisclosureBody = new VerticalPanel();
-        previousDisclosureBody.setWidth("95%");
-        ScrollPanel previousExecScroll = new ScrollPanel(previousDisclosureBody);
+        ResultView resultView = new ResultView();
+        final ResultPresenter resultPresenter = new ResultPresenter(resultView, dispatchAsync, eventBus);
+        resultPresenter.bind();
+        ScrollPanel previousExecScroll = new ScrollPanel(resultView) {
+            @Override
+            protected void onDetach() {
+                super.onDetach();
+                resultPresenter.unbind();
+            }
+        };
 
         // dataset selection
         SelectedDatasetsView selectedDatasetsView = new SelectedDatasetsView();
-        final SelectedDatasetsPresenter selectedDatasetsPresenter = new SelectedDatasetsPresenter(dispatchAsync,
+        final SelectedDatasetsPresenter selectedDatasetsPresenter = 
+                new SelectedDatasetsPresenter(dispatchAsync,
                 eventBus, selectedDatasetsView);
         selectedDatasetsPresenter.bind();
         VerticalPanel selectionDisclosureBody = new VerticalPanel() {
@@ -86,11 +96,6 @@ public class Workflow extends Composite {
         initWidget(tabPanel);
 
         populate();
-        selectedDatasetsPresenter.refresh();
-    }
-
-    public HasWidgets getResultWidget() {
-        return previousDisclosureBody;
     }
 
     private void populate() {
@@ -139,7 +144,7 @@ public class Workflow extends Composite {
                 GWT.log("Error retrieving measures", caught);
             }
         });
-        
+
         registryService.getSamplers(new AsyncCallback<List<ComponentMetadata>>() {
 
             @Override

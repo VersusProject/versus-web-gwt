@@ -29,9 +29,11 @@ import edu.illinois.ncsa.versus.web.client.event.MeasureSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
+import edu.illinois.ncsa.versus.web.client.event.NewSubmissionEvent;
+import edu.illinois.ncsa.versus.web.client.event.SubmissionFailureEvent;
+import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
-import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
  * @author lmarini
@@ -147,12 +149,14 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
      * Submit a new job to the server.
      */
     protected void submitExecution() {
-        final Submission submission = new Submission();
+        final ComparisonSubmission submission = new ComparisonSubmission();
         submission.setDatasetsURI(MMDB.getSessionState().getSelectedDatasets());
         submission.setAdapter(adapter);
         submission.setMeasure(measure);
         submission.setExtraction(extractor);
 
+        eventBus.fireEvent(new NewSubmissionEvent(submission));
+        
         // submit execution
         executionService.submit(submission, new AsyncCallback<Job>() {
 
@@ -165,6 +169,7 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
             @Override
             public void onFailure(Throwable caught) {
                 GWT.log("Error submitting execution", caught);
+                eventBus.fireEvent(new SubmissionFailureEvent(submission, caught));
             }
         });
     }

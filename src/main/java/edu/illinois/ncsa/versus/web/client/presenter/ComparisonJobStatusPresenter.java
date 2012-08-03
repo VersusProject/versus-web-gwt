@@ -14,21 +14,21 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
+import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
-import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
  * @author lmarini
  *
  */
-public class JobStatusPresenter implements Presenter {
+public class ComparisonJobStatusPresenter implements Presenter {
 
     private static final int WAIT_INTERVAL = 1000;
 
     private final Display display;
 
-    private final Job job;
+    private Job job;
 
     private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
 
@@ -49,14 +49,21 @@ public class JobStatusPresenter implements Presenter {
         void showResults(Job job);
     }
 
-    public JobStatusPresenter(Display display, Job job, Submission submission) {
+    public ComparisonJobStatusPresenter(Display display, ComparisonSubmission submission) {
         this.display = display;
-        this.job = job;
-        display.setStart(job.getStarted());
         display.setAdapter(submission.getAdapter().getName());
         display.setExtractor(submission.getExtraction().getName());
         display.setMeasure(submission.getMeasure().getName());
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+        display.setStart(job.getStarted());
         pollStatus();
+    }
+
+    public void setError(String error) {
+        display.setStatus(error);
     }
 
     private void pollStatus() {
@@ -92,6 +99,8 @@ public class JobStatusPresenter implements Presenter {
                     @Override
                     public void onFailure(Throwable caught) {
                         GWT.log("Error getting status of job ", caught);
+                        display.setStatus("Cannot get job status: "
+                                + caught.getMessage());
                         cancel();
                     }
                 });

@@ -25,6 +25,7 @@ import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob.SamplingStatus;
 import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
+import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
 /**
@@ -39,7 +40,7 @@ public class SamplingJobStatusPresenter implements Presenter {
 
     private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
 
-    private final SamplingJob job;
+    private SamplingJob job;
 
     public interface Display {
 
@@ -62,19 +63,25 @@ public class SamplingJobStatusPresenter implements Presenter {
         void setSample(Set<DatasetBean> sample);
     }
 
-    public SamplingJobStatusPresenter(Display display, SamplingJob job) {
+    public SamplingJobStatusPresenter(Display display, SamplingSubmission submission) {
         this.display = display;
+        display.setIndividual(submission.getIndividual().getName());
+        display.setSampler(submission.getSampler().getName());
+        display.setSampleSize(submission.getSampleSize());
+        pollStatus();
+    }
+    
+    public void setJob(SamplingJob job) {
         this.job = job;
-        SamplingRequest sampling = job.getSamplings().iterator().next();
-        display.setStatus(job.getStatus(sampling).toString());
         display.setStart(job.getStarted());
         display.setEnd(job.getEnded());
+        SamplingRequest sampling = job.getSamplings().iterator().next();
         display.setDatasets(sampling.getDatasets());
-        display.setIndividual(sampling.getIndividualId());
-        display.setSampler(sampling.getSamplerId());
-        display.setSampleSize(sampling.getSampleSize());
         display.setSample(sampling.getSample());
-        pollStatus();
+    }
+    
+    public void setError(String error) {
+        display.setStatus(error);
     }
 
     private void pollStatus() {
@@ -90,6 +97,9 @@ public class SamplingJobStatusPresenter implements Presenter {
                             public void onFailure(Throwable caught) {
                                 GWT.log("Error getting status of sampling job",
                                         caught);
+                                display.setStatus("Cannot get job status: "
+                                        + caught.getMessage());
+                                cancel();
                             }
 
                             @Override

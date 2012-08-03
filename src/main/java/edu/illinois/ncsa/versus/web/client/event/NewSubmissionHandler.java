@@ -9,13 +9,15 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package edu.illinois.ncsa.versus.web.shared;
+package edu.illinois.ncsa.versus.web.client.event;
 
-import java.io.Serializable;
+import com.google.gwt.event.shared.EventHandler;
 
 /**
  *
  * @author antoinev
  */
-public interface Submission extends Serializable {
+public interface NewSubmissionHandler extends EventHandler {
+
+    void onNewSubmission(NewSubmissionEvent newSubmissionEvent);
 }

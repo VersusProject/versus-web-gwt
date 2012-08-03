@@ -24,7 +24,7 @@ import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
 import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
-import edu.illinois.ncsa.versus.web.shared.Submission;
+import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
@@ -46,7 +46,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     private static final Log log = LogFactory.getLog(ExecutionServiceImpl.class);
 
     @Override
-    public Job submit(Submission set) {
+    public Job submit(ComparisonSubmission set) {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
 
         // create comparison

@@ -11,14 +11,13 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
  *
  * @author antoinev
  */
-public class SamplingSubmission implements Serializable {
+public class SamplingSubmission implements Submission {
 
     private Set<String> datasetsURI;
 

@@ -6,8 +6,8 @@ package edu.illinois.ncsa.versus.web.client.event;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.GwtEvent.Type;
 
+import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.illinois.ncsa.versus.web.shared.Job;
-import edu.illinois.ncsa.versus.web.shared.Submission;
 
 /**
  * @author lmarini
@@ -17,12 +17,12 @@ public class NewJobEvent extends GwtEvent<NewJobHandler>{
 
 	public static Type<NewJobHandler> TYPE = new Type<NewJobHandler>();
 	private Job job;
-	private Submission submission;
+	private ComparisonSubmission submission;
 	
 	public NewJobEvent() {
 	}
 	
-	public NewJobEvent(Job job, Submission submission) {
+	public NewJobEvent(Job job, ComparisonSubmission submission) {
 		this.job = job;
 		this.submission = submission;
 	}
@@ -41,7 +41,7 @@ public class NewJobEvent extends GwtEvent<NewJobHandler>{
 		return job;
 	}
 
-	public Submission getSubmission() {
+	public ComparisonSubmission getSubmission() {
 		return submission;
 	}
 
