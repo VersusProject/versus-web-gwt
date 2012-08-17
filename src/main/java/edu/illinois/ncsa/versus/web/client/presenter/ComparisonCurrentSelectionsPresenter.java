@@ -7,12 +7,23 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.mmdb.web.client.MMDB;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedHandler;
+import edu.illinois.ncsa.mmdb.web.client.event.RefreshEvent;
+import edu.illinois.ncsa.mmdb.web.client.event.RefreshHandler;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
@@ -31,9 +42,12 @@ import edu.illinois.ncsa.versus.web.client.event.MeasureUnselectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.NewJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewSubmissionEvent;
 import edu.illinois.ncsa.versus.web.client.event.SubmissionFailureEvent;
+import edu.illinois.ncsa.versus.web.client.view.DatasetSelectionView;
 import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.illinois.ncsa.versus.web.shared.ComponentMetadata;
 import edu.illinois.ncsa.versus.web.shared.Job;
+import edu.uiuc.ncsa.cet.bean.DatasetBean;
+import net.customware.gwt.dispatch.client.DispatchAsync;
 
 /**
  * @author lmarini
@@ -41,17 +55,25 @@ import edu.illinois.ncsa.versus.web.shared.Job;
  */
 public class ComparisonCurrentSelectionsPresenter implements Presenter {
 
+    private final DispatchAsync dispatchAsync;
+
     private final RegistryServiceAsync registryService;
 
     private final HandlerManager eventBus;
 
     private final Display display;
 
-    protected ComponentMetadata adapter;
+    private ComponentMetadata adapter;
 
-    protected ComponentMetadata measure;
+    private ComponentMetadata measure;
 
-    protected ComponentMetadata extractor;
+    private ComponentMetadata extractor;
+
+    private DatasetBean referenceBean = null;
+
+    private final DatasetSelectionPresenter datasetSelectionPresenter;
+
+    private final PopupPanel popupPanel;
 
     private final ExecutionServiceAsync executionService = GWT.create(ExecutionService.class);
 
@@ -65,20 +87,65 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
 
         void setExtractor(String name);
 
+        void addSelectImageHandler(ClickHandler clickHandler);
+
+        void setSelectedImage(DatasetBean datasetBean);
+
         HasClickHandlers getExecuteButton();
     }
 
-    public ComparisonCurrentSelectionsPresenter(RegistryServiceAsync registryService,
-            HandlerManager eventBus, Display currentSelectionsView) {
+    public ComparisonCurrentSelectionsPresenter(DispatchAsync dispatchAsync,
+            RegistryServiceAsync registryService, HandlerManager eventBus,
+            Display currentSelectionsView) {
+        this.dispatchAsync = dispatchAsync;
         this.registryService = registryService;
         this.eventBus = eventBus;
         this.display = currentSelectionsView;
+
+        DatasetSelectionView view = new DatasetSelectionView(dispatchAsync);
+        datasetSelectionPresenter =
+                new DatasetSelectionPresenter(view, dispatchAsync, eventBus,
+                MMDB.getSessionState().getSelectedDatasets());
+
+        popupPanel = new PopupPanel(true);
+
+        datasetSelectionPresenter.getCloseHandler().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                popupPanel.hide();
+            }
+        });
+
+        popupPanel.addCloseHandler(new CloseHandler<PopupPanel>() {
+
+            @Override
+            public void onClose(CloseEvent<PopupPanel> event) {
+                referenceBean = datasetSelectionPresenter.getSelectedDataset();
+                display.setSelectedImage(referenceBean);
+            }
+        });
+        ScrollPanel scrollPanel = new ScrollPanel();
+        datasetSelectionPresenter.go(scrollPanel);
+        popupPanel.add(scrollPanel);
     }
 
     @Override
     public void go(HasWidgets container) {
         bind();
         container.add(display.asWidget());
+    }
+    
+    private void checkReferenceBean() {
+        if(referenceBean == null) {
+            return;
+        }
+        if(MMDB.getSessionState().getSelectedDatasets().contains(
+                referenceBean.getUri())) {
+            return;
+        }
+        referenceBean = null;
+        display.setSelectedImage(referenceBean);
     }
 
     private void bind() {
@@ -136,11 +203,55 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
             }
         });
 
+        eventBus.addHandler(RefreshEvent.TYPE, new RefreshHandler() {
+
+            @Override
+            public void onRefresh(RefreshEvent event) {
+                checkReferenceBean();
+            }
+        });
+
+        eventBus.addHandler(DatasetUnselectedEvent.TYPE, new DatasetUnselectedHandler() {
+
+            @Override
+            public void onDatasetUnselected(DatasetUnselectedEvent datasetUnselectedEvent) {
+                checkReferenceBean();
+            }
+        });
+
+        eventBus.addHandler(DatasetSelectedEvent.TYPE, new DatasetSelectedHandler() {
+
+            @Override
+            public void onDatasetSelected(DatasetSelectedEvent datasetSelectedEvent) {
+                checkReferenceBean();
+            }
+        });
+
         display.getExecuteButton().addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
                 submitExecution();
+            }
+        });
+
+        display.addSelectImageHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                datasetSelectionPresenter.setSelectedDataset(referenceBean);
+
+                popupPanel.setWidth((int) (Window.getClientWidth() / 1.5) + "px");
+                popupPanel.setHeight((int) (Window.getClientHeight() / 1.5) + "px");
+                popupPanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+
+                    @Override
+                    public void setPosition(int offsetWidth, int offsetHeight) {
+                        int left = (Window.getClientWidth() - offsetWidth) / 2;
+                        int top = (Window.getClientHeight() - offsetHeight) / 2;
+                        popupPanel.setPopupPosition(left, top);
+                    }
+                });
             }
         });
     }
@@ -156,7 +267,7 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         submission.setExtraction(extractor);
 
         eventBus.fireEvent(new NewSubmissionEvent(submission));
-        
+
         // submit execution
         executionService.submit(submission, new AsyncCallback<Job>() {
 

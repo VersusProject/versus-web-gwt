@@ -11,7 +11,6 @@
  */
 package edu.illinois.ncsa.versus.web.client.ui;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Composite;
@@ -21,7 +20,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import edu.illinois.ncsa.versus.web.client.RegistryService;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
 import edu.illinois.ncsa.versus.web.client.presenter.ComparisonCurrentSelectionsPresenter;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectAdapterPresenter;
@@ -39,7 +37,7 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
  */
 public class ComparisonWorkflow extends Composite {
 
-    public ComparisonWorkflow(final DispatchAsync dispatchAsync, 
+    public ComparisonWorkflow(final DispatchAsync dispatchAsync,
             final HandlerManager eventBus, final RegistryServiceAsync registryService) {
         VerticalPanel newExecutionPanel = new VerticalPanel();
         newExecutionPanel.setWidth("100%");
@@ -69,13 +67,15 @@ public class ComparisonWorkflow extends Composite {
 
         // current selections
         SimplePanel currentSelectionPanel = new SimplePanel();
-        ComparisonCurrentSelectionsView currentSelectionsView = new ComparisonCurrentSelectionsView();
-        ComparisonCurrentSelectionsPresenter currentSelectionsPresenter = new ComparisonCurrentSelectionsPresenter(
+        ComparisonCurrentSelectionsView currentSelectionsView = 
+                new ComparisonCurrentSelectionsView(dispatchAsync);
+        ComparisonCurrentSelectionsPresenter currentSelectionsPresenter =
+                new ComparisonCurrentSelectionsPresenter(dispatchAsync,
                 registryService, eventBus, currentSelectionsView);
         currentSelectionsPresenter.go(currentSelectionPanel);
 
-        DockLayoutPanel comparePanel = new DockLayoutPanel(Style.Unit.EM);
-        comparePanel.addSouth(currentSelectionPanel, 8);
+        DockLayoutPanel comparePanel = new DockLayoutPanel(Style.Unit.PX);
+        comparePanel.addSouth(currentSelectionPanel, 200);
         comparePanel.add(new ScrollPanel(newExecutionPanel));
 
         initWidget(comparePanel);

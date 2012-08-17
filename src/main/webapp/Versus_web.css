@@ -243,6 +243,10 @@ HTML, BODY {
     padding: 3px;
 } 
 
+.datasetSelectionThumbnail {
+    float: left;
+}
+
 .gwt-stacklayoutpanel .workflowHeader {
     font-size: 0.9em;
     background: #F0F0F0;
