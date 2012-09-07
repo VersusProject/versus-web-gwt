@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +51,6 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     public Job submit(ComparisonSubmission set) {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
 
-        // create comparison
-        Set<PairwiseComparison> comparisons = new HashSet<PairwiseComparison>();
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
 
         final String adapterId = set.getAdapter().getId();
@@ -58,26 +58,24 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
         final String measureId = set.getMeasure().getId();
 
         List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
-        for (int i = 0; i < datasetsURI.size(); i++) {
-            for (int j = i + 1; j < datasetsURI.size(); j++) {
-                PairwiseComparison comparison = new PairwiseComparison();
-                try {
-                    comparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
-                    comparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
-                    comparison.setAdapterId(adapterId);
-                    comparison.setExtractorId(extractorId);
-                    comparison.setMeasureId(measureId);
-                } catch (OperatorException e) {
-                    log.error("Error setting up comparison", e);
-                }
-                comparisons.add(comparison);
+        HashSet<DatasetBean> datasets = new HashSet<DatasetBean>(datasetsURI.size());
+
+        for(String uri : datasetsURI) {
+            try {
+                DatasetBean db = dbu.get(Resource.uriRef(uri));
+                datasets.add(db);
+            } catch (OperatorException ex) {
+                log.error("Error reading dataset " + uri, ex);
             }
         }
-
+        
         // submit job for execution
         Job job = new Job();
         job.setStarted(new Date());
-        job.setComparisons(comparisons);
+        job.setDatasets(datasets);
+        job.setAdapterId(adapterId);
+        job.setExtractorId(extractorId);
+        job.setMeasureId(measureId);
         executionEngine.submit(job);
         return job;
     }
