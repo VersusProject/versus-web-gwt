@@ -27,6 +27,8 @@ import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
 import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
 import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
+import edu.illinois.ncsa.versus.web.shared.JobNotFoundException;
+import edu.illinois.ncsa.versus.web.shared.JobSubmissionException;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
@@ -48,7 +50,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     private static final Log log = LogFactory.getLog(ExecutionServiceImpl.class);
 
     @Override
-    public Job submit(ComparisonSubmission set) {
+    public Job submit(ComparisonSubmission set) throws JobSubmissionException {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
 
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
@@ -65,7 +67,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
                 DatasetBean db = dbu.get(Resource.uriRef(uri));
                 datasets.add(db);
             } catch (OperatorException ex) {
-                log.error("Error reading dataset " + uri, ex);
+                throw new JobSubmissionException("Error reading dataset " + uri, ex);
             }
         }
         
@@ -81,7 +83,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    public Job getStatus(String jobId) {
+    public Job getStatus(String jobId) throws JobNotFoundException {
         return executionEngine.getJob(jobId);
     }
 

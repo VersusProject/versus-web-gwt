@@ -27,6 +27,8 @@ import edu.illinois.ncsa.versus.core.comparison.Comparison;
 import edu.illinois.ncsa.versus.core.comparison.ComparisonClient;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
+import edu.illinois.ncsa.versus.web.shared.JobNotFoundException;
+import edu.illinois.ncsa.versus.web.shared.JobSubmissionException;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 
@@ -103,7 +105,7 @@ public class ExecutionEngine {
         }
     }
 
-    public void submit(Job job) {
+    public void submit(Job job) throws JobSubmissionException {
         try {
             BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
             List<DatasetBean> datasets = new ArrayList<DatasetBean>(job.getDatasets());
@@ -148,16 +150,16 @@ public class ExecutionEngine {
             log.debug("Job submitted");
         } catch (Exception e) {
             log.error("Error submitting the comparisons job", e);
+            throw new JobSubmissionException("Error submitting the comparisons job", e);
         }
     }
 
-    public Job getJob(String jobId) {
+    public Job getJob(String jobId) throws JobNotFoundException {
         for (Job job : jobs) {
             if (job.getId().equals(jobId)) {
                 return job;
             }
         }
-        log.error("Job not found. Id = " + jobId);
-        return null;
+        throw new JobNotFoundException("Job not found. Id = " + jobId);
     }
 }
