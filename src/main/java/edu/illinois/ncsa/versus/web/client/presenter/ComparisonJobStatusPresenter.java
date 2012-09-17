@@ -69,41 +69,49 @@ public class ComparisonJobStatusPresenter implements Presenter {
     private void pollStatus() {
 
         Timer timer = new Timer() {
+            private volatile boolean previousCallFinished = true;
 
             @Override
             public void run() {
-                executionService.getStatus(job.getId(), new AsyncCallback<Job>() {
-
-                    @Override
-                    public void onSuccess(Job job) {
-                        int done = 0;
-                        int failed = 0;
-                        Map<String, ComparisonStatus> comparisonStatus =
-                                job.getComparisonStatus();
-                        for (ComparisonStatus status : comparisonStatus.values()) {
-                            if (status == ComparisonStatus.ENDED) {
-                                done++;
+                if (!previousCallFinished) {
+                    return;
+                }
+                previousCallFinished = false;
+                try {
+                    executionService.getStatus(job.getId(), new AsyncCallback<Job>() {
+                        @Override
+                        public void onSuccess(Job job) {
+                            int done = 0;
+                            int failed = 0;
+                            Map<String, ComparisonStatus> comparisonStatus =
+                                    job.getComparisonStatus();
+                            for (ComparisonStatus status : comparisonStatus.values()) {
+                                if (status == ComparisonStatus.ENDED) {
+                                    done++;
+                                }
+                                if (status == ComparisonStatus.FAILED) {
+                                    failed++;
+                                }
                             }
-                            if (status == ComparisonStatus.FAILED) {
-                                failed++;
+                            display.setStatus("Done: " + done + " / " + comparisonStatus.size()
+                                    + " Failed: " + failed + " / " + comparisonStatus.size());
+                            display.showResults(job);
+                            if (done + failed == comparisonStatus.size()) {
+                                cancel();
                             }
                         }
-                        display.setStatus("Done: " + done + " / " + comparisonStatus.size()
-                                + " Failed: " + failed + " / " + comparisonStatus.size());
-                        display.showResults(job);
-                        if (done + failed == comparisonStatus.size()) {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            GWT.log("Error getting status of job ", caught);
+                            display.setStatus("Cannot get job status: "
+                                    + caught.getMessage());
                             cancel();
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        GWT.log("Error getting status of job ", caught);
-                        display.setStatus("Cannot get job status: "
-                                + caught.getMessage());
-                        cancel();
-                    }
-                });
+                    });
+                } finally {
+                    previousCallFinished = true;
+                }
             }
         };
         timer.scheduleRepeating(WAIT_INTERVAL);

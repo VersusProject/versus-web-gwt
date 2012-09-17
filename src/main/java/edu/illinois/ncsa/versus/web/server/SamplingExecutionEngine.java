@@ -30,6 +30,7 @@ import org.tupeloproject.kernel.BeanSession;
 import org.tupeloproject.rdf.Resource;
 
 import edu.illinois.ncsa.mmdb.web.server.TupeloStore;
+import edu.illinois.ncsa.versus.web.shared.JobNotFoundException;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob.SamplingStatus;
 import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
@@ -57,12 +58,18 @@ public class SamplingExecutionEngine {
 
         private final SamplingJob job;
 
+        private volatile boolean previousCallEnded = true;
+        
         public SamplingStatusUpdater(SamplingJob job) {
             this.job = job;
         }
 
         @Override
         public void run() {
+            if (!previousCallEnded) {
+                return;
+            }
+            previousCallEnded = false;
             try {
                 boolean allFinished = true;
                 Map<String, SamplingStatus> samplingsStatus =
@@ -93,7 +100,7 @@ public class SamplingExecutionEngine {
                                     job.updateSample(id, result);
                                     break;
                                 case FAILED:
-//                                    job.updateError(id, sampling.getError());
+                                    job.updateError(id, sampling.getError());
                                     break;
                                 case ABORTED:
                                     job.setStatus(id, SamplingStatus.ABORTED);
@@ -111,6 +118,8 @@ public class SamplingExecutionEngine {
                 }
             } catch (Exception ex) {
                 log.info("Update error", ex);
+            } finally {
+                previousCallEnded = true;
             }
         }
     }
@@ -137,14 +146,13 @@ public class SamplingExecutionEngine {
                 Sampling sampling = new Sampling(individualId, samplerId,
                         sampleSize, datasetsUrls);
                 String id = client.submit(sampling, datasetsStreams);
-//                sampling.setId(id);
                 sr.setId(id);
                 job.setStatus(id, SamplingStatus.STARTED);
             } catch (Exception ex) {
                 String id = UUID.randomUUID().toString();
                 sr.setId(id);
-                job.updateError(id, "Error submitting comparison: " + ex.getMessage());
-                log.error("Error submitting comparison " + id, ex);
+                job.updateError(id, "Error submitting sampling: " + ex.getMessage());
+                log.error("Error submitting sampling " + id, ex);
             }
         }
         jobs.add(job);
@@ -153,13 +161,12 @@ public class SamplingExecutionEngine {
         log.debug("Job submitted");
     }
 
-    public SamplingJob getJob(String jobId) {
+    public SamplingJob getJob(String jobId) throws JobNotFoundException {
         for (SamplingJob job : jobs) {
             if (job.getId().equals(jobId)) {
                 return job;
             }
         }
-        log.error("Job not found. Id = " + jobId);
-        return null;
+        throw new JobNotFoundException("Sampling job " + jobId + " not found.");
     }
 }

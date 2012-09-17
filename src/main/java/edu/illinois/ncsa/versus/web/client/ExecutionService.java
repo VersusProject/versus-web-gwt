@@ -24,7 +24,7 @@ public interface ExecutionService extends RemoteService {
 
     Job getStatus(String jobId) throws JobNotFoundException;
 
-    SamplingJob submit(SamplingSubmission submission);
+    SamplingJob submit(SamplingSubmission submission) throws JobSubmissionException;
 
-    SamplingJob getSamplingStatus(String samplingJobId);
+    SamplingJob getSamplingStatus(String samplingJobId) throws JobNotFoundException;
 }

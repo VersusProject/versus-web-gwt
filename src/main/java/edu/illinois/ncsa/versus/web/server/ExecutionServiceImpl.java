@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,14 +19,13 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.illinois.ncsa.mmdb.web.server.TupeloStore;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
+import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.illinois.ncsa.versus.web.shared.Job;
-import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
+import edu.illinois.ncsa.versus.web.shared.JobNotFoundException;
+import edu.illinois.ncsa.versus.web.shared.JobSubmissionException;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
 import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
-import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
-import edu.illinois.ncsa.versus.web.shared.JobNotFoundException;
-import edu.illinois.ncsa.versus.web.shared.JobSubmissionException;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
@@ -62,7 +59,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
         List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
         HashSet<DatasetBean> datasets = new HashSet<DatasetBean>(datasetsURI.size());
 
-        for(String uri : datasetsURI) {
+        for (String uri : datasetsURI) {
             try {
                 DatasetBean db = dbu.get(Resource.uriRef(uri));
                 datasets.add(db);
@@ -70,7 +67,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
                 throw new JobSubmissionException("Error reading dataset " + uri, ex);
             }
         }
-        
+
         // submit job for execution
         Job job = new Job();
         job.setStarted(new Date());
@@ -88,7 +85,8 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    public SamplingJob submit(SamplingSubmission submission) {
+    public SamplingJob submit(SamplingSubmission submission)
+            throws JobSubmissionException {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
         Set<String> datasetsURI = submission.getDatasetsURI();
@@ -116,7 +114,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    public SamplingJob getSamplingStatus(String samplingJobId) {
+    public SamplingJob getSamplingStatus(String samplingJobId) throws JobNotFoundException {
         return see.getJob(samplingJobId);
     }
 }

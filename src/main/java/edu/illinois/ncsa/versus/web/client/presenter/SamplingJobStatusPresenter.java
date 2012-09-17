@@ -70,7 +70,7 @@ public class SamplingJobStatusPresenter implements Presenter {
         display.setSampleSize(submission.getSampleSize());
         pollStatus();
     }
-    
+
     public void setJob(SamplingJob job) {
         this.job = job;
         display.setStart(job.getStarted());
@@ -79,7 +79,7 @@ public class SamplingJobStatusPresenter implements Presenter {
         display.setDatasets(sampling.getDatasets());
         display.setSample(sampling.getSample());
     }
-    
+
     public void setError(String error) {
         display.setStatus(error);
     }
@@ -87,37 +87,46 @@ public class SamplingJobStatusPresenter implements Presenter {
     private void pollStatus() {
 
         Timer timer = new Timer() {
+            private volatile boolean previousCallFinished = true;
 
             @Override
             public void run() {
-                executionService.getSamplingStatus(job.getId(),
-                        new AsyncCallback<SamplingJob>() {
-
-                            @Override
-                            public void onFailure(Throwable caught) {
-                                GWT.log("Error getting status of sampling job",
-                                        caught);
-                                display.setStatus("Cannot get job status: "
-                                        + caught.getMessage());
-                                cancel();
-                            }
-
-                            @Override
-                            public void onSuccess(SamplingJob result) {
-                                SamplingRequest sr = result.getSamplings().
-                                        iterator().next();
-                                SamplingStatus status = result.getStatus(sr);
-                                if (status != null) {
-                                    display.setEnd(result.getEnded());
-                                    display.setStatus(status.toString());
-                                    display.setSample(sr.getSample());
-                                }
-                                if (status != null
-                                        && status != SamplingStatus.STARTED) {
+                if (!previousCallFinished) {
+                    return;
+                }
+                previousCallFinished = false;
+                try {
+                    executionService.getSamplingStatus(job.getId(),
+                            new AsyncCallback<SamplingJob>() {
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    GWT.log("Error getting status of sampling job",
+                                            caught);
+                                    display.setStatus("Cannot get job status: "
+                                            + caught.getMessage());
                                     cancel();
                                 }
-                            }
-                        });
+
+                                @Override
+                                public void onSuccess(SamplingJob result) {
+                                    SamplingRequest sr = result.getSamplings().
+                                            iterator().next();
+                                    SamplingStatus status = result.getStatus(sr);
+                                    if (status != null) {
+                                        display.setEnd(result.getEnded());
+                                        display.setStatus(status.toString());
+                                        display.setSample(sr.getSample());
+                                    }
+                                    if (status != null
+                                            && status != SamplingStatus.STARTED) {
+                                        cancel();
+                                    }
+                                }
+                            });
+
+                } finally {
+                    previousCallFinished = true;
+                }
             }
         };
         timer.scheduleRepeating(WAIT_INTERVAL);
