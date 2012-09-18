@@ -12,14 +12,18 @@
 package edu.illinois.ncsa.versus.web.client.view;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -30,6 +34,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
+import edu.illinois.ncsa.mmdb.web.client.ui.DownloadDialog;
 import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.InfoPopup;
 import edu.illinois.ncsa.versus.web.client.presenter.SamplingJobStatusPresenter.Display;
@@ -174,21 +179,33 @@ public class SamplingJobStatusView extends Composite implements Display {
     public void setSample(Set<DatasetBean> sample) {
         samplePanel.clear();
         samplePanel.add(new Label("Sample:"));
-        if (sample != null) {
+        if (sample != null && !sample.isEmpty()) {
+            final HashSet<String> uris = new HashSet<String>(sample.size());
             for (DatasetBean bean : sample) {
                 PreviewWidget previewWidget = new PreviewWidget(bean.getUri(),
                         GetPreviews.SMALL, "dataset?id=" + bean.getUri(), dispatchAsync);
                 previewWidget.addStyleName("inlinethumbnail");
                 samplePanel.add(previewWidget);
                 addPopup(previewWidget, bean);
+                uris.add(bean.getUri());
             }
+
+            Button downloadButton = new Button("Download sample");
+            downloadButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    DownloadDialog dd = new DownloadDialog("Download sample", 
+                            uris, "sample");
+                }
+            });
+            samplePanel.add(downloadButton);
+
         }
     }
 
     private void addPopup(PreviewWidget previewWidget, DatasetBean bean) {
         final InfoPopup popup = new InfoPopup(bean.getTitle());
         previewWidget.addMouseOverHandler(new MouseOverHandler() {
-
             @Override
             public void onMouseOver(final MouseOverEvent event) {
                 popup.setPopupPosition(event.getClientX(),
@@ -197,7 +214,6 @@ public class SamplingJobStatusView extends Composite implements Display {
             }
         });
         previewWidget.addMouseOutHandler(new MouseOutHandler() {
-
             @Override
             public void onMouseOut(MouseOutEvent event) {
                 popup.hide();
