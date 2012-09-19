@@ -22,9 +22,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasValue;
 
-import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.PermissionUtil;
-import edu.illinois.ncsa.mmdb.web.client.UserSessionState;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetDatasetsInCollection;
 import edu.illinois.ncsa.mmdb.web.client.dispatch.GetDatasetsInCollectionResult;
 import edu.illinois.ncsa.mmdb.web.client.event.ClearDatasetsEvent;
@@ -33,6 +31,7 @@ import edu.illinois.ncsa.mmdb.web.client.event.RefreshEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.ShowItemEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.ShowItemEventHandler;
 import edu.illinois.ncsa.mmdb.web.client.mvp.BasePresenter;
+import edu.illinois.ncsa.versus.web.client.Versus_web;
 import edu.illinois.ncsa.versus.web.client.event.CollectionCreatedEvent;
 import edu.illinois.ncsa.versus.web.client.event.CollectionCreatedHandler;
 import edu.illinois.ncsa.versus.web.client.event.CollectionDeletedEvent;
@@ -168,8 +167,8 @@ public class DynamicListCollectionPresenter
                         if (datasets.isEmpty()) {
                             selected.setValue(false);
                         } else {
-                            UserSessionState sessionState = MMDB.getSessionState();
-                            Set<String> selectedDatasets = sessionState.getSelectedDatasets();
+                            Set<String> selectedDatasets = Versus_web
+                                    .getSessionState().getSelectedDatasets();
                             for (String dataset : datasets) {
                                 if (!selectedDatasets.contains(dataset)) {
                                     selected.setValue(false);

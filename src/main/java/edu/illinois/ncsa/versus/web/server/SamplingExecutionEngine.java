@@ -89,8 +89,10 @@ public class SamplingExecutionEngine {
                             switch (status) {
                                 case DONE:
                                     SamplingRequest sr = job.getSampling(id);
-                                    Set<DatasetBean> datasets = sr.getDatasets();
-                                    Set<DatasetBean> result = new HashSet<DatasetBean>(sr.getSampleSize());
+                                    List<DatasetBean> datasets = sr.getDatasets();
+                                    List<DatasetBean> result =
+                                            new ArrayList<DatasetBean>(
+                                            sr.getSampleSize());
                                     for (DatasetBean ds : datasets) {
                                         if (sampling.getSample().contains(ds.getUri())) {
                                             result.add(ds);
@@ -129,7 +131,7 @@ public class SamplingExecutionEngine {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
         for (SamplingRequest sr : samplings) {
             try {
-                Set<DatasetBean> datasets = sr.getDatasets();
+                List<DatasetBean> datasets = sr.getDatasets();
                 ArrayList<String> datasetsUrls =
                         new ArrayList<String>(datasets.size());
                 ArrayList<InputStream> datasetsStreams =

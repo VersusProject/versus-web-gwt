@@ -12,10 +12,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
+import edu.illinois.ncsa.versus.web.client.Versus_web;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.AdapterUnselectedEvent;
@@ -150,7 +150,7 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
      */
     protected void submitExecution() {
         final ComparisonSubmission submission = new ComparisonSubmission();
-        submission.setDatasetsURI(MMDB.getSessionState().getSelectedDatasets());
+        submission.setDatasetsURI(Versus_web.getSessionState().getSelectedDatasets());
         submission.setAdapter(adapter);
         submission.setMeasure(measure);
         submission.setExtraction(extractor);

@@ -89,8 +89,8 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
             throws JobSubmissionException {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
-        Set<String> datasetsURI = submission.getDatasetsURI();
-        Set<DatasetBean> beans = new HashSet<DatasetBean>(datasetsURI.size());
+        List<String> datasetsURI = submission.getDatasetsURI();
+        List<DatasetBean> beans = new ArrayList<DatasetBean>(datasetsURI.size());
         for (String uri : datasetsURI) {
             try {
                 beans.add(dbu.get(Resource.uriRef(uri)));

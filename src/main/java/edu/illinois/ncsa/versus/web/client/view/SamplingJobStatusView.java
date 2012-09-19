@@ -13,6 +13,8 @@ package edu.illinois.ncsa.versus.web.client.view;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -148,7 +150,7 @@ public class SamplingJobStatusView extends Composite implements Display {
     }
 
     @Override
-    public void setDatasets(Set<DatasetBean> datasets) {
+    public void setDatasets(List<DatasetBean> datasets) {
         selectedDatasetsPanel.clear();
         selectedDatasetsPanel.add(new Label("Datasets:"));
         for (DatasetBean bean : datasets) {
@@ -176,11 +178,11 @@ public class SamplingJobStatusView extends Composite implements Display {
     }
 
     @Override
-    public void setSample(Set<DatasetBean> sample) {
+    public void setSample(List<DatasetBean> sample) {
         samplePanel.clear();
         samplePanel.add(new Label("Sample:"));
         if (sample != null && !sample.isEmpty()) {
-            final HashSet<String> uris = new HashSet<String>(sample.size());
+            final LinkedHashSet<String> uris = new LinkedHashSet<String>(sample.size());
             for (DatasetBean bean : sample) {
                 PreviewWidget previewWidget = new PreviewWidget(bean.getUri(),
                         GetPreviews.SMALL, "dataset?id=" + bean.getUri(), dispatchAsync);

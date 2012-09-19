@@ -121,6 +121,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
             public void onLoggedOut(LoggedOutEvent loggedOutEvent) {
                 //FIXME: When logged out, clear permissions cache
                 permissionUtil = new PermissionUtil(dispatchAsync);
+                sessionState = null;
                 History.newItem("login");
             }
         });
@@ -131,6 +132,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
             public void onDatasetSelected(DatasetSelectedEvent event) {
                 GWT.log("Dataset selected " + event.getUri());
                 MMDB.getSessionState().datasetSelected(event.getUri());
+                getSessionState().datasetSelected(event.getUri());
             }
         });
 
@@ -140,6 +142,7 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
             public void onDatasetUnselected(DatasetUnselectedEvent event) {
                 GWT.log("Dataset unselected " + event.getUri());
                 MMDB.getSessionState().datasetUnselected(event.getUri());
+                getSessionState().datasetUnselected(event.getUri());
             }
         });
 
@@ -249,5 +252,14 @@ public class Versus_web implements EntryPoint, ValueChangeHandler<String> {
             }
         }
         return params;
+    }
+    
+    private static VersusUserSessionState sessionState;
+    
+    public static VersusUserSessionState getSessionState() {
+        if(sessionState == null) {
+            sessionState = new VersusUserSessionState();
+        }
+        return sessionState;
     }
 }

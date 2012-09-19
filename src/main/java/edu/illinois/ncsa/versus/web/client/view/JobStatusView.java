@@ -195,6 +195,7 @@ public class JobStatusView extends Composite implements Display {
         });
         comparisonsPanel.add(button);
         
+        boolean allFinished = true;
         for (PairwiseComparison comparison : ordered) {
             HorizontalPanel pairwiseComparisonPanel = new HorizontalPanel();
             String firstId = comparison.getFirstDataset().getUri();
@@ -251,6 +252,8 @@ public class JobStatusView extends Composite implements Display {
                 text += "<b>" + comparison.getSimilarity() + "</b>";
             } else if (comparisonStatus == ComparisonStatus.FAILED) {
                 text += "<b>" + comparisonStatus + "</b><br />" + comparison.getError();
+            } else {
+                allFinished = false;
             }
             HTML similarity = new HTML(text);
             pairwiseComparisonPanel.add(similarity);
@@ -259,6 +262,7 @@ public class JobStatusView extends Composite implements Display {
 
             comparisonsPanel.add(pairwiseComparisonPanel);
         }
+        button.setVisible(allFinished);
     }
 
     private void clearPopups() {

@@ -12,7 +12,7 @@
 package edu.illinois.ncsa.versus.web.client.presenter;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -52,7 +52,7 @@ public class SamplingJobStatusPresenter implements Presenter {
 
         void setEnd(Date date);
 
-        void setDatasets(Set<DatasetBean> datasets);
+        void setDatasets(List<DatasetBean> datasets);
 
         void setIndividual(String individual);
 
@@ -60,7 +60,7 @@ public class SamplingJobStatusPresenter implements Presenter {
 
         void setSampleSize(int sampleSize);
 
-        void setSample(Set<DatasetBean> sample);
+        void setSample(List<DatasetBean> sample);
     }
 
     public SamplingJobStatusPresenter(Display display, SamplingSubmission submission) {
