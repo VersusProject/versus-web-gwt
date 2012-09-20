@@ -55,14 +55,19 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
         final String adapterId = set.getAdapter().getId();
         final String extractorId = set.getExtraction().getId();
         final String measureId = set.getMeasure().getId();
-
-        List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
+        final String referenceDatasetUri = set.getReferenceDataset();
+        
+        Set<String> datasetsURI = set.getDatasetsURI();
         HashSet<DatasetBean> datasets = new HashSet<DatasetBean>(datasetsURI.size());
 
-        for (String uri : datasetsURI) {
+        DatasetBean referenceDataset = null;
+        for (String uri : set.getDatasetsURI()) {
             try {
                 DatasetBean db = dbu.get(Resource.uriRef(uri));
                 datasets.add(db);
+                if(referenceDatasetUri != null && referenceDatasetUri.equals(uri)) {
+                    referenceDataset = db;
+                }
             } catch (OperatorException ex) {
                 throw new JobSubmissionException("Error reading dataset " + uri, ex);
             }
@@ -75,6 +80,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
         job.setAdapterId(adapterId);
         job.setExtractorId(extractorId);
         job.setMeasureId(measureId);
+        job.setReferenceDataset(referenceDataset);
         executionEngine.submit(job);
         return job;
     }

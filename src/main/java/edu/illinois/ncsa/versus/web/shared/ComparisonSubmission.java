@@ -12,9 +12,10 @@ import java.util.Set;
 public class ComparisonSubmission implements Submission {
 
 	private Set<String> datasetsURI;
+	private ComponentMetadata adapter;
 	private ComponentMetadata extraction;
 	private ComponentMetadata measure;
-	private ComponentMetadata adapter;
+    private String referenceDataset;
 	
 	public ComparisonSubmission() {
 	}
@@ -27,6 +28,14 @@ public class ComparisonSubmission implements Submission {
 		return datasetsURI;
 	}
 
+	public void setAdapter(ComponentMetadata adapter) {
+		this.adapter = adapter;
+	}
+
+	public ComponentMetadata getAdapter() {
+		return adapter;
+	}
+    
 	public void setExtraction(ComponentMetadata extraction) {
 		this.extraction = extraction;
 	}
@@ -42,12 +51,12 @@ public class ComparisonSubmission implements Submission {
 	public ComponentMetadata getMeasure() {
 		return measure;
 	}
-
-	public void setAdapter(ComponentMetadata adapter) {
-		this.adapter = adapter;
-	}
-
-	public ComponentMetadata getAdapter() {
-		return adapter;
-	}
+    
+    public void setReferenceDataset(String referenceDataset) {
+        this.referenceDataset = referenceDataset;
+    }
+    
+    public String getReferenceDataset() {
+        return referenceDataset;
+    }
 }

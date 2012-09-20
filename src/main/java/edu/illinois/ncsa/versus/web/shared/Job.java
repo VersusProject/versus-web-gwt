@@ -27,6 +27,8 @@ public class Job implements Serializable {
 
     private volatile String measureId;
 
+    private volatile DatasetBean referenceDataset;
+
     private Set<DatasetBean> datasets;
 
     private Set<PairwiseComparison> comparisons;
@@ -73,6 +75,14 @@ public class Job implements Serializable {
 
     public String getMeasureId() {
         return measureId;
+    }
+
+    public DatasetBean getReferenceDataset() {
+        return referenceDataset;
+    }
+
+    public void setReferenceDataset(DatasetBean referenceDataset) {
+        this.referenceDataset = referenceDataset;
     }
 
     public synchronized void setDatasets(Set<DatasetBean> datasets) {

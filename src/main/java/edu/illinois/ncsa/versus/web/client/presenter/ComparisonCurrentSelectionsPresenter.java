@@ -110,7 +110,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         popupPanel = new PopupPanel(true);
 
         datasetSelectionPresenter.getCloseHandler().addClickHandler(new ClickHandler() {
-
             @Override
             public void onClick(ClickEvent event) {
                 popupPanel.hide();
@@ -118,7 +117,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         popupPanel.addCloseHandler(new CloseHandler<PopupPanel>() {
-
             @Override
             public void onClose(CloseEvent<PopupPanel> event) {
                 referenceBean = datasetSelectionPresenter.getSelectedDataset();
@@ -135,12 +133,12 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         bind();
         container.add(display.asWidget());
     }
-    
+
     private void checkReferenceBean() {
-        if(referenceBean == null) {
+        if (referenceBean == null) {
             return;
         }
-        if(Versus_web.getSessionState().getSelectedDatasets().contains(
+        if (Versus_web.getSessionState().getSelectedDatasets().contains(
                 referenceBean.getUri())) {
             return;
         }
@@ -150,7 +148,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
 
     private void bind() {
         eventBus.addHandler(AdapterSelectedEvent.TYPE, new AdapterSelectedHandler() {
-
             @Override
             public void onAdapterSelected(AdapterSelectedEvent event) {
                 adapter = event.getAdapterMetadata();
@@ -159,7 +156,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(AdapterUnselectedEvent.TYPE, new AdapterUnselectedHandler() {
-
             @Override
             public void onAdapterUnselected(AdapterUnselectedEvent event) {
                 adapter = null;
@@ -168,7 +164,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(MeasureSelectedEvent.TYPE, new MeasureSelectedHandler() {
-
             @Override
             public void onMeasureSelected(MeasureSelectedEvent event) {
                 measure = event.getMeasureMetadata();
@@ -177,7 +172,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(MeasureUnselectedEvent.TYPE, new MeasureUnselectedHandler() {
-
             @Override
             public void onMeasureUnselected(MeasureUnselectedEvent event) {
                 measure = null;
@@ -186,7 +180,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(ExtractorSelectedEvent.TYPE, new ExtractorSelectedHandler() {
-
             @Override
             public void onExtractorSelected(ExtractorSelectedEvent event) {
                 extractor = event.getExtractorMetadata();
@@ -195,7 +188,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(ExtractorUnselectedEvent.TYPE, new ExtractorUnselectedHandler() {
-
             @Override
             public void onExtractorUnselected(ExtractorUnselectedEvent event) {
                 extractor = null;
@@ -204,7 +196,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(RefreshEvent.TYPE, new RefreshHandler() {
-
             @Override
             public void onRefresh(RefreshEvent event) {
                 checkReferenceBean();
@@ -212,7 +203,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(DatasetUnselectedEvent.TYPE, new DatasetUnselectedHandler() {
-
             @Override
             public void onDatasetUnselected(DatasetUnselectedEvent datasetUnselectedEvent) {
                 checkReferenceBean();
@@ -220,7 +210,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         eventBus.addHandler(DatasetSelectedEvent.TYPE, new DatasetSelectedHandler() {
-
             @Override
             public void onDatasetSelected(DatasetSelectedEvent datasetSelectedEvent) {
                 checkReferenceBean();
@@ -228,7 +217,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         display.getExecuteButton().addClickHandler(new ClickHandler() {
-
             @Override
             public void onClick(ClickEvent event) {
                 submitExecution();
@@ -236,7 +224,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         });
 
         display.addSelectImageHandler(new ClickHandler() {
-
             @Override
             public void onClick(ClickEvent event) {
                 datasetSelectionPresenter.setSelectedDataset(referenceBean);
@@ -244,7 +231,6 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
                 popupPanel.setWidth((int) (Window.getClientWidth() / 1.5) + "px");
                 popupPanel.setHeight((int) (Window.getClientHeight() / 1.5) + "px");
                 popupPanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-
                     @Override
                     public void setPosition(int offsetWidth, int offsetHeight) {
                         int left = (Window.getClientWidth() - offsetWidth) / 2;
@@ -263,14 +249,16 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         final ComparisonSubmission submission = new ComparisonSubmission();
         submission.setDatasetsURI(Versus_web.getSessionState().getSelectedDatasets());
         submission.setAdapter(adapter);
-        submission.setMeasure(measure);
         submission.setExtraction(extractor);
+        submission.setMeasure(measure);
+        if (referenceBean != null) {
+            submission.setReferenceDataset(referenceBean.getUri());
+        }
 
         eventBus.fireEvent(new NewSubmissionEvent(submission));
 
         // submit execution
         executionService.submit(submission, new AsyncCallback<Job>() {
-
             @Override
             public void onSuccess(Job job) {
                 GWT.log("Execution successfully submitted");
