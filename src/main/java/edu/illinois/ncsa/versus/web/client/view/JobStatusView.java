@@ -10,12 +10,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -30,6 +33,7 @@ import edu.illinois.ncsa.mmdb.web.client.dispatch.GetPreviews;
 import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.InfoPopup;
 import edu.illinois.ncsa.versus.web.client.presenter.ComparisonJobStatusPresenter.Display;
+import edu.illinois.ncsa.versus.web.client.ui.DownloadTextFileDialog;
 import edu.illinois.ncsa.versus.web.shared.Job;
 import edu.illinois.ncsa.versus.web.shared.Job.ComparisonStatus;
 import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
@@ -145,7 +149,7 @@ public class JobStatusView extends Composite implements Display {
         Set<PairwiseComparison> comparisons = job.getComparisons();
         comparisonsPanel.clear();
         clearPopups();
-        List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(
+        final List<PairwiseComparison> ordered = new ArrayList<PairwiseComparison>(
                 comparisons);
         Collections.sort(ordered, new Comparator<PairwiseComparison>() {
 
@@ -166,6 +170,32 @@ public class JobStatusView extends Composite implements Display {
                 }
             }
         });
+        
+        Button button = new Button("Download results");
+        button.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                StringBuilder content = new StringBuilder(
+                        "Dataset1;Dataset2;Similarity;Error\n");
+                
+                for(PairwiseComparison comp : ordered) {
+                    content.append(comp.getFirstDataset().getFilename());
+                    content.append(';');
+                    content.append(comp.getSecondDataset().getFilename());
+                    content.append(';');
+                    content.append(comp.getSimilarity());
+                    content.append(';');
+                    content.append(comp.getError());
+                    content.append("\n");
+                }
+                DownloadTextFileDialog dtfd = new DownloadTextFileDialog(
+                        "Download as CSV", content.toString(), "results", "csv");
+            }
+        });
+        comparisonsPanel.add(button);
+        
+        boolean allFinished = true;
         for (PairwiseComparison comparison : ordered) {
             HorizontalPanel pairwiseComparisonPanel = new HorizontalPanel();
             String firstId = comparison.getFirstDataset().getUri();
@@ -222,6 +252,8 @@ public class JobStatusView extends Composite implements Display {
                 text += "<b>" + comparison.getSimilarity() + "</b>";
             } else if (comparisonStatus == ComparisonStatus.FAILED) {
                 text += "<b>" + comparisonStatus + "</b><br />" + comparison.getError();
+            } else {
+                allFinished = false;
             }
             HTML similarity = new HTML(text);
             pairwiseComparisonPanel.add(similarity);
@@ -230,6 +262,7 @@ public class JobStatusView extends Composite implements Display {
 
             comparisonsPanel.add(pairwiseComparisonPanel);
         }
+        button.setVisible(allFinished);
     }
 
     private void clearPopups() {

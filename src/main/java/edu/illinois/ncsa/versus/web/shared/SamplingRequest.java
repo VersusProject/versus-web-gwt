@@ -12,6 +12,7 @@
 package edu.illinois.ncsa.versus.web.shared;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
@@ -28,11 +29,11 @@ public class SamplingRequest implements Serializable {
 
     private String samplerId;
 
-    private Set<DatasetBean> datasets;
+    private List<DatasetBean> datasets;
 
     private int sampleSize;
 
-    private Set<DatasetBean> sample;
+    private List<DatasetBean> sample;
 
     private String error;
 
@@ -60,11 +61,11 @@ public class SamplingRequest implements Serializable {
         this.samplerId = samplerId;
     }
 
-    public Set<DatasetBean> getDatasets() {
+    public List<DatasetBean> getDatasets() {
         return datasets;
     }
 
-    public void setDatasets(Set<DatasetBean> datasets) {
+    public void setDatasets(List<DatasetBean> datasets) {
         this.datasets = datasets;
     }
 
@@ -76,11 +77,11 @@ public class SamplingRequest implements Serializable {
         this.sampleSize = sampleSize;
     }
 
-    public Set<DatasetBean> getSample() {
+    public List<DatasetBean> getSample() {
         return sample;
     }
 
-    public void setSample(Set<DatasetBean> sample) {
+    public void setSample(List<DatasetBean> sample) {
         this.sample = sample;
     }
 

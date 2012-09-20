@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -90,7 +91,7 @@ public class SamplingJob implements Serializable {
         return samplingStatus.get(sampling.getId());
     }
 
-    public synchronized void updateSample(String samplingId, Set<DatasetBean> sample) {
+    public synchronized void updateSample(String samplingId, List<DatasetBean> sample) {
         SamplingRequest sampling = getSampling(samplingId);
         if (sampling != null) {
             sampling.setSample(sample);

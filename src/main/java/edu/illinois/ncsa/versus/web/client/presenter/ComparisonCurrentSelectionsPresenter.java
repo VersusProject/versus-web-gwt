@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedEvent;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetSelectedHandler;
 import edu.illinois.ncsa.mmdb.web.client.event.DatasetUnselectedEvent;
@@ -27,6 +26,7 @@ import edu.illinois.ncsa.mmdb.web.client.event.RefreshHandler;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
 import edu.illinois.ncsa.versus.web.client.RegistryServiceAsync;
+import edu.illinois.ncsa.versus.web.client.Versus_web;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedEvent;
 import edu.illinois.ncsa.versus.web.client.event.AdapterSelectedHandler;
 import edu.illinois.ncsa.versus.web.client.event.AdapterUnselectedEvent;
@@ -105,7 +105,7 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         DatasetSelectionView view = new DatasetSelectionView(dispatchAsync);
         datasetSelectionPresenter =
                 new DatasetSelectionPresenter(view, dispatchAsync, eventBus,
-                MMDB.getSessionState().getSelectedDatasets());
+                Versus_web.getSessionState().getSelectedDatasets());
 
         popupPanel = new PopupPanel(true);
 
@@ -140,7 +140,7 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
         if(referenceBean == null) {
             return;
         }
-        if(MMDB.getSessionState().getSelectedDatasets().contains(
+        if(Versus_web.getSessionState().getSelectedDatasets().contains(
                 referenceBean.getUri())) {
             return;
         }
@@ -261,7 +261,7 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
      */
     protected void submitExecution() {
         final ComparisonSubmission submission = new ComparisonSubmission();
-        submission.setDatasetsURI(MMDB.getSessionState().getSelectedDatasets());
+        submission.setDatasetsURI(Versus_web.getSessionState().getSelectedDatasets());
         submission.setAdapter(adapter);
         submission.setMeasure(measure);
         submission.setExtraction(extractor);

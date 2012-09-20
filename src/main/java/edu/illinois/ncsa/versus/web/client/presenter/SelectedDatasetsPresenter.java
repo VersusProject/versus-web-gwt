@@ -37,6 +37,7 @@ import edu.illinois.ncsa.mmdb.web.client.presenter.DynamicListPresenter;
 import edu.illinois.ncsa.mmdb.web.client.ui.ContentCategory;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicGridView;
 import edu.illinois.ncsa.mmdb.web.client.view.DynamicListView;
+import edu.illinois.ncsa.versus.web.client.Versus_web;
 import edu.illinois.ncsa.versus.web.client.presenter.SelectedDatasetsPresenter.Display;
 import edu.illinois.ncsa.versus.web.client.view.SelectedDatasetsView;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
@@ -93,7 +94,7 @@ public class SelectedDatasetsPresenter extends BasePresenter<Display> {
 
     private void getContent() {
         final HashSet<String> selectedDatasets = new HashSet<String>(
-                MMDB.getSessionState().getSelectedDatasets());
+                Versus_web.getSessionState().getSelectedDatasets());
 
         service.execute(new GetDatasetsBySet(selectedDatasets),
                 new AsyncCallback<GetDatasetsBySetResult>() {

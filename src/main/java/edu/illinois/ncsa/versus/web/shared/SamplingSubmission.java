@@ -11,7 +11,7 @@
  */
 package edu.illinois.ncsa.versus.web.shared;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  *
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class SamplingSubmission implements Submission {
 
-    private Set<String> datasetsURI;
+    private List<String> datasetsURI;
 
     private ComponentMetadata individual;
 
@@ -30,11 +30,11 @@ public class SamplingSubmission implements Submission {
     public SamplingSubmission() {
     }
 
-    public Set<String> getDatasetsURI() {
+    public List<String> getDatasetsURI() {
         return datasetsURI;
     }
 
-    public void setDatasetsURI(Set<String> datasetsURI) {
+    public void setDatasetsURI(List<String> datasetsURI) {
         this.datasetsURI = datasetsURI;
     }
 

@@ -19,12 +19,13 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.illinois.ncsa.mmdb.web.server.TupeloStore;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
+import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.illinois.ncsa.versus.web.shared.Job;
-import edu.illinois.ncsa.versus.web.shared.PairwiseComparison;
+import edu.illinois.ncsa.versus.web.shared.JobNotFoundException;
+import edu.illinois.ncsa.versus.web.shared.JobSubmissionException;
 import edu.illinois.ncsa.versus.web.shared.SamplingJob;
 import edu.illinois.ncsa.versus.web.shared.SamplingRequest;
 import edu.illinois.ncsa.versus.web.shared.SamplingSubmission;
-import edu.illinois.ncsa.versus.web.shared.ComparisonSubmission;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import edu.uiuc.ncsa.cet.bean.tupelo.DatasetBeanUtil;
 
@@ -46,11 +47,9 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     private static final Log log = LogFactory.getLog(ExecutionServiceImpl.class);
 
     @Override
-    public Job submit(ComparisonSubmission set) {
+    public Job submit(ComparisonSubmission set) throws JobSubmissionException {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
 
-        // create comparison
-        Set<PairwiseComparison> comparisons = new HashSet<PairwiseComparison>();
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
 
         final String adapterId = set.getAdapter().getId();
@@ -58,41 +57,40 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
         final String measureId = set.getMeasure().getId();
 
         List<String> datasetsURI = new ArrayList<String>(set.getDatasetsURI());
-        for (int i = 0; i < datasetsURI.size(); i++) {
-            for (int j = i + 1; j < datasetsURI.size(); j++) {
-                PairwiseComparison comparison = new PairwiseComparison();
-                try {
-                    comparison.setFirstDataset(dbu.get(Resource.uriRef(datasetsURI.get(i))));
-                    comparison.setSecondDataset(dbu.get(Resource.uriRef(datasetsURI.get(j))));
-                    comparison.setAdapterId(adapterId);
-                    comparison.setExtractorId(extractorId);
-                    comparison.setMeasureId(measureId);
-                } catch (OperatorException e) {
-                    log.error("Error setting up comparison", e);
-                }
-                comparisons.add(comparison);
+        HashSet<DatasetBean> datasets = new HashSet<DatasetBean>(datasetsURI.size());
+
+        for (String uri : datasetsURI) {
+            try {
+                DatasetBean db = dbu.get(Resource.uriRef(uri));
+                datasets.add(db);
+            } catch (OperatorException ex) {
+                throw new JobSubmissionException("Error reading dataset " + uri, ex);
             }
         }
 
         // submit job for execution
         Job job = new Job();
         job.setStarted(new Date());
-        job.setComparisons(comparisons);
+        job.setDatasets(datasets);
+        job.setAdapterId(adapterId);
+        job.setExtractorId(extractorId);
+        job.setMeasureId(measureId);
         executionEngine.submit(job);
         return job;
     }
 
     @Override
-    public Job getStatus(String jobId) {
+    public Job getStatus(String jobId) throws JobNotFoundException {
         return executionEngine.getJob(jobId);
     }
 
     @Override
-    public SamplingJob submit(SamplingSubmission submission) {
+    public SamplingJob submit(SamplingSubmission submission)
+            throws JobSubmissionException {
         BeanSession beanSession = TupeloStore.getInstance().getBeanSession();
         DatasetBeanUtil dbu = new DatasetBeanUtil(beanSession);
-        Set<String> datasetsURI = submission.getDatasetsURI();
-        Set<DatasetBean> beans = new HashSet<DatasetBean>(datasetsURI.size());
+        List<String> datasetsURI = submission.getDatasetsURI();
+        List<DatasetBean> beans = new ArrayList<DatasetBean>(datasetsURI.size());
         for (String uri : datasetsURI) {
             try {
                 beans.add(dbu.get(Resource.uriRef(uri)));
@@ -116,7 +114,7 @@ public class ExecutionServiceImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    public SamplingJob getSamplingStatus(String samplingJobId) {
+    public SamplingJob getSamplingStatus(String samplingJobId) throws JobNotFoundException {
         return see.getJob(samplingJobId);
     }
 }

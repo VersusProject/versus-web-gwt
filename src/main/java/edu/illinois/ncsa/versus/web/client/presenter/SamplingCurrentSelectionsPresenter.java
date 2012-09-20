@@ -11,6 +11,8 @@
  */
 package edu.illinois.ncsa.versus.web.client.presenter;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,9 +25,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.illinois.ncsa.mmdb.web.client.MMDB;
 import edu.illinois.ncsa.versus.web.client.ExecutionService;
 import edu.illinois.ncsa.versus.web.client.ExecutionServiceAsync;
+import edu.illinois.ncsa.versus.web.client.Versus_web;
 import edu.illinois.ncsa.versus.web.client.event.NewSamplingJobEvent;
 import edu.illinois.ncsa.versus.web.client.event.NewSubmissionEvent;
 import edu.illinois.ncsa.versus.web.client.event.SamplerSelectedEvent;
@@ -137,14 +139,14 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
         if (size <= 0) {
             return false;
         }
-        if (size > MMDB.getSessionState().getSelectedDatasets().size()) {
+        if (size > Versus_web.getSessionState().getSelectedDatasets().size()) {
             return false;
         }
         return true;
     }
 
     private String getSampleSizeErrorMessage() {
-        int maxSize = MMDB.getSessionState().getSelectedDatasets().size();
+        int maxSize = Versus_web.getSessionState().getSelectedDatasets().size();
         if (maxSize == 0) {
             return "Select data before setting the sample size.";
         }
@@ -159,7 +161,8 @@ public class SamplingCurrentSelectionsPresenter implements Presenter {
         int sampleSize = Integer.parseInt(sampleSizeString);
 
         final SamplingSubmission submission = new SamplingSubmission();
-        submission.setDatasetsURI(MMDB.getSessionState().getSelectedDatasets());
+        submission.setDatasetsURI(new ArrayList<String>(
+                Versus_web.getSessionState().getSelectedDatasets()));
         submission.setIndividual(individual);
         submission.setSampler(sampler);
         submission.setSampleSize(sampleSize);
