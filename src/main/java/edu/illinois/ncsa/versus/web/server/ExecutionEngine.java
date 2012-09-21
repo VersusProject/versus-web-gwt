@@ -1,6 +1,5 @@
 package edu.illinois.ncsa.versus.web.server;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,19 +7,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.restlet.resource.ResourceException;
 import org.tupeloproject.kernel.BeanSession;
-import org.tupeloproject.kernel.OperatorException;
 import org.tupeloproject.rdf.Resource;
 
 import edu.illinois.ncsa.mmdb.web.server.TupeloStore;

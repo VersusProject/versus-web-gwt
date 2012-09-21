@@ -10,7 +10,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -108,6 +108,8 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
                 Versus_web.getSessionState().getSelectedDatasets());
 
         popupPanel = new PopupPanel(true);
+        popupPanel.setGlassEnabled(true);
+        popupPanel.setStyleName("datasetSelectionPopup");
 
         datasetSelectionPresenter.getCloseHandler().addClickHandler(new ClickHandler() {
             @Override
@@ -227,17 +229,8 @@ public class ComparisonCurrentSelectionsPresenter implements Presenter {
             @Override
             public void onClick(ClickEvent event) {
                 datasetSelectionPresenter.setSelectedDataset(referenceBean);
-
-                popupPanel.setWidth((int) (Window.getClientWidth() / 1.5) + "px");
-                popupPanel.setHeight((int) (Window.getClientHeight() / 1.5) + "px");
-                popupPanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-                    @Override
-                    public void setPosition(int offsetWidth, int offsetHeight) {
-                        int left = (Window.getClientWidth() - offsetWidth) / 2;
-                        int top = (Window.getClientHeight() - offsetHeight) / 2;
-                        popupPanel.setPopupPosition(left, top);
-                    }
-                });
+                popupPanel.center();
+                DOM.setStyleAttribute(popupPanel.getElement(), "overflow", "auto");
             }
         });
     }

@@ -55,14 +55,17 @@ public class DatasetSelectionView extends Composite implements Display {
         this.dispatchAsync = dispatchAsync;
         checkBoxes = new HashMap<CheckBox, DatasetBean>();
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.setStyleName("datasetSelection");
 
         Label title = new Label("Select the reference file to use.");
+        title.addStyleName("popupTitle");
         mainPanel.add(title);
 
         filesPanel = new FlowPanel();
         mainPanel.add(filesPanel);
 
-        button = new Button("OK");
+        button = new Button("Done");
+        button.addStyleName("buttonDone");
         mainPanel.add(button);
 
         initWidget(mainPanel);

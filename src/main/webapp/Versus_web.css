@@ -306,3 +306,25 @@ HTML, BODY {
     opacity: 0.4;
     font-style: italic ;
 }
+
+.popupTitle {
+    font-size: 1.4em;
+}
+
+.datasetSelection tbody tr td {
+    text-align: center;
+}
+
+.buttonDone {
+    margin-top: 2em;
+    font-size: 1.2em;
+}
+
+.datasetSelectionPopup {
+    border: 1px solid black;
+    padding: 3px;
+    background: white;
+    max-height: 66%;
+    max-width: 66%;
+    overflow: auto;
+}
