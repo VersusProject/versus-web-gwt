@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,6 +43,25 @@ import gov.nist.itl.ssd.sampling.SamplersClient;
 public class RegistryServiceImpl extends RemoteServiceServlet implements
         RegistryService {
 
+    // Cache time out in milliseconds
+    private static final long CACHE_TIMEOUT = 300000;
+
+    private final List<ComponentMetadata> adaptersCache = new ArrayList<ComponentMetadata>();
+
+    private Date lastAdaptersRefresh = new Date(0);
+
+    private final List<ComponentMetadata> extractorsCache = new ArrayList<ComponentMetadata>();
+
+    private Date lastExtractorsRefresh = new Date(0);
+
+    private final List<ComponentMetadata> measuresCache = new ArrayList<ComponentMetadata>();
+
+    private Date lastMeasuresRefresh = new Date(0);
+
+    private final List<ComponentMetadata> samplersCache = new ArrayList<ComponentMetadata>();
+
+    private Date lastSamplersRefresh = new Date(0);
+
     private static final String serviceUrl = PropertiesManager.getWebServicesUrl();
 
     private interface ZippedHelpStreamProvider {
@@ -51,7 +71,6 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         InputStream getZippedHelpStream(String componentId) throws IOException;
     }
     private static final ZippedHelpStreamProvider adapterHelpProvider = new ZippedHelpStreamProvider() {
-
         @Override
         public String getHelpSha1(String componentId) {
             return new AdaptersClient(serviceUrl).getAdapterHelpSha1(componentId);
@@ -64,7 +83,6 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
     };
 
     private static final ZippedHelpStreamProvider extractorHelpProvider = new ZippedHelpStreamProvider() {
-
         @Override
         public String getHelpSha1(String componentId) {
             return new ExtractorsClient(serviceUrl).getExtractorHelpSha1(componentId);
@@ -77,7 +95,6 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
     };
 
     private static final ZippedHelpStreamProvider measureHelpProvider = new ZippedHelpStreamProvider() {
-
         @Override
         public String getHelpSha1(String componentId) {
             return new MeasuresClient(serviceUrl).getMeasureHelpSha1(componentId);
@@ -91,90 +108,111 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 
     @Override
     public List<ComponentMetadata> getAdapters() {
-        List<ComponentMetadata> adapters = new ArrayList<ComponentMetadata>();
-
-        AdaptersClient adc = new AdaptersClient(serviceUrl);
-        HashSet<String> adaptersId = adc.getAdapters();
-        for (String id : adaptersId) {
-            AdapterDescriptor adapterDescriptor = adc.getAdapterDescriptor(id);
-            String category = getCategory(adapterDescriptor.getCategory());
-            String helpLink = getHelpLink(adapterDescriptor.getId(),
-                    adapterHelpProvider, adapterDescriptor.hasHelp());
-            ComponentMetadata adapter = new ComponentMetadata(id,
-                    adapterDescriptor.getName(), "", category, helpLink);
-            for (String mimeType : adapterDescriptor.getSupportedMediaTypes()) {
-                adapter.addSupportedInput(mimeType);
+        synchronized (adaptersCache) {
+            Date now = new Date();
+            if (now.getTime() - lastAdaptersRefresh.getTime() > CACHE_TIMEOUT) {
+                adaptersCache.clear();
+                AdaptersClient adc = new AdaptersClient(serviceUrl);
+                HashSet<String> adaptersId = adc.getAdapters();
+                for (String id : adaptersId) {
+                    AdapterDescriptor adapterDescriptor = adc.getAdapterDescriptor(id);
+                    String category = getCategory(adapterDescriptor.getCategory());
+                    String helpLink = getHelpLink(adapterDescriptor.getId(),
+                            adapterHelpProvider, adapterDescriptor.hasHelp());
+                    ComponentMetadata adapter = new ComponentMetadata(id,
+                            adapterDescriptor.getName(), "", category, helpLink);
+                    for (String mimeType : adapterDescriptor.getSupportedMediaTypes()) {
+                        adapter.addSupportedInput(mimeType);
+                    }
+                    adaptersCache.add(adapter);
+                }
+                lastAdaptersRefresh = new Date();
             }
-            adapters.add(adapter);
+            return new ArrayList<ComponentMetadata>(adaptersCache);
         }
-        return adapters;
     }
 
     @Override
     public List<ComponentMetadata> getExtractors() {
-        List<ComponentMetadata> extractors = new ArrayList<ComponentMetadata>();
-
-        ExtractorsClient exc = new ExtractorsClient(serviceUrl);
-        HashSet<String> extractorsId = exc.getExtractors();
-        for (String id : extractorsId) {
-            ExtractorDescriptor extractorDescriptor = exc.getExtractorDescriptor(id);
-            String category = getCategory(extractorDescriptor.getCategory());
-            String helpLink = getHelpLink(extractorDescriptor.getType(),
-                    extractorHelpProvider, extractorDescriptor.hasHelp());
-            ComponentMetadata extractor = new ComponentMetadata(id,
-                    extractorDescriptor.getName(), "", category, helpLink);
-            for (String adpater : extractorDescriptor.getSupportedAdapters()) {
-                extractor.addSupportedInput(adpater);
+        synchronized (extractorsCache) {
+            Date now = new Date();
+            if (now.getTime() - lastExtractorsRefresh.getTime() > CACHE_TIMEOUT) {
+                extractorsCache.clear();
+                ExtractorsClient exc = new ExtractorsClient(serviceUrl);
+                HashSet<String> extractorsId = exc.getExtractors();
+                for (String id : extractorsId) {
+                    ExtractorDescriptor extractorDescriptor = exc.getExtractorDescriptor(id);
+                    String category = getCategory(extractorDescriptor.getCategory());
+                    String helpLink = getHelpLink(extractorDescriptor.getType(),
+                            extractorHelpProvider, extractorDescriptor.hasHelp());
+                    ComponentMetadata extractor = new ComponentMetadata(id,
+                            extractorDescriptor.getName(), "", category, helpLink);
+                    for (String adpater : extractorDescriptor.getSupportedAdapters()) {
+                        extractor.addSupportedInput(adpater);
+                    }
+                    extractor.addSupportedOutputs(extractorDescriptor.getSupportedFeature());
+                    extractorsCache.add(extractor);
+                }
+                lastExtractorsRefresh = new Date();
             }
-            extractor.addSupportedOutputs(extractorDescriptor.getSupportedFeature());
-            extractors.add(extractor);
+
+            return new ArrayList<ComponentMetadata>(extractorsCache);
         }
-        return extractors;
     }
 
     @Override
     public List<ComponentMetadata> getMeasures() {
-        List<ComponentMetadata> measures = new ArrayList<ComponentMetadata>();
-
-        MeasuresClient mec = new MeasuresClient(serviceUrl);
-        HashSet<String> measuresId = mec.getMeasures();
-        for (String id : measuresId) {
-            MeasureDescriptor measureDescriptor = mec.getMeasureDescriptor(id);
-            String category = getCategory(measureDescriptor.getCategory());
-            String helpLink = getHelpLink(measureDescriptor.getType(),
-                    measureHelpProvider, measureDescriptor.hasHelp());
-            ComponentMetadata extractor = new ComponentMetadata(id,
-                    measureDescriptor.getName(), "", category, helpLink);
-            for (String feature : measureDescriptor.getSupportedFeatures()) {
-                extractor.addSupportedInput(feature);
+        synchronized (measuresCache) {
+            Date now = new Date();
+            if (now.getTime() - lastMeasuresRefresh.getTime() > CACHE_TIMEOUT) {
+                measuresCache.clear();
+                MeasuresClient mec = new MeasuresClient(serviceUrl);
+                HashSet<String> measuresId = mec.getMeasures();
+                for (String id : measuresId) {
+                    MeasureDescriptor measureDescriptor = mec.getMeasureDescriptor(id);
+                    String category = getCategory(measureDescriptor.getCategory());
+                    String helpLink = getHelpLink(measureDescriptor.getType(),
+                            measureHelpProvider, measureDescriptor.hasHelp());
+                    ComponentMetadata extractor = new ComponentMetadata(id,
+                            measureDescriptor.getName(), "", category, helpLink);
+                    for (String feature : measureDescriptor.getSupportedFeatures()) {
+                        extractor.addSupportedInput(feature);
+                    }
+                    measuresCache.add(extractor);
+                }
+                lastMeasuresRefresh = new Date();
             }
-            measures.add(extractor);
+            return new ArrayList<ComponentMetadata>(measuresCache);
         }
-        return measures;
     }
 
     @Override
     public List<ComponentMetadata> getSamplers() {
-        List<ComponentMetadata> samplers = new ArrayList<ComponentMetadata>();
-
-        SamplersClient sc = new SamplersClient(serviceUrl);
-        HashSet<String> samplersId = sc.getSamplers();
-        for (String id : samplersId) {
-            SamplerDescriptor samplerDescriptor = sc.getSamplerDescriptor(id);
-            String category = getCategory(samplerDescriptor.getCategory());
-            String helpLink = getHelpLink(samplerDescriptor.getId(),
-                    measureHelpProvider, samplerDescriptor.hasHelp());
-            ComponentMetadata sampler = new ComponentMetadata(id,
-                    samplerDescriptor.getName(), "", category, helpLink);
-            samplers.add(sampler);
+        synchronized (samplersCache) {
+            Date now = new Date();
+            if (now.getTime() - lastSamplersRefresh.getTime() > CACHE_TIMEOUT) {
+                samplersCache.clear();
+                SamplersClient sc = new SamplersClient(serviceUrl);
+                HashSet<String> samplersId = sc.getSamplers();
+                for (String id : samplersId) {
+                    SamplerDescriptor samplerDescriptor = sc.getSamplerDescriptor(id);
+                    String category = getCategory(samplerDescriptor.getCategory());
+                    String helpLink = getHelpLink(samplerDescriptor.getId(),
+                            measureHelpProvider, samplerDescriptor.hasHelp());
+                    ComponentMetadata sampler = new ComponentMetadata(id,
+                            samplerDescriptor.getName(), "", category, helpLink);
+                    samplersCache.add(sampler);
+                }
+                lastSamplersRefresh = new Date();
+            }
+            return new ArrayList<ComponentMetadata>(samplersCache);
         }
-        return samplers;
     }
 
     private String getCategory(String category) {
         return category == null || category.isEmpty() ? "Other" : category;
     }
-    
+
     private String getHelpLink(String id, ZippedHelpStreamProvider helpProvider, boolean hasHelp) {
         if (!hasHelp) {
             return "";
