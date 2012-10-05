@@ -111,20 +111,27 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         synchronized (adaptersCache) {
             Date now = new Date();
             if (now.getTime() - lastAdaptersRefresh.getTime() > CACHE_TIMEOUT) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Refreshing adapters cache");
                 adaptersCache.clear();
                 AdaptersClient adc = new AdaptersClient(serviceUrl);
                 HashSet<String> adaptersId = adc.getAdapters();
                 for (String id : adaptersId) {
-                    AdapterDescriptor adapterDescriptor = adc.getAdapterDescriptor(id);
-                    String category = getCategory(adapterDescriptor.getCategory());
-                    String helpLink = getHelpLink(adapterDescriptor.getId(),
-                            adapterHelpProvider, adapterDescriptor.hasHelp());
-                    ComponentMetadata adapter = new ComponentMetadata(id,
-                            adapterDescriptor.getName(), "", category, helpLink);
-                    for (String mimeType : adapterDescriptor.getSupportedMediaTypes()) {
-                        adapter.addSupportedInput(mimeType);
+                    try {
+                        AdapterDescriptor adapterDescriptor = adc.getAdapterDescriptor(id);
+                        String category = getCategory(adapterDescriptor.getCategory());
+                        String helpLink = getHelpLink(adapterDescriptor.getId(),
+                                adapterHelpProvider, adapterDescriptor.hasHelp());
+                        ComponentMetadata adapter = new ComponentMetadata(id,
+                                adapterDescriptor.getName(), "", category, helpLink);
+                        for (String mimeType : adapterDescriptor.getSupportedMediaTypes()) {
+                            adapter.addSupportedInput(mimeType);
+                        }
+                        adaptersCache.add(adapter);
+                    } catch (Exception e) {
+                        Logger.getLogger(RegistryServiceImpl.class.getName()).
+                                log(Level.WARNING, "Cannot get adapter " + id, e);
                     }
-                    adaptersCache.add(adapter);
                 }
                 lastAdaptersRefresh = new Date();
             }
@@ -137,21 +144,28 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         synchronized (extractorsCache) {
             Date now = new Date();
             if (now.getTime() - lastExtractorsRefresh.getTime() > CACHE_TIMEOUT) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Refreshing extractors cache");
                 extractorsCache.clear();
                 ExtractorsClient exc = new ExtractorsClient(serviceUrl);
                 HashSet<String> extractorsId = exc.getExtractors();
                 for (String id : extractorsId) {
-                    ExtractorDescriptor extractorDescriptor = exc.getExtractorDescriptor(id);
-                    String category = getCategory(extractorDescriptor.getCategory());
-                    String helpLink = getHelpLink(extractorDescriptor.getType(),
-                            extractorHelpProvider, extractorDescriptor.hasHelp());
-                    ComponentMetadata extractor = new ComponentMetadata(id,
-                            extractorDescriptor.getName(), "", category, helpLink);
-                    for (String adpater : extractorDescriptor.getSupportedAdapters()) {
-                        extractor.addSupportedInput(adpater);
+                    try {
+                        ExtractorDescriptor extractorDescriptor = exc.getExtractorDescriptor(id);
+                        String category = getCategory(extractorDescriptor.getCategory());
+                        String helpLink = getHelpLink(extractorDescriptor.getType(),
+                                extractorHelpProvider, extractorDescriptor.hasHelp());
+                        ComponentMetadata extractor = new ComponentMetadata(id,
+                                extractorDescriptor.getName(), "", category, helpLink);
+                        for (String adpater : extractorDescriptor.getSupportedAdapters()) {
+                            extractor.addSupportedInput(adpater);
+                        }
+                        extractor.addSupportedOutputs(extractorDescriptor.getSupportedFeature());
+                        extractorsCache.add(extractor);
+                    } catch (Exception e) {
+                        Logger.getLogger(RegistryServiceImpl.class.getName()).
+                                log(Level.WARNING, "Cannot get extractor " + id, e);
                     }
-                    extractor.addSupportedOutputs(extractorDescriptor.getSupportedFeature());
-                    extractorsCache.add(extractor);
                 }
                 lastExtractorsRefresh = new Date();
             }
@@ -165,20 +179,27 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         synchronized (measuresCache) {
             Date now = new Date();
             if (now.getTime() - lastMeasuresRefresh.getTime() > CACHE_TIMEOUT) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Refreshing measures cache");
                 measuresCache.clear();
                 MeasuresClient mec = new MeasuresClient(serviceUrl);
                 HashSet<String> measuresId = mec.getMeasures();
                 for (String id : measuresId) {
-                    MeasureDescriptor measureDescriptor = mec.getMeasureDescriptor(id);
-                    String category = getCategory(measureDescriptor.getCategory());
-                    String helpLink = getHelpLink(measureDescriptor.getType(),
-                            measureHelpProvider, measureDescriptor.hasHelp());
-                    ComponentMetadata extractor = new ComponentMetadata(id,
-                            measureDescriptor.getName(), "", category, helpLink);
-                    for (String feature : measureDescriptor.getSupportedFeatures()) {
-                        extractor.addSupportedInput(feature);
+                    try {
+                        MeasureDescriptor measureDescriptor = mec.getMeasureDescriptor(id);
+                        String category = getCategory(measureDescriptor.getCategory());
+                        String helpLink = getHelpLink(measureDescriptor.getType(),
+                                measureHelpProvider, measureDescriptor.hasHelp());
+                        ComponentMetadata extractor = new ComponentMetadata(id,
+                                measureDescriptor.getName(), "", category, helpLink);
+                        for (String feature : measureDescriptor.getSupportedFeatures()) {
+                            extractor.addSupportedInput(feature);
+                        }
+                        measuresCache.add(extractor);
+                    } catch (Exception e) {
+                        Logger.getLogger(RegistryServiceImpl.class.getName()).
+                                log(Level.WARNING, "Cannot get measure " + id, e);
                     }
-                    measuresCache.add(extractor);
                 }
                 lastMeasuresRefresh = new Date();
             }
@@ -191,17 +212,24 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
         synchronized (samplersCache) {
             Date now = new Date();
             if (now.getTime() - lastSamplersRefresh.getTime() > CACHE_TIMEOUT) {
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Refreshing samplers cache");
                 samplersCache.clear();
                 SamplersClient sc = new SamplersClient(serviceUrl);
                 HashSet<String> samplersId = sc.getSamplers();
                 for (String id : samplersId) {
-                    SamplerDescriptor samplerDescriptor = sc.getSamplerDescriptor(id);
-                    String category = getCategory(samplerDescriptor.getCategory());
-                    String helpLink = getHelpLink(samplerDescriptor.getId(),
-                            measureHelpProvider, samplerDescriptor.hasHelp());
-                    ComponentMetadata sampler = new ComponentMetadata(id,
-                            samplerDescriptor.getName(), "", category, helpLink);
-                    samplersCache.add(sampler);
+                    try {
+                        SamplerDescriptor samplerDescriptor = sc.getSamplerDescriptor(id);
+                        String category = getCategory(samplerDescriptor.getCategory());
+                        String helpLink = getHelpLink(samplerDescriptor.getId(),
+                                measureHelpProvider, samplerDescriptor.hasHelp());
+                        ComponentMetadata sampler = new ComponentMetadata(id,
+                                samplerDescriptor.getName(), "", category, helpLink);
+                        samplersCache.add(sampler);
+                    } catch (Exception e) {
+                        Logger.getLogger(RegistryServiceImpl.class.getName()).
+                                log(Level.WARNING, "Cannot get sampler " + id, e);
+                    }
                 }
                 lastSamplersRefresh = new Date();
             }
@@ -218,26 +246,32 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
             return "";
         }
 
-        String applicationPath = getServletContext().getRealPath("");
-        File helpDirectory = new File(applicationPath, "help");
-        if (!helpDirectory.isDirectory()) {
-            if (helpDirectory.exists()) {
-                helpDirectory.delete();
+        try {
+            String applicationPath = getServletContext().getRealPath("");
+            File helpDirectory = new File(applicationPath, "help");
+            if (!helpDirectory.isDirectory()) {
+                if (helpDirectory.exists()) {
+                    helpDirectory.delete();
+                }
+                helpDirectory.mkdir();
             }
-            helpDirectory.mkdir();
-        }
 
-        File help = new File(helpDirectory, id);
-        if (!help.isDirectory()) {
-            if (help.exists()) {
-                help.delete();
+            File help = new File(helpDirectory, id);
+            if (!help.isDirectory()) {
+                if (help.exists()) {
+                    help.delete();
+                }
+                help.mkdir();
             }
-            help.mkdir();
-        }
 
-        extractIfNeeded(id, helpProvider, help);
-        String helpLink = "help/" + id + "/index.html";
-        return new File(help, "index.html").exists() ? helpLink : "";
+            extractIfNeeded(id, helpProvider, help);
+            String helpLink = "help/" + id + "/index.html";
+            return new File(help, "index.html").exists() ? helpLink : "";
+        } catch (Exception e) {
+            Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                    Level.WARNING, "Cannot get help of " + id, e);
+            return "";
+        }
     }
 
     private void extractIfNeeded(String id, ZippedHelpStreamProvider helpProvider, File help) {
