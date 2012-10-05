@@ -67,7 +67,7 @@ public class SamplingCurrentSelectionsView extends Composite implements Display 
         sampleSizeTextBox.setVisibleLength(10);
         HorizontalPanel selectedSizePanel = new HorizontalPanel();
         selectedSizePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        selectedSizePanel.add(new Label("Sampling size:"));
+        selectedSizePanel.add(new Label("Sample size:"));
         selectedSizePanel.add(sampleSizeTextBox);
         errorImage = new Image("images/dialog-error.png");
         errorImage.setVisible(false);

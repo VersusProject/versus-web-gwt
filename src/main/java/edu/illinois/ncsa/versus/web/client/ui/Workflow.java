@@ -89,7 +89,7 @@ public class Workflow extends Composite {
         TabLayoutPanel tabPanel = new TabLayoutPanel(2, Style.Unit.EM);
         tabPanel.setWidth("100%");
         tabPanel.add(selectedDataScroll, "Selected Data");
-        tabPanel.add(workflowSelection, "Worflow selection");
+        tabPanel.add(workflowSelection, "Workflow selection");
         tabPanel.add(previousExecScroll, "View Results");
         tabPanel.selectTab(0);
 
