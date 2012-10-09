@@ -151,7 +151,7 @@ public class ExecutionEngine {
                         adapterId, extractorId, measureId,
                         datasetsNames, datasetsStreams, referenceDatasets);
             }
-        }, 3, 3);
+        }, 30, 3);
                                                   
         List<String> comparisonsIds = retryService.run();
 
