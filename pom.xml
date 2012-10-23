@@ -52,7 +52,7 @@
         <dependency>
             <groupId>edu.illinois.ncsa.isda</groupId>
             <artifactId>mmdb-web</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>edu.uiuc.ncsa.cet</groupId>
