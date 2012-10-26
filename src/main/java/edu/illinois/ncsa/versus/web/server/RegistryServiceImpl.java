@@ -46,17 +46,29 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
     // Cache time out in milliseconds
     private static final long CACHE_TIMEOUT = 300000;
 
+    private static final int getTimeout = 3;
+
+    private static final int getRetry = 3;
+
+    private final Object adaptersLock = new Object();
+
     private final List<ComponentMetadata> adaptersCache = new ArrayList<ComponentMetadata>();
 
     private Date lastAdaptersRefresh = new Date(0);
+
+    private final Object extractorsLock = new Object();
 
     private final List<ComponentMetadata> extractorsCache = new ArrayList<ComponentMetadata>();
 
     private Date lastExtractorsRefresh = new Date(0);
 
+    private final Object measuresLock = new Object();
+
     private final List<ComponentMetadata> measuresCache = new ArrayList<ComponentMetadata>();
 
     private Date lastMeasuresRefresh = new Date(0);
+
+    private final Object samplersLock = new Object();
 
     private final List<ComponentMetadata> samplersCache = new ArrayList<ComponentMetadata>();
 
@@ -64,57 +76,15 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 
     private static final String serviceUrl = PropertiesManager.getWebServicesUrl();
 
-    private interface ZippedHelpStreamProvider {
-
-        String getHelpSha1(String componentId);
-
-        InputStream getZippedHelpStream(String componentId) throws IOException;
-    }
-    private static final ZippedHelpStreamProvider adapterHelpProvider = new ZippedHelpStreamProvider() {
-        @Override
-        public String getHelpSha1(String componentId) {
-            return new AdaptersClient(serviceUrl).getAdapterHelpSha1(componentId);
-        }
-
-        @Override
-        public InputStream getZippedHelpStream(String componentId) throws IOException {
-            return new AdaptersClient(serviceUrl).getAdapterZippedHelp(componentId);
-        }
-    };
-
-    private static final ZippedHelpStreamProvider extractorHelpProvider = new ZippedHelpStreamProvider() {
-        @Override
-        public String getHelpSha1(String componentId) {
-            return new ExtractorsClient(serviceUrl).getExtractorHelpSha1(componentId);
-        }
-
-        @Override
-        public InputStream getZippedHelpStream(String componentId) throws IOException {
-            return new ExtractorsClient(serviceUrl).getExtractorZippedHelp(componentId);
-        }
-    };
-
-    private static final ZippedHelpStreamProvider measureHelpProvider = new ZippedHelpStreamProvider() {
-        @Override
-        public String getHelpSha1(String componentId) {
-            return new MeasuresClient(serviceUrl).getMeasureHelpSha1(componentId);
-        }
-
-        @Override
-        public InputStream getZippedHelpStream(String componentId) throws IOException {
-            return new MeasuresClient(serviceUrl).getMeasureZippedHelp(componentId);
-        }
-    };
-
     @Override
     public List<ComponentMetadata> getAdapters() {
-        synchronized (adaptersCache) {
+        synchronized (adaptersLock) {
             Date now = new Date();
             if (now.getTime() - lastAdaptersRefresh.getTime() > CACHE_TIMEOUT) {
                 Logger.getLogger(RegistryServiceImpl.class.getName()).log(
                         Level.INFO, "Refreshing adapters cache");
                 adaptersCache.clear();
-                AdaptersClient adc = new AdaptersClient(serviceUrl);
+                AdaptersClient adc = new AdaptersClient(serviceUrl, getTimeout, getRetry);
                 HashSet<String> adaptersId = adc.getAdapters();
                 for (String id : adaptersId) {
                     try {
@@ -134,6 +104,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
                     }
                 }
                 lastAdaptersRefresh = new Date();
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Found {0} adapters", adaptersCache.size());
             }
             return new ArrayList<ComponentMetadata>(adaptersCache);
         }
@@ -141,13 +113,13 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 
     @Override
     public List<ComponentMetadata> getExtractors() {
-        synchronized (extractorsCache) {
+        synchronized (extractorsLock) {
             Date now = new Date();
             if (now.getTime() - lastExtractorsRefresh.getTime() > CACHE_TIMEOUT) {
                 Logger.getLogger(RegistryServiceImpl.class.getName()).log(
                         Level.INFO, "Refreshing extractors cache");
                 extractorsCache.clear();
-                ExtractorsClient exc = new ExtractorsClient(serviceUrl);
+                ExtractorsClient exc = new ExtractorsClient(serviceUrl, getTimeout, getRetry);
                 HashSet<String> extractorsId = exc.getExtractors();
                 for (String id : extractorsId) {
                     try {
@@ -168,6 +140,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
                     }
                 }
                 lastExtractorsRefresh = new Date();
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Found {0} extractors", extractorsCache.size());
             }
 
             return new ArrayList<ComponentMetadata>(extractorsCache);
@@ -176,13 +150,13 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 
     @Override
     public List<ComponentMetadata> getMeasures() {
-        synchronized (measuresCache) {
+        synchronized (measuresLock) {
             Date now = new Date();
             if (now.getTime() - lastMeasuresRefresh.getTime() > CACHE_TIMEOUT) {
                 Logger.getLogger(RegistryServiceImpl.class.getName()).log(
                         Level.INFO, "Refreshing measures cache");
                 measuresCache.clear();
-                MeasuresClient mec = new MeasuresClient(serviceUrl);
+                MeasuresClient mec = new MeasuresClient(serviceUrl, getTimeout, getRetry);
                 HashSet<String> measuresId = mec.getMeasures();
                 for (String id : measuresId) {
                     try {
@@ -202,6 +176,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
                     }
                 }
                 lastMeasuresRefresh = new Date();
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Found {0} measures", measuresCache.size());
             }
             return new ArrayList<ComponentMetadata>(measuresCache);
         }
@@ -209,13 +185,13 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
 
     @Override
     public List<ComponentMetadata> getSamplers() {
-        synchronized (samplersCache) {
+        synchronized (samplersLock) {
             Date now = new Date();
             if (now.getTime() - lastSamplersRefresh.getTime() > CACHE_TIMEOUT) {
                 Logger.getLogger(RegistryServiceImpl.class.getName()).log(
                         Level.INFO, "Refreshing samplers cache");
                 samplersCache.clear();
-                SamplersClient sc = new SamplersClient(serviceUrl);
+                SamplersClient sc = new SamplersClient(serviceUrl, getTimeout, getRetry);
                 HashSet<String> samplersId = sc.getSamplers();
                 for (String id : samplersId) {
                     try {
@@ -232,6 +208,8 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
                     }
                 }
                 lastSamplersRefresh = new Date();
+                Logger.getLogger(RegistryServiceImpl.class.getName()).log(
+                        Level.INFO, "Found {0} samplers", samplersCache.size());
             }
             return new ArrayList<ComponentMetadata>(samplersCache);
         }
@@ -240,6 +218,54 @@ public class RegistryServiceImpl extends RemoteServiceServlet implements
     private String getCategory(String category) {
         return category == null || category.isEmpty() ? "Other" : category;
     }
+
+    private interface ZippedHelpStreamProvider {
+
+        String getHelpSha1(String componentId);
+
+        InputStream getZippedHelpStream(String componentId) throws IOException;
+    }
+    private static final ZippedHelpStreamProvider adapterHelpProvider = new ZippedHelpStreamProvider() {
+        @Override
+        public String getHelpSha1(String componentId) {
+            return new AdaptersClient(serviceUrl, getTimeout, getRetry).
+                    getAdapterHelpSha1(componentId);
+        }
+
+        @Override
+        public InputStream getZippedHelpStream(String componentId) throws IOException {
+            return new AdaptersClient(serviceUrl, getTimeout, getRetry).
+                    getAdapterZippedHelp(componentId);
+        }
+    };
+
+    private static final ZippedHelpStreamProvider extractorHelpProvider = new ZippedHelpStreamProvider() {
+        @Override
+        public String getHelpSha1(String componentId) {
+            return new ExtractorsClient(serviceUrl, getTimeout, getRetry).
+                    getExtractorHelpSha1(componentId);
+        }
+
+        @Override
+        public InputStream getZippedHelpStream(String componentId) throws IOException {
+            return new ExtractorsClient(serviceUrl, getTimeout, getRetry).
+                    getExtractorZippedHelp(componentId);
+        }
+    };
+
+    private static final ZippedHelpStreamProvider measureHelpProvider = new ZippedHelpStreamProvider() {
+        @Override
+        public String getHelpSha1(String componentId) {
+            return new MeasuresClient(serviceUrl, getTimeout, getRetry).
+                    getMeasureHelpSha1(componentId);
+        }
+
+        @Override
+        public InputStream getZippedHelpStream(String componentId) throws IOException {
+            return new MeasuresClient(serviceUrl, getTimeout, getRetry).
+                    getMeasureZippedHelp(componentId);
+        }
+    };
 
     private String getHelpLink(String id, ZippedHelpStreamProvider helpProvider, boolean hasHelp) {
         if (!hasHelp) {
