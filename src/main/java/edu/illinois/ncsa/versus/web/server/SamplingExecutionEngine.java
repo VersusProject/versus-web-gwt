@@ -14,7 +14,6 @@ package edu.illinois.ncsa.versus.web.server;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +24,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.restlet.resource.ResourceException;
 import org.tupeloproject.kernel.BeanSession;
 import org.tupeloproject.rdf.Resource;
 
@@ -79,7 +77,7 @@ public class SamplingExecutionEngine {
                         Sampling sampling;
                         try {
                             sampling = client.getSampling(id);
-                        } catch (ResourceException e) {
+                        } catch (RuntimeException e) {
                             job.updateError(id, "Cannot get result: " + e);
                             continue;
                         }
