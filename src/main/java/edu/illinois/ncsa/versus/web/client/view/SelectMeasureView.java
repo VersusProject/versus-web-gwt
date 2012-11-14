@@ -53,7 +53,7 @@ public class SelectMeasureView extends Composite implements Display {
     public SelectMeasureView() {
         mainPanel = new FlowPanel();
         mainPanel.addStyleName("selectMeasurePanel");
-        Label titleLabel = new Label("Measures");
+        Label titleLabel = new Label("Compare (measure)");
         titleLabel.addStyleName("titleLabel");
         mainPanel.add(titleLabel);
         listCategoriesPanel = new VerticalPanel();

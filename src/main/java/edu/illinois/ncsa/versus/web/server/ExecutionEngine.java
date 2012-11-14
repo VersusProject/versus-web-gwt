@@ -68,7 +68,7 @@ public class ExecutionEngine {
                         Comparison comparison;
                         try {
                             comparison = client.getComparison(id);
-                        } catch (ResourceException e) {
+                        } catch (RuntimeException e) {
                             job.updateError(id, "Cannot get result: " + e);
                             continue;
                         }

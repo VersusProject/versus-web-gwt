@@ -23,7 +23,7 @@ public class SelectAdapterView extends Composite implements Display {
     public SelectAdapterView() {
         mainPanel = new FlowPanel();
         mainPanel.addStyleName("selectAdapterPanel");
-        Label titleLabel = new Label("Adapters");
+        Label titleLabel = new Label("Load (adapter)");
         titleLabel.addStyleName("titleLabel");
         mainPanel.add(titleLabel);
         listCategoriesPanel = new VerticalPanel();

@@ -39,7 +39,7 @@ public class SelectExtractorView extends Composite implements Display {
     public SelectExtractorView() {
         mainPanel = new FlowPanel();
         mainPanel.addStyleName("selectExtractorPanel");
-        Label titleLabel = new Label("Extractors");
+        Label titleLabel = new Label("Characterize (extractor)");
         titleLabel.addStyleName("titleLabel");
         mainPanel.add(titleLabel);
         listCategoriesPanel = new VerticalPanel();
