@@ -111,6 +111,11 @@
         <servlet-name>BatchDownload</servlet-name>
         <servlet-class>edu.illinois.ncsa.mmdb.web.server.BatchDownload</servlet-class>
     </servlet>
+
+    <servlet>
+        <servlet-name>SampleBatchDownload</servlet-name>
+        <servlet-class>edu.illinois.ncsa.versus.web.server.SampleBatchDownload</servlet-class>
+    </servlet>	
     
     <servlet>
         <servlet-name>TextFileDownload</servlet-name>
@@ -161,6 +166,11 @@
         <url-pattern>/BatchDownload</url-pattern>
     </servlet-mapping>
     
+	<servlet-mapping>
+        <servlet-name>SampleBatchDownload</servlet-name>
+        <url-pattern>/SampleBatchDownload</url-pattern>
+    </servlet-mapping>
+	
     <servlet-mapping>
         <servlet-name>TextFileDownload</servlet-name>
         <url-pattern>/TextFileDownload</url-pattern>

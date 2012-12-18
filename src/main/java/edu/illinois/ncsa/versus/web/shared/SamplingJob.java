@@ -53,7 +53,7 @@ public class SamplingJob implements Serializable {
     }
 
     public synchronized void setSamplings(Set<SamplingRequest> sampling) {
-        this.samplings = new HashSet(sampling);
+        this.samplings = new HashSet<SamplingRequest>(sampling);
     }
 
     public synchronized Set<SamplingRequest> getSamplings() {

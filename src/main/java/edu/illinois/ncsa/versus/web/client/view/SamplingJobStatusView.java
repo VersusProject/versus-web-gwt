@@ -11,7 +11,11 @@
  */
 package edu.illinois.ncsa.versus.web.client.view;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -38,6 +42,7 @@ import edu.illinois.ncsa.mmdb.web.client.ui.DownloadDialog;
 import edu.illinois.ncsa.mmdb.web.client.ui.PreviewWidget;
 import edu.illinois.ncsa.versus.web.client.InfoPopup;
 import edu.illinois.ncsa.versus.web.client.presenter.SamplingJobStatusPresenter.Display;
+import edu.illinois.ncsa.versus.web.client.ui.SampleDownloadDialog;
 import edu.uiuc.ncsa.cet.bean.DatasetBean;
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
@@ -176,25 +181,25 @@ public class SamplingJobStatusView extends Composite implements Display {
     }
 
     @Override
-    public void setSample(List<DatasetBean> sample) {
+    public void setSample(final List<DatasetBean> sample) {
         samplePanel.clear();
         samplePanel.add(new Label("Sample dataset:"));
-        if (sample != null && !sample.isEmpty()) {
-            final LinkedHashSet<String> uris = new LinkedHashSet<String>(sample.size());
+        if (sample != null && !sample.isEmpty()) {        	
+            final ArrayList<String> uris = new ArrayList<String>(sample.size());
             for (DatasetBean bean : sample) {
-                PreviewWidget previewWidget = new PreviewWidget(bean.getUri(),
+            	PreviewWidget previewWidget = new PreviewWidget(bean.getUri(),
                         GetPreviews.SMALL, "dataset?id=" + bean.getUri(), dispatchAsync);
                 previewWidget.addStyleName("inlinethumbnail");
                 samplePanel.add(previewWidget);
                 addPopup(previewWidget, bean);
                 uris.add(bean.getUri());
             }
-
+                        
             Button downloadButton = new Button("Download sample");
             downloadButton.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    DownloadDialog dd = new DownloadDialog("Download sample", 
+                	SampleDownloadDialog sdd = new SampleDownloadDialog("Download sample", 
                             uris, "sample");
                 }
             });

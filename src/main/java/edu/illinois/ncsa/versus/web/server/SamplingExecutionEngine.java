@@ -91,11 +91,16 @@ public class SamplingExecutionEngine {
                                     List<DatasetBean> result =
                                             new ArrayList<DatasetBean>(
                                             sr.getSampleSize());
-                                    for (DatasetBean ds : datasets) {
-                                        if (sampling.getSample().contains(ds.getUri())) {
-                                            result.add(ds);
-                                        }
+                                    
+                                    for (String ind : sampling.getSample()) {
+                                    	for (DatasetBean ds : datasets) {
+                                    		if (ind.equals(ds.getUri())) {
+                                    			result.add(ds);
+                                    			break;
+                                    		}
+                                    	}
                                     }
+                                    
                                     job.setEnded(new Date());
                                     job.updateSample(id, result);
                                     break;
