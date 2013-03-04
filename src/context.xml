@@ -66,7 +66,7 @@
     <a:hasProperties>
       <b:storageTypeMapEntry rdf:about="tag:tupeloproject.org,2006:f46fb261c22c87af3033e559026f1619248b3478">
         <b:storageTypeMapKey>MySQL.database</b:storageTypeMapKey>
-        <b:storageTypeMapValue>medici</b:storageTypeMapValue>
+        <b:storageTypeMapValue>versus</b:storageTypeMapValue>
       </b:storageTypeMapEntry>
     </a:hasProperties>
     <a:isType>MySQL</a:isType>

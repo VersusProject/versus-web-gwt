@@ -1,0 +1,330 @@
+html {
+	overflow-y: auto; 
+}
+
+.page {
+    padding: 0px;
+}
+
+.sendButton {
+    display: block;
+    font-size: 16pt;
+}
+
+.dialogVPanel {
+    margin: 5px;
+}
+
+.serverResponseLabelError {
+    color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+    margin: 15px 6px 6px;
+}
+
+.panel {
+    border: 1px solid black;
+}
+
+.headerPanel {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    text-align: left;
+    padding: 5px;
+}
+
+.navigation {
+    border-right: 1px solid black;
+}
+
+.footer {
+    border-top: 1px solid gray;
+}
+
+.titleLabel {
+    font-size: large;
+    color: orange;
+    margin: 0px;
+    padding: 0px;
+}
+
+.selectAdapterPanel {
+    width: 300px;
+    margin: 10px auto;
+    line-height: 2.0;
+}
+
+.selectMeasurePanel {
+    width: 300px;
+    margin: 10px auto;
+    line-height: 2.0;
+}
+
+.selectExtractorPanel {
+    width: 300px;
+    margin: 10px auto;
+    line-height: 2.0;
+}
+
+.selectSamplerPanel {
+    width: 300px;
+    margin: 10px auto;
+    line-height: 2.0;
+}
+
+.contentPanel {
+    width: 100%;
+}
+
+.selectedLabel {
+    color: white !important;
+    background: blue;
+    padding: 5px;
+}
+
+.highlightLabel {
+    background: #FDD017;
+    padding: 5px;
+}
+
+.listAnchor {
+    text-decoration: none;
+    padding: 5px;
+}
+
+.listAnchor:hover {
+    text-decoration: none;
+}
+
+.listThumbnailsPanel {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    border-top: 1px solid gray;
+}
+
+.listThumbnailsLabel {
+    color: gray;
+    margin-top: 5px;	
+}
+
+.thumbnail {
+    width: auto;
+    margin: 5px;
+    padding: 5px;
+}
+
+.inlinethumbnail {
+    margin: 5px;
+    padding: 5px;
+    display: inline-block;
+}
+
+.dropBoxesPanel {
+    border: 1px solid black;
+    width: 500px;
+    margin: 5px auto;
+}
+
+.dropBoxPanel {
+    width: 100px;
+    height: 100px;
+    margin: 10px auto;
+    padding: 10px;
+    background: orange;
+    border: 1px black solid;
+    vertical-align: middle;
+}
+
+HTML, BODY {
+    height: 100%;
+}
+
+.box {
+    border: 1px dotted green;
+}
+
+.currentSelectionsView {
+    width: 800px;
+    margin: 5px auto;
+}
+
+.mainSection {
+    width: 95%;
+    margin: 15px 0px 15px 15px;
+}
+
+.jobStatusPanel {
+    width: 100%;
+    padding: 5px;
+}
+
+.jobStatusSubPanel {
+    margin: 0px 0px 10px 20px;
+    padding: 0px;
+}
+
+.pairwiseComparisonPanel {
+    display:inline;
+    position:relative;
+    width: 100%;
+    border:1px solid red;
+}
+
+.enabledExtractor {
+    border: 1px solid red;
+}
+
+.hideExtractor {
+    color: gray !important;
+    background: white;
+}
+
+.hideExtractor:hover {
+    color: gray;
+    cursor: default;
+}
+
+.enabledMeasure {
+    border: 1px solid red;
+}
+
+.hideMeasure {
+    color: gray !important;
+    background: white;
+}
+
+.hideMeasure:hover {
+    color: gray;
+    cursor: default;
+}
+
+.logo {
+    width: auto;
+    height: auto;
+    padding-left: 10px;	
+    padding-right: 15px;
+}
+
+.logo a {
+    color: #C4273A;
+    text-decoration: none;
+}
+
+.logo a:visited {
+    color: #C4273A;
+}
+
+.logo a:hover {
+    text-decoration: underline;
+}
+
+.resultDisclosurePanel {
+    margin: 10px
+}
+
+.centralPanelLayout {
+    overflow: auto;
+}
+
+.loginWidget {
+    float: right;
+}
+
+.loginWidget a:visited {
+    color: black;
+}
+
+.loginWidget .gwt-Label {
+    border: 1px solid black;
+    cursor: pointer;
+    padding: 3px;
+} 
+
+.datasetSelectionThumbnail {
+    float: left;
+}
+
+.gwt-stacklayoutpanel .workflowHeader {
+    font-size: 0.9em;
+    background: #F0F0F0;
+    text-align: left;
+    line-height: 2em;
+    padding: 0px;
+    padding-left: 0.4em;
+}
+
+.gwt-PopupPanel {
+    border: 1px solid black;
+}
+
+.gwt-TabLayoutPanel {
+    height: 100%;
+}
+
+/** the tab bar */
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
+  padding-top: 2px;
+  border-bottom: 1px solid #888888;
+  background: white;
+}
+
+/** the individual tab in the tab bar */
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+  padding: 4px;
+  cursor: pointer;
+  background: white;
+  border: 1px solid #888888;
+  margin-right: 2px;
+  font-weight: normal;
+  margin-bottom: -1px;
+  float: left;
+  font-size: 0.9em;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+  font-weight: bold;
+  cursor: default;
+  border-bottom: 1px solid white;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
+    border: none;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabInner {
+    border: none;
+}
+
+.gwt-TabLayoutPanelContentContainer {
+    border: none;
+}
+
+.applyOpacityToCategory{
+    opacity: 0.4;
+    font-style: italic ;
+}
+
+.popupTitle {
+    font-size: 1.4em;
+}
+
+.datasetSelection tbody tr td {
+    text-align: center;
+}
+
+.buttonDone {
+    margin-top: 2em;
+    font-size: 1.2em;
+}
+
+.datasetSelectionPopup {
+    border: 1px solid black;
+    padding: 3px;
+    background: white;
+    max-height: 66%;
+    max-width: 66%;
+    overflow: auto;
+}
