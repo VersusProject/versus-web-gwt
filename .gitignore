@@ -2,3 +2,7 @@
 /gwt-unitCache
 /test-classes
 /target/
+.project
+.classpath
+.settings
+nb-configuration.xml
